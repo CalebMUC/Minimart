@@ -1,0 +1,99 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.login-form {
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.login-header {
+    margin-bottom: 1rem;
+}
+
+.logo img {
+    width: 50px;
+    margin-bottom: 10px;
+}
+
+.details h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.details p {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.form-input-field {
+    margin-bottom: 1rem;
+}
+
+.form-input-field input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.password-field {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.response-div {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: red;
+}
+
+.form-button {
+    margin-top: 1rem;
+}
+
+.form-button button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-button button:hover {
+    background-color: #0056b3;
+}
+
+.form-links {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.form-links a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}

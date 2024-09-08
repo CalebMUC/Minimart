@@ -1,0 +1,325 @@
+/* Root Variables */
+:root {
+    --color-primary: #7380ec;
+    --color-danger: #ff7782;
+    --color-success: #41f1b6;
+    --color-warning: #ffbb55;
+    --color-info-dark: #7d8da1;
+    --color-info-light: #dce1eb;
+    --color-dark: #363949;
+    --color-light: rgba(132, 139, 200, 0.18);
+    --color-primary-variant: #111e88;
+    --color-dark-variant: #111e88;
+    --color-background: #eceff7;
+    --color-white: #ffffff;
+    --color-gray: #f0f0f0;
+    --color-dark-gray: #4a4a4a;
+    --box-shadow: 0 2rem 3rem rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Variables */
+.dark-theme-variables {
+    --color-background: #181a1e;
+    --color-dark: #edeffd;
+    --color-white: #202528;
+    --color-dark-variant: #a3bdcc;
+    --color-light: rgba(0, 0, 0, 0.4);
+    --box-shadow: 0 2rem 3rem var(--color-light);
+}
+
+/* General Styles */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-background);
+    color: var(--color-dark);
+}
+
+/* Outer Container */
+.outer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 95%;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* Main Content */
+.container1 {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Sidebar */
+.sidebarp {
+    position: relative;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: 100px;
+}
+
+
+.Prime,
+.RecentlyViewed,
+.Complementary,
+.Personalized,
+.Related,
+.SavedItems {
+    background-color: var(--color-white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.CheckOut{
+    background-color: var(--color-white);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+
+/* Cart Items Section */
+.CartItems h1 {
+    margin-bottom: 20px;
+}
+
+.CartItems a {
+    color: #007185;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.CartItems a:hover {
+    text-decoration: underline;
+}
+
+/* Product Item */
+.productItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+    gap: 20px;
+}
+
+/* Checkbox Styling */
+.CheckBox input[type="checkbox"] {
+    margin-right: 20px;
+    transform: scale(1.5);
+}
+
+/* Product Image */
+.productImage img {
+    max-width: 150px;
+    height: auto;
+    margin-right: 20px;
+}
+
+/* Product Details */
+.productDetails {
+    flex-grow: 1;
+}
+
+.productDetails p {
+    margin: 5px 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #0f1111;
+}
+
+.productDetails .Instock {
+    color: #007600;
+    font-size: 14px;
+}
+
+.productDetails .LowStock {
+    color: #d9534f;
+    font-size: 14px;
+}
+
+.Quantity,
+.Actions {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.Quantity label {
+    margin-right: 10px;
+}
+
+.Quantity select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+.Actions a {
+    color: #007185;
+    font-size: 14px;
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.Actions a:hover {
+    text-decoration: underline;
+}
+
+/* Price Styling */
+.Price p {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f1111;
+}
+
+/* Carousel Container */
+.carouselContainer {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.carouselContent {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+}
+
+.carouselContent::-webkit-scrollbar {
+    display: none;
+}
+
+.carouselContent {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Carousel Items */
+.item {
+    min-width: 200px;
+    max-width: 220px;
+    text-align: center;
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.item p {
+    margin: 10px 0;
+    color: #333;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.item .hover-text {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    height: 1.5em;
+    transition: all 0.3s ease;
+}
+
+.item:hover .hover-text {
+    white-space: normal;
+    height: auto;
+}
+
+.item:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}
+
+/* Scroll Buttons */
+.scrollBtn,
+.cont-scrollBtn {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.scrollBtn.left,
+.cont-scrollBtn.left {
+    left: 0;
+}
+
+.scrollBtn.right,
+.cont-scrollBtn.right {
+    right: 0;
+}
+button{
+    background-color: #FFA500;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+button :hover {
+    background-color: #FF4500;
+}
+    
+/* Container 3 Layout */
+.container3 {
+    width: 100%;
+    margin-top: 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .outer-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .container1,
+    .sidebar {
+        width: 100%;
+    }
+
+    .productItem {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .carouselContainer {
+        padding: 10px 0;
+    }
+
+    .item {
+        max-width: 100%;
+    }
+}

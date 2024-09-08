@@ -1,0 +1,82 @@
+/* Container for the dropdown */
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: #333;
+    width: 250px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 10px 0;
+    z-index: 1000;
+    color: #fff;
+}
+
+/* Each dropdown item */
+.dropdown-content a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #ddd;
+    font-size: 14px;
+}
+
+.dropdown-content a:hover {
+    background-color: #444;
+}
+
+/* Icon and text container */
+.dropdown-content a i {
+    margin-right: 10px;
+}
+
+/* Separate sections with a border */
+.dropdown-content .section-divider {
+    height: 1px;
+    margin: 8px 0;
+    background-color: #555;
+}
+
+/* User account items (like in Switch Account section) */
+.account-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+}
+
+.account-item img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.account-item .account-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-item .account-info .account-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.account-item .account-info .account-email {
+    font-size: 12px;
+    color: #999;
+}
+
+.account-item:hover {
+    background-color: #444;
+}
+
+.account-item .status-indicator {
+    margin-left: auto;
+    width: 10px;
+    height: 10px;
+    background-color: #4CAF50;
+    /* Green status indicator */
+    border-radius: 50%;
+}

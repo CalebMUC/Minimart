@@ -1,0 +1,257 @@
+.header {
+    background-color: #131a22;
+    color: white;
+    padding: 10px;
+}
+.header-logo{
+background-color: white;
+width: 40px;
+height: 40px;
+/* border-radius: 8px; */
+    /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Soft shadow for depth */
+    margin-right: 10px;
+    /* Space around the logo */
+}
+
+.header-logo img {
+    width: 20px;
+    height: 20px;
+}
+
+.header-top {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #1a1a1a;
+    /* Match the header background */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    margin-right: 100px;
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+}
+
+.search-button {
+    padding: 10px;
+    background-color: #ff9900;
+    border: none;
+    border-radius: 4px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.header-account {
+    position: relative;
+    display: inline-block;
+}
+
+.header-account a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.header-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    color: white;
+    margin-left: 50px;
+}
+
+.header-right>div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+}
+
+.header-orders a,
+.header-cart a {
+    text-decoration: none;
+    color: white;
+}
+
+.header-cart {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.header-cart i {
+    font-size: 24px;
+    margin-right: 5px;
+}
+
+.header-cart span:nth-child(2) {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+
+.header-account,
+.header-orders,
+.header-cart {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* .header-cart {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  } */
+
+.sub-header {
+    display: flex;
+    align-items: center;
+    background-color: #232f3e;
+    padding: 10px;
+}
+
+.sub-header-menu {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.sub-header-menu a{
+    text-decoration: none;
+    color: white;
+}
+
+.sub-header-links a {
+    margin: 0 10px;
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.sub-header-links a:hover {
+    text-decoration: underline;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar a{
+    text-decoration: none;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #232f3e;
+    color: #fff;
+}
+
+.sidebar-header span {
+    font-size: 1.2em;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    color: #fff;
+    cursor: pointer;
+}
+
+.category-group {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.category-group h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.category-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-group ul li {
+    margin-bottom: 8px;
+}
+
+.category-group ul li a {
+    text-decoration: none;
+    color: black;
+}
+
+.category-group ul li a:hover {
+    text-decoration: underline;
+}
+.sub-category-list{
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    list-style: none;
+}
+.category-group h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.sub-category-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sub-category-list ul li {
+    margin-bottom: 5px;
+}
+
+.sub-category-list ul li a {
+    text-decoration: none;
+    color: black
+}
+
+

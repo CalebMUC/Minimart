@@ -1,0 +1,50 @@
+/* Container for the entire product list */
+.products-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Grid container for products */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* Individual product card */
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    background-color: #fff;
+}
+
+/* Image inside the product card */
+.product-card img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Styling for product text */
+.product-card p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Ensure the grid is responsive */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,142 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+}
+
+.register-form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.register-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.register-logo img {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+.register-details h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.register-details p {
+    margin-top: 5px;
+    color: #777;
+}
+
+.register-success {
+    text-align: center;
+    background-color: #e0ffe0;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.register-input-field {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.register-input-field input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.register-input-field input:focus {
+    outline: none;
+    border-color: #333;
+}
+
+.register-input-field .fa-eye,
+.register-input-field .fa-eye-slash {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+}
+
+.register-password-strength {
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+.strong {
+    color: green;
+}
+
+.weak {
+    color: red;
+}
+
+.register-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.register-button {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.register-button button {
+    padding: 10px 15px;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.register-button button:disabled {
+    background-color: #ccc;
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.register-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+.phone-input {
+    display: flex;
+    align-items: center;
+}
+
+
+
+.phone-input input {
+    flex: 1;
+}
+
+.phone-input select {
+    padding: 8px;
+    font-size: 16px;
+    width: 200px;
+}

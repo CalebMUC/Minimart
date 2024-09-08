@@ -3,12 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.6.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
     "react-scripts": "5.0.1",
+    "react-slick": "^0.30.2",
+    "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -23,6 +30,21 @@
       "react-app/jest"
     ]
   },
+  "urls": {
+    "GetCartItemsUrl": "https://localhost:44334/api/Entities/GetCartItems",
+    "GetAllProducts": "https://localhost:44334/api/Entities/FetchAllProducts",
+    "AddProducts": "https://localhost:44334/api/Entities/AddProducts",
+    "UploadImages": "https://localhost:44334/api/Entities/UploadImages",
+    "GetCategoriesUrl": "https://localhost:44334/api/Entities/GetCartItems",
+    "GetCategoriesByIDUrl": "https://localhost:44334/api/Entities/GetCartItems",
+    "GetCategories": " https://localhost:44334/api/Entities/GetDashBoardCategories",
+    "GetSubCategory": "https://localhost:44334/api/Entities/SubCategoryID",
+    "GetProductsByCategory": "https://localhost:44334/api/Entities/GetProductsByCategory",
+    "Login": "https://localhost:44334/api/Entities/Login",
+    "WeatherForecast": "https://localhost:44334/WeatherForecast",
+    "Register": "https://localhost:44334/api/Entities/Register",
+    "AddCartItems": "https://localhost:44334/api/Entities/AddToCart"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -34,5 +56,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10"
   }
 }

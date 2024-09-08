@@ -1,0 +1,27 @@
+.ad-slider-container {
+    position: absolute;
+    top: 40%;
+    /* Center vertically */
+    left: 50%;
+    /* Center horizontally */
+    transform: translate(-50%, -50%);
+    /* Adjust for actual center position */
+     z-index: -1; 
+    /* Position it behind other content */
+    width: 80%;
+    /* Adjust the width as needed */
+    height: 200px;
+}
+
+.ad-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ad-slide img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
