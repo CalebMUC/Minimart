@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -68,3 +69,8 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+=======
+# Minimart
+
+Minimart is an eCommerce platform designed to provide a seamless online shopping experience. Minimart enables users to browse and purchase a wide range of products, from electronics to household items, all from the comfort of their homes. It offers features such as product search, detailed product descriptions, secure payment gateways, order tracking, and user-friendly interfaces to ensure a smooth shopping experience. Minimart aims to bridge the gap between consumers and sellers, making online shopping accessible and efficient for everyone
+>>>>>>> 36a58e6891108f0c50397b420dbff90bb90ee2d6
