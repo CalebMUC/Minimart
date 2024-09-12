@@ -42,7 +42,7 @@
 
 /* Carousel Items */
 .item {
-  min-width: 200px;
+  min-width: 250px;
   max-width: 220px;
   text-align: center;
   background-color: #f8f8f8;
@@ -67,14 +67,15 @@
   overflow: hidden;
 }
 
-.item .hover-text {
-  position: relative;
-  white-space: nowrap;
+.item p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
-  height: 1.5em;
-  transition: all 0.3s ease;
+  white-space: normal;
+  /* Allow wrapping */
 }
 
 .item:hover .hover-text {
@@ -85,6 +86,28 @@
 .item:hover {
   transform: scale(1.05);
   cursor: pointer;
+}
+.original-price {
+  /* color: red; */
+  font-size: 14px;
+  text-decoration: line-through;
+}
+
+.discounted-price {
+  color: green;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.discount-tag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: red;
+  color: white;
+  padding: 5px;
+  font-size: 12px;
+  border-radius: 3px;
 }
 
 

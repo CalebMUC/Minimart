@@ -118,7 +118,7 @@ const ProductPage = () => {
                   />
                 </div>
                 <div className="productImage">
-                  <img src={`/images/${product.productImage}`} alt={product.productName} />
+                  <img src={`${product.productImage}`} alt={product.productName} />
                 </div>
                 <div className="productDetails">
                   <p>{product.productName}</p>

@@ -3,61 +3,74 @@ import '../../src/AddProducts.css';
 // Import the API methods
 import { AddProduct, fetchCategories } from '../Data.js'; 
 import packageInfo from "../../package.json";
+import Dialogs from "./Dialogs.js";
 
 const AddProducts = () => {
   const [formData, setFormData] = useState({
     productName: "",
-    productImage: null,  // This will hold the image file
+    productImage: null,
     productDetails: "",
     productFeatures: "",
     productSpecifications: "",
     boxContent: "",
     price: "",
     discount: "",
-    category: "",   // Category selection
+    categoryID: 0,
     Quantity: "",
-    subcategory: "" // Subcategory selection
+    subcategory: "",
+    CreatedBy: "",
+    ProductID: "",
+    category: "",
   });
 
   const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]); // Subcategories state
-  const [error, setError] = useState(null); // Error handling
+  const [subcategories, setSubcategories] = useState([]);
+  const [error, setError] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  // Fetch categories on component mount
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const fetchedCategories = await fetchCategories(); // Fetch categories from API
+        const fetchedCategories = await fetchCategories();
         setCategories(fetchedCategories);
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
         setError("Failed to load categories");
       }
     };
-
     loadCategories();
   }, []);
 
-  // Handle category change and reset subcategories if a new category is selected
+  useEffect(() => {
+    const username = localStorage.getItem('username');
+    if (!username) {
+      setError("No user is logged in.");
+    }
+    setFormData((prevData) => ({
+      ...prevData,
+      CreatedBy: username,
+    }));
+  }, []);
+
   const handleCategoryChange = (e) => {
     const selectedCategoryId = e.target.value;
+    const categoryName = e.target.options[e.target.selectedIndex].text;
     setFormData({
       ...formData,
-      category: selectedCategoryId,
-      subcategory: "", // Reset subcategory when category changes
+      categoryID: selectedCategoryId,
+      category: categoryName,
+      subcategory: "",
     });
 
-    // Find the selected category and set subcategories if available
     const selectedCategory = categories.find(cat => cat.id === parseInt(selectedCategoryId));
     if (selectedCategory && selectedCategory.subcategoryids.length > 0) {
       setSubcategories(selectedCategory.subcategoryids);
     } else {
-      setSubcategories([]); // Clear subcategories if none exist
+      setSubcategories([]);
     }
   };
 
-  // Handle subcategory change
   const handleSubcategoryChange = (e) => {
     setFormData({
       ...formData,
@@ -65,56 +78,86 @@ const AddProducts = () => {
     });
   };
 
-  // Handle image file change and save the image name
-  const handleImageChange = async (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(packageInfo.urls.UploadImages, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      const data = await response.json();
-      setFormData({
-        ...formData,
-        productImage: data.url, // Save the uploaded image URL
-      });
-      setIsUploading(false);
-    } catch (uploadError) {
-      console.error("Image upload failed:", uploadError);
-      setError("Failed to upload image");
-      setIsUploading(false);
+  const generateProductID = () => {
+    const { categoryID, subcategory } = formData;
+    if (categoryID && subcategory) {
+      const categoryName = categories.find(cat => cat.id === parseInt(categoryID))?.name || "";
+      const subcategoryName = subcategories.find(sub => sub.id === parseInt(subcategory))?.name || "";
+      const catCode = categoryName.substring(0, 2).toUpperCase();
+      const subCatCode = subcategoryName.substring(0, 2).toUpperCase();
+      const uniqueNumber = Date.now();
+      return `${catCode}${subCatCode}${uniqueNumber}`;
     }
-  }
-};
+    return "";
+  };
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIsUploading(true);
+      try {
+        const imageData = new FormData();
+        imageData.append('file', file);
+        const response = await fetch(packageInfo.urls.UploadImages, {
+          method: 'POST',
+          body: imageData,
+        });
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+        const data = await response.json();
+        setFormData((prevData) => ({
+          ...prevData,
+          productImage: data.url,
+        }));
+        setIsUploading(false);
+      } catch (uploadError) {
+        setError("Failed to upload image");
+        setIsUploading(false);
+      }
+    }
+  };
 
-  // Submit form data to the API
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const productID = generateProductID();
+    if (!productID) {
+      setError("Please select a category and subcategory.");
+      return;
+    }
+
+    if (!formData.productImage) {
+      setError("Please upload an image before submitting.");
+      return;
+    }
+
+    const finalData = {
+      ...formData,
+      productImage: formData.productImage,
+      ProductID: productID,
+    };
+
     try {
-      const finalData = {
-        ...formData,
-        productImage: formData.productImage, // Only image name is sent
-      };
-
-      // Log the final data for verification
-      console.log(finalData);
-
-      // Call the AddProduct API method with the final form data
       const response = await AddProduct(finalData);
-      console.log("Product added successfully:", response);
+      setSuccessMessage('Product added successfully');
+      setShowSuccessDialog(true);
+      setFormData({
+        productName: "",
+        productImage: null,
+        productDetails: "",
+        productFeatures: "",
+        productSpecifications: "",
+        boxContent: "",
+        price: "",
+        discount: "",
+        categoryID: 0,
+        Quantity: "",
+        subcategory: "",
+        CreatedBy: localStorage.getItem('username'),
+        ProductID: "",
+        category: "",
+      });
     } catch (error) {
-      console.error("Error adding product:", error);
       setError("Failed to add product");
     }
   };
@@ -132,7 +175,9 @@ const AddProducts = () => {
 
       <h2>Add New Product</h2>
       {error && <p className="error-message">{error}</p>} {/* Display errors if any */}
-      
+
+      {showSuccessDialog && <Dialogs message={successMessage} />}
+
       <form className="add-product-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="productName">Product Name</label>
@@ -164,7 +209,6 @@ const AddProducts = () => {
           </select>
         </div>
 
-        {/* Subcategory selection, shown only if subcategories exist */}
         {subcategories.length > 0 && (
           <div className="form-group">
             <label htmlFor="subcategory">Subcategory</label>
@@ -250,23 +294,22 @@ const AddProducts = () => {
             id="Quantity"
             name="Quantity"
             value={formData.Quantity}
-            onChange={(e) => setFormData({...formData, Quantity : e.target.value})}
+            onChange={(e) => setFormData({ ...formData, Quantity: e.target.value })}
             required
           >
-            <option value="" disabled>Add Quantity</option>
-            {[...Array(10).keys()].map(i => (
-              <option key={i} value={i + 1}> {i + 1}</option>
-            ))}
+            <option value="" disabled>Select quantity</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
           </select>
         </div>
 
         <div className="form-group">
           <label htmlFor="price">Price</label>
           <input
+            type="number"
             id="price"
             name="price"
-            type="number"
-            placeholder="Enter price"
             value={formData.price}
             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
             required
@@ -276,19 +319,16 @@ const AddProducts = () => {
         <div className="form-group">
           <label htmlFor="discount">Discount</label>
           <input
+            type="number"
             id="discount"
             name="discount"
-            type="number"
-            placeholder="Discount in %"
             value={formData.discount}
             onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
             required
           />
         </div>
 
-        <div className="form-actions">
-          <button type="submit" className="submit-btn">Add Product</button>
-        </div>
+        <button type="submit" disabled={isUploading}>Add Product</button>
       </form>
     </div>
   );

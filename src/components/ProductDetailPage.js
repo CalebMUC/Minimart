@@ -79,14 +79,12 @@ const ProductDetail = () => {
         }),
       });
 
-      console.log(response.ok);
       // console.log(response.json());
       if (!response.ok) {
         throw new Error("Failed to add to cart");
       }
 
       const data = await response.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -128,7 +126,7 @@ const ProductDetail = () => {
   return (
     <div className="product-detail-container">
       <div className="sidebarPDP">
-        <img src={`/images/${product.imageUrl}`} alt={product.productName} />
+        <img src={`${product.imageUrl}`} alt={product.productName} />
       </div>
 
       <div className="product-details">

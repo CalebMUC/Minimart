@@ -45,6 +45,9 @@
     "Register": "https://localhost:44334/api/Entities/Register",
     "AddCartItems": "https://localhost:44334/api/Entities/AddToCart"
   },
+  "ImageUploads":{
+    "filepath":"D:/OrderApi"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
