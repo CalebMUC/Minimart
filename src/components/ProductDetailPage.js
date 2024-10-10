@@ -1,13 +1,16 @@
+
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import packageInfo from "../../package.json";
 import '../../src/ProductDetailPage.css';
 import { cartContext } from "./CartContext";
+import  ProductImageCarousel  from "./ProductImageCouresel";
+import Dialogs from "./Dialogs.js";
 
 const ProductDetail = () => {
-  const { ProductName } = useParams();
+  const { productName: encodedProductName, productID } = useParams(); // Extract both productName and productID
   const [product, setProduct] = useState(null);
-  const [productID, setProductID] = useState(null);
+  // const [productID, setProductID] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userID, setUserID] = useState(localStorage.getItem('userID') || null);
@@ -15,10 +18,13 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { cartCount, updateCartCount } = useContext(cartContext);
+  const [showSuccessDialog,setSuccessDialog] = useState(false);
+  const [dialogMessage,setDialogMessage] = useState(null);
+
 
   useEffect(() => {
     fetchAllProducts();
-  }, [ProductName]);
+  }, [productID]);
 
   const fetchAllProducts = async () => {
     try {
@@ -35,13 +41,13 @@ const ProductDetail = () => {
       }
 
       const products = await response.json();
-      const matchedProduct = products.find((p) => p.productName === ProductName);
+      const matchedProduct = products.find((p) => p.productId  === productID);
 
       if (matchedProduct) {
         console.log(matchedProduct)
         setProduct(matchedProduct);
         
-        setProductID(`${matchedProduct.productId}`);
+        // setProductID(`${matchedProduct.productId}`);
 ;
         console.log(productID)
       } else {
@@ -106,10 +112,17 @@ const ProductDetail = () => {
       if (response && response.responseMessage) {
         const newCount = parseInt(cartCount) + 1;
         updateCartCount(newCount);
-        alert(response.responseMessage);
+        setSuccessDialog(true)
+        setDialogMessage("Product Added to cart succesfully");
+        // alert(response.responseMessage);
       }
     }
   };
+
+  const handleCloseDialog = async () =>{
+    setSuccessDialog(false);
+    setDialogMessage(null)
+  }
 
   if (loading) {
     return <h2>Loading...</h2>;
@@ -123,13 +136,26 @@ const ProductDetail = () => {
     return <div>Product not found</div>;
   }
 
+  const productImages = [product.imageUrl];
+
   return (
+     
     <div className="product-detail-container">
-      <div className="sidebarPDP">
-        <img src={`${product.imageUrl}`} alt={product.productName} />
-      </div>
+
+      {/* Error message shown inline, allowing users to edit the form */}
+    
+      {/* <div className="sidebarPDP"> */}
+        {/* <img src={`${product.imageUrl}`} alt={product.productName} /> */}
+        {/* call the ProductImageCorousel and pass the images */}
+        
+        <ProductImageCarousel images={productImages} />
+      {/* </div> */}
 
       <div className="product-details">
+      {showSuccessDialog && <Dialogs 
+      message={dialogMessage}
+       type="cart"
+       onClose={handleCloseDialog} />}
         <div className="details">
           <h2>{product.productName}</h2>
           <h3>KSH {Number(product.price).toLocaleString()}</h3>
@@ -156,7 +182,7 @@ const ProductDetail = () => {
         <div>
           <h2>Product Details</h2>
           <ul>
-            {product.productDescription.split(/\\r\\n|\\n/).map((feature, index) => (
+            {product.productDescription.split("\n").map(point => point.trim()).filter(point => point.length > 0).map((feature, index) => (
               <li key={index}>{feature.trim()}</li>
             ))}
           </ul>
@@ -218,3 +244,5 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+
+

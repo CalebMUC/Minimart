@@ -75,6 +75,7 @@ const MainPage = () => {
       const categoriesWithProducts = await Promise.all(
         categoryData.map(async (category) => {
           const products = await fetchProductsByCategory(category.id);
+          console.log(products);
           return { ...category, products, scrollRef: React.createRef() };
         })
       );
@@ -113,7 +114,8 @@ const MainPage = () => {
 
                     return (
                       <div key={index} className="item">
-                        <Link to={`/ProductPage/${product.productName}`}>
+                      <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                       
                           {/* Discount tag */}
                           <div className="discount-tag">
                             -{(discount * 100).toFixed(0)}%
@@ -123,6 +125,7 @@ const MainPage = () => {
                           <img
                             src={`${product.productImage}`}
                             alt={product.productName}
+                            className="product-image" // Apply a class for consistent styling
                           />
 
                           {/* Product name (ellipsis after 3 lines) */}

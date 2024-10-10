@@ -88,7 +88,7 @@ function Login() {
 
          if (isAuthenticated) {
           // Redirect to the main page if authenticated
-          const redirectPath = location.state?.from?.pathname || '/MainPage';
+          const redirectPath = location.state?.from?.pathname || '/';
           navigate(redirectPath);
         } else {
           setErrors('Authentication failed. Please try again.');

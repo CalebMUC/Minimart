@@ -13,6 +13,8 @@
 /* Section Headings */
 .address-section h2,
 .payment-section h2,
+.delivery-section h2,
+.items-section h2,
 .items-shipping-section h2 {
     font-size: 18px;
     font-weight: bold;
@@ -296,9 +298,40 @@ hr {
 }
 /* Product Image */
 .productImage img {
-    max-width: 150px;
+    max-width: 100px;
     height: auto;
     margin-right: 20px;
+}
+.delivery-mode-options{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.delivery-option{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.delivery-mode-logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.delivery-mode-name {
+    font-size: 14px;
+}
+
+.delivery-info{
+    width: 100%;
+    height:auto;
+    border:1px   solid orange;
+    box-shadow: 0 2px 8px rgba(0, 0, 0,
+     0.1);
+    transition: transform 0.3s ease;
+    padding: 10px;
+    border-radius: 10px;
+
+    background-color:#fdf3e6 ;
 }
 
 @media (max-width: 600px) {

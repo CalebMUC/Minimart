@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import '../../src/AddProducts.css';
-// Import the API methods
 import { AddProduct, fetchCategories } from '../Data.js'; 
 import packageInfo from "../../package.json";
 import Dialogs from "./Dialogs.js";
@@ -30,6 +29,7 @@ const AddProducts = () => {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Fetch categories on component mount
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -42,6 +42,7 @@ const AddProducts = () => {
     loadCategories();
   }, []);
 
+  // Set CreatedBy field with logged-in user's name
   useEffect(() => {
     const username = localStorage.getItem('username');
     if (!username) {
@@ -53,24 +54,28 @@ const AddProducts = () => {
     }));
   }, []);
 
+  // Handle category selection change
   const handleCategoryChange = (e) => {
     const selectedCategoryId = e.target.value;
     const categoryName = e.target.options[e.target.selectedIndex].text;
+
     setFormData({
       ...formData,
       categoryID: selectedCategoryId,
       category: categoryName,
-      subcategory: "",
+      subcategory: "", // Reset subcategory when category changes
     });
 
+    // Find selected category and update subcategories
     const selectedCategory = categories.find(cat => cat.id === parseInt(selectedCategoryId));
     if (selectedCategory && selectedCategory.subcategoryids.length > 0) {
       setSubcategories(selectedCategory.subcategoryids);
     } else {
-      setSubcategories([]);
+      setSubcategories([]); // No subcategories
     }
   };
 
+  // Handle subcategory selection change
   const handleSubcategoryChange = (e) => {
     setFormData({
       ...formData,
@@ -78,19 +83,21 @@ const AddProducts = () => {
     });
   };
 
+  // Generate unique ProductID based on category and subcategory
   const generateProductID = () => {
     const { categoryID, subcategory } = formData;
-    if (categoryID && subcategory) {
+    if (categoryID) {
       const categoryName = categories.find(cat => cat.id === parseInt(categoryID))?.name || "";
       const subcategoryName = subcategories.find(sub => sub.id === parseInt(subcategory))?.name || "";
       const catCode = categoryName.substring(0, 2).toUpperCase();
-      const subCatCode = subcategoryName.substring(0, 2).toUpperCase();
+      const subCatCode = subcategoryName ? subcategoryName.substring(0, 2).toUpperCase() : '00';
       const uniqueNumber = Date.now();
       return `${catCode}${subCatCode}${uniqueNumber}`;
     }
     return "";
   };
 
+  // Handle image upload
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -118,11 +125,12 @@ const AddProducts = () => {
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const productID = generateProductID();
-    if (!productID) {
-      setError("Please select a category and subcategory.");
+    if (!formData.categoryID) {
+      setError("Please select a category.");
       return;
     }
 
@@ -174,7 +182,6 @@ const AddProducts = () => {
       </div>
 
       <h2>Add New Product</h2>
-      {error && <p className="error-message">{error}</p>} {/* Display errors if any */}
 
       {showSuccessDialog && <Dialogs message={successMessage} />}
 
@@ -196,7 +203,7 @@ const AddProducts = () => {
           <select
             id="category"
             name="category"
-            value={formData.category}
+            value={formData.categoryID} // Bound to categoryID instead of category name
             onChange={handleCategoryChange}
             required
           >
@@ -211,15 +218,14 @@ const AddProducts = () => {
 
         {subcategories.length > 0 && (
           <div className="form-group">
-            <label htmlFor="subcategory">Subcategory</label>
+            <label htmlFor="subcategory">Subcategory (Optional)</label>
             <select
               id="subcategory"
               name="subcategory"
               value={formData.subcategory}
               onChange={handleSubcategoryChange}
-              required
             >
-              <option value="" disabled>Select a subcategory</option>
+              <option value="">No subcategory</option>
               {subcategories.map((subcategory) => (
                 <option key={subcategory.id} value={subcategory.id}>
                   {subcategory.name}
@@ -329,6 +335,8 @@ const AddProducts = () => {
         </div>
 
         <button type="submit" disabled={isUploading}>Add Product</button>
+
+        {error && <p className="error-message">{error}</p>} {/* Display errors if any */}
       </form>
     </div>
   );

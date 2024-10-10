@@ -5,9 +5,89 @@
 }
 
 .sidebarPDP {
-    flex: 1;
-    padding-right: 20px;
-}
+    width: 400px; /* Fixed width for container */
+    height: 400px; /* Fixed height for container */
+    overflow: hidden; /* Ensures that the zoomed image doesn't overflow the container */
+    position: relative;
+    top: 10;
+  }
+  
+  .sidebarPDP img {
+    width: 100%; /* Ensure the image takes the full width of the container */
+    height: 100%; /* Ensure the image takes the full height of the container */
+    object-fit: contain; /* Maintain the aspect ratio */
+    transition: transform 0.3s ease-in-out; /* Smooth zoom-in effect */
+  }
+  
+  .sidebarPDP:hover img {
+    transform: scale(1.5); /* Zoom the image on hover */
+  }
+  /* Carousel container */
+.carousel-container {
+    width: 100%;
+    max-width: 400px; /* You can adjust this to your desired width */
+    margin: 0 auto;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* Carousel inner wrapper for images */
+  .carousel-images {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Individual image item inside carousel */
+  .carousel-image-item {
+    min-width: 100%; /* This ensures only one image is shown at a time */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Image styling with fixed width, maintaining aspect ratio */
+  .carousel-image-item img {
+    width: 100%;
+    height: 400px; /* Set a fixed height to control the aspect ratio */
+    object-fit: contain; /* Ensures the image fits without stretching */
+    transition: transform 0.3s ease-in-out;
+    cursor: zoom-in; /* Indicate that hover zoom is available */
+  }
+  
+  /* Hover-to-zoom effect */
+  .carousel-image-item img:hover {
+    transform: scale(1.5); /* Zoom in when hovering */
+    cursor: zoom-out;
+  }
+  
+  /* Left and right navigation arrows */
+  .carousel-arrow {
+    position: absolute;
+    top: 15%;
+    transform: tr   anslateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1;
+  }
+  
+  .carousel-arrow.left {
+    left: 10px;
+  }
+  
+  .carousel-arrow.right {
+    right: 10px;
+  }
+  
+  .carousel-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  
 
 .product-details {
     flex: 2;

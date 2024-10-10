@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import packageInfo from "../../package.json";
-import '../../src/ProductPage.css';
+import React, { useEffect, useRef, useContext } from 'react';
+import { CheckOutContext } from './CheckOutContext'; // Importing the checkout context
 import { Link, useNavigate } from 'react-router-dom';
+import packageInfo from '../../package.json';
+import '../../src/ProductPage.css';
 
 const ProductPage = () => {
+  const { checkOutData, addItemTocheckOut, removeItemFromCheckout, subTotal } = useContext(CheckOutContext); // Using the context
+
   // State for storing fetched products
-  const [products, setProducts] = useState([]);
-  
-  // State for storing selected items for checkout
-  const [checkOutData, setCheckOutData] = useState([]);
-  
+  const [products, setProducts] = React.useState([]);
+
   // Refs for each carousel container
   const savedItemsRef = useRef(null);
   const complementaryRef = useRef(null);
@@ -48,41 +48,37 @@ const ProductPage = () => {
 
   // Function to handle item selection
   const handleChecking = (product) => {
-    setCheckOutData((prevData) => {
-      // Check if the item is already selected
-      const isAlreadySelected = prevData.some(item => item.productID === product.productID);
-      
-      // If already selected, remove it, otherwise add it to the selected items
-      if (isAlreadySelected) {
-        return prevData.filter(item => item.productID !== product.productID);
-      } else {
-        return [...prevData, {
-          productID: product.productID,
-          productName: product.productName,
-          productImage: product.productImage,
-          price: product.price,
-          quantity: product.quantity
-        }];
-      }
-    });
+    const isAlreadySelected = checkOutData.some(item => item.productID === product.productID);
+    
+    if (isAlreadySelected) {
+      removeItemFromCheckout(product.productID);
+    } else {
+      addItemTocheckOut({
+        productID: product.productID,
+        productName: product.productName,
+        productImage: product.productImage,
+        price: product.price,
+        quantity: product.quantity
+      });
+    }
   };
 
   // Function to deselect all items
   const DeselectItems = () => {
-    setCheckOutData([]); // Clear all selected items
+    checkOutData.forEach(item => removeItemFromCheckout(item.productID)); // Clear all selected items
   };
 
   // Scroll functions that accept a ref as a parameter
   const scrollLeft = (ref) => {
     ref.current.scrollBy({
-      left: -300, // Adjust this value for the scroll distance
+      left: -300,
       behavior: 'smooth',
     });
   };
 
   const scrollRight = (ref) => {
     ref.current.scrollBy({
-      left: 300, // Adjust this value for the scroll distance
+      left: 300,
       behavior: 'smooth',
     });
   };
@@ -92,8 +88,7 @@ const ProductPage = () => {
   // Function to handle checkout
   const handleCheckout = () => {
     if (checkOutData.length > 0) {
-      const subtotal = checkOutData.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
-      navigate("/checkout", { state: { checkOutData, subtotal } });
+      navigate("/checkout");
     } else {
       alert('Please select items for checkout.');
     }
@@ -189,17 +184,10 @@ const ProductPage = () => {
 
         <div className="sidebarp">
           <div className="CheckOut">
-            <h2>Subtotal ({checkOutData.length} items): $
-              {checkOutData.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}
-            </h2>
+            <h2>Subtotal ({checkOutData.length} items): ${subTotal.toFixed(2)}</h2>
             <button onClick={handleCheckout} disabled={checkOutData.length === 0}>
               Proceed to checkout
             </button>
-          </div>
-          <div className="Prime">
-            <h3>Prime Membership</h3>
-            <p>Unlock extra discounts and faster delivery with Prime.</p>
-            <button>Join Prime</button>
           </div>
           <div className="RecentlyViewed">
             <h3>Recently Viewed Items</h3>
@@ -209,7 +197,7 @@ const ProductPage = () => {
 
       <div className="container3">
         <div className="Complementary">
-          <h2>Complement your products for a better Experience</h2>
+          <h2>Complement your products for a better experience</h2>
           <div className="carouselContainer">
             <div className="carousel">
               <button className="cont-scrollBtn left" onClick={() => scrollLeft(complementaryRef)}>
@@ -250,7 +238,7 @@ const ProductPage = () => {
                       <img src={`/images/${product.productImage}`} alt={product.productName} />
                       <p>{product.productName}</p>
                       <p className={product.inStock ? "Instock" : "LowStock"}>
-                        {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
+                      {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
                       </p>
                       <p>${product.price.toFixed(2)}</p>
                     </Link>
@@ -265,7 +253,7 @@ const ProductPage = () => {
         </div>
 
         <div className="Related">
-          <h2>Related Products</h2>
+          <h2>Customers who bought this also bought</h2>
           <div className="carouselContainer">
             <div className="carousel">
               <button className="scrollBtn left" onClick={() => scrollLeft(relatedRef)}>
@@ -297,3 +285,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+

@@ -24,6 +24,54 @@ export const AddProduct = async (formData) => {
   }
 };
 
+export const SaveAddresses = async (formDta) =>{
+  try{
+    const response = await fetch(
+      packageInfo.urls.SaveAddress,{
+        method: "POST",
+        headers:{
+          Accept : "*/*",
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify(formDta)
+      }
+    );
+
+
+
+  }catch(error){
+    console.error(error)
+  }
+}
+
+export const Order = async (formData) => {
+  try {
+    console.log("FormData being sent to API:", formData); // Log to check the data being sent
+
+    const response = await fetch(packageInfo.urls.AddOrder, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData) // Make sure formData is correctly passed here
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to place order: ${response.status}`);
+    }
+
+    const data = await response.json(); // Ensure we are parsing the JSON response
+    console.log("Response from API:", data); // Log the response for debugging
+
+    return data;
+  } catch (error) {
+    console.error("Error in Order function:", error); // Log error if there's any issue
+    throw error;
+  }
+};
+
+
 // Function to fetch categories from API
 export const fetchCategories = async () => {
   try {

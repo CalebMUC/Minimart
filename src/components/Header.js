@@ -151,7 +151,7 @@ const Header = () => {
               )}
             </div>
             <div className="header-orders">
-              <a href="#" onClick={() => navigate('/Orders')}>
+              <a href="#" onClick={() => navigate('/ReturnsAndOrdersPage')}>
                 <span>Returns</span>
                 <span>& Orders</span>
               </a>
@@ -220,9 +220,15 @@ const Header = () => {
                 </div>
               ))}
               {isAdmin && (
+                // React Fragment
+                <>
                 <div className="category-group">
                   <h3 onClick={() => navigate('/AddProducts')}>Add Product</h3>
                 </div>
+                <div className="category-group">
+                <h3 onClick={() => navigate('/MaintainStations')}>Maintain Stations</h3>
+              </div>
+              </>
               )}
             </>
           )}

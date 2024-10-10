@@ -1,0 +1,263 @@
+/* Modal overlay background */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Aligns modal at the top */
+    z-index: 1000;
+    overflow-y: auto; /* Enables vertical scrolling for the entire overlay */
+    padding-top: 2rem; /* Adds space at the top */
+  }
+  
+  /* Modal content styling */
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 50vw; /* Width is 50% of the viewport */
+    max-height: 90vh; /* Limits modal height to 90% of the viewport */
+    overflow-y: auto; /* Scrolls content within the modal if it exceeds height */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    position: relative;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in effect */
+  }
+  
+  /* Modal title */
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+  
+  /* Modal section styling */
+  .modal-section {
+    margin-bottom: 1.5rem;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    border : 1px ;
+
+  }
+  
+  /* Product list styling */
+  .product-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .product-list li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Modal footer */
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  /* Close button styling */
+  .modal-close-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .modal-close-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Add a smooth animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Container to hold horizontal sections 
+.modal-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Ensure sections with larger content remain vertically stacked 
+  .modal-section > div {
+    flex: 1;
+    margin-right: 1rem;
+  }
+  
+  .modal-section > div:last-child {
+    margin-right: 0;
+  }
+  
+  /* Styling the individual content blocks 
+  .product-list, .shippingAddress, .pickupLocation, .paymentDetails {
+    flex: 1;
+  }
+  
+  /* Each block in the order summary 
+  .order-summary {
+    flex: 1;
+  }
+  
+  /* Product list styling 
+  .product-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .product-list li {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Modal footer stays the same 
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  /* Responsive adjustments for smaller screens 
+  @media (max-width: 768px) {
+    .modal-section {
+      flex-direction: column;
+    }
+  }*/
+
+  /* Close button styling */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333; /* Visible color */
+  }
+  
+  .close-button:hover {
+    color: red; /* Highlighted when hovered */
+  }
+
+  /* table format */
+  /* General section table styling */
+.general-section, .products-shipping-section, .payment-summary-section {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+
+/* .general-section td, .products-shipping-section td, .payment-summary-section td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+} */
+
+.general-section h4, .products-shipping-section h5, .payment-summary-section h5 {
+  margin-bottom: 0.5rem;
+}
+
+/* Products and shipping table styling */
+.products-table, .shipping-address-table, .payment-details-table, .order-summary-table {
+  width: 100%;
+}
+
+/* .products-table td, .shipping-address-table td, .payment-details-table td, .order-summary-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: left;
+} */
+  
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+table th {
+  background-color: #4CAF50; /* Green background for headers */
+  color: white;
+}
+
+table td {
+  background-color: #fff;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f2f2f2; /* Light gray background for alternate rows */
+}
+
+.products-shipping-container {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.products-section, .shipping-section {
+  flex: 1;
+}
+
+.products-section {
+  margin-right: 20px;
+}
+
+.shipping-section table {
+  width: 100%;
+}
+
+/* Hover effects for table rows */
+.products-table tbody tr:hover, 
+.shipping-address-table tbody tr:hover, 
+.payment-details-table tbody tr:hover, 
+.order-summary-table tbody tr:hover {
+  background-color: #e6f7ff; /* Light blue on hover */
+}
+
+h4 {
+  color: #333;
+  border-bottom: 2px solid #4CAF50; /* Green line under headings */
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+h5 {
+  color: #4CAF50;
+  margin-bottom: 10px;
+}
+
+/* For responsive design */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 90%;
+  }
+
+  .products-shipping-container {
+    flex-direction: column;
+  }
+
+  .products-section, .shipping-section {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+}

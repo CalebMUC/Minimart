@@ -30,6 +30,13 @@
     font-size: 24px;
     font-weight: 600;
 }
+.error-message{
+    color: red;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    left: 20%;
+}
 
 h2 {
     font-size: 28px;

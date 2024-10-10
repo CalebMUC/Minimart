@@ -42,7 +42,7 @@
 
 /* Carousel Items */
 .item {
-  min-width: 250px;
+  min-width: 300px;
   max-width: 220px;
   text-align: center;
   background-color: #f8f8f8;
@@ -52,11 +52,18 @@
   transition: transform 0.3s ease;
 }
 
-.item img {
+ .item img {
   width: 100%;
-  height: auto;
+  height: 300px;
   object-fit: cover;
-}
+} 
+
+/* .product-image {
+  width: 150px; /* Fixed width
+  height: 150px; /* Fixed height 
+  object-fit: cover; /* Ensures image fits without distortion 
+} */
+
 
 .item p {
   margin: 10px 0;

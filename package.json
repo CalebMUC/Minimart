@@ -43,7 +43,14 @@
     "Login": "https://localhost:44334/api/Entities/Login",
     "WeatherForecast": "https://localhost:44334/WeatherForecast",
     "Register": "https://localhost:44334/api/Entities/Register",
-    "AddCartItems": "https://localhost:44334/api/Entities/AddToCart"
+    "AddCartItems": "https://localhost:44334/api/Entities/AddToCart",
+    "LoadCounties": "https://localhost:44334/api/Entities/counties",
+    "LoadTowns": "https://localhost:44334/api/Entities/towns?countyId={countyId}",
+    "LoadDeliveryStations": "https://localhost:44334/api/Entities/deliveryStations?townId={townId}",
+    "AddNewAddress": "https://localhost:44334/api/Entities/AddAddress",
+    "UpdateAddress": "https://localhost:44334/api/Entities/EditAddress",
+    "AddOrder": "https://localhost:44334/api/Order/AddOrder",
+    "GetOrders":"https://localhost:44334/api/Order/GetOrders"
   },
   "ImageUploads":{
     "filepath":"D:/OrderApi"
