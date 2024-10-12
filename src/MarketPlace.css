@@ -1,0 +1,171 @@
+body {
+    margin: 0;
+    font-family: 'Amazon Ember', Arial, sans-serif;
+    background-color: #f3f3f3;
+    color: var(--color-text-dark);
+}
+  
+  .marketplace-creation {
+    display: flex;
+    min-height: 100vh;
+    background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max'); /* Replace with a creative background */
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .background {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+  
+  .form-container {
+    flex: 1;
+    background-color: white;
+    padding: 40px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    margin-right: 50px;
+    border-radius: 10px;
+    min-width: 350px;
+  }
+  
+  h2 {
+    color: #333;
+    font-size: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .marketplace-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  .create-marketplace-button {
+    padding: 12px 20px;
+    background-color: #ff9900;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .create-marketplace-button:hover {
+    background-color: #e68900;
+  }
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: lightgray;
+  }
+  .start{
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+  }
+  /* body {
+    background-color: #1c2a39;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  } */
+  
+  .container {
+    width: 50%;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #2e3b4c;
+    border-radius: 8px;
+  }
+  
+  h1, h2 {
+    text-align: center;
+  }
+  
+  .input-group {
+    margin: 15px 0;
+  }
+  
+  .input-group label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  
+  .input-group input, .input-group select, .input-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .input-group input[type="file"] {
+    padding: 5px;
+    background-color: #f5a623;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .buttons button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .buttons .primary {
+    background-color: #f5a623;
+    color: white;
+  }
+  
+  .buttons .secondary {
+    background-color: lightgray;
+    color: black;
+  }
+  
+  footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: lightgray;
+  }
+  
+  

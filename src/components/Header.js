@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import packageInfo from "../../package.json";
 import '../../src/Header.css';
 import '../../src/Dropdown.css';
 import { cartContext } from "./CartContext";
+import { UserContext } from "./UserMainContext";
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
@@ -16,6 +20,7 @@ const Header = () => {
 
 
   const { cartCount, GetCartItems } = useContext(cartContext);
+  const { usercontextname } = useContext(UserContext);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -87,14 +92,27 @@ const Header = () => {
     }
   }, [location.pathname]);
 
+  useEffect(()=>{
+    const handleStorageChange = () =>{
+      localStorage.getItem('username')
+    }
+    window.addEventListener ('storage',handleStorageChange)
+
+    //clean up event listener on component un mount 
+    return () =>{
+      window.removeEventListener('storage',handleStorageChange)
+    }
+
+  }, [])
+
   // Check for user and admin role on component mount
   useEffect(() => {
-    const storedUsername = localStorage.getItem('username');
+    //const storedUsername = localStorage.getItem('username');
     // const userRole = localStorage.getItem('userRole');
     const userRole = 'admin';
-    if (storedUsername) {
-      setUsername(storedUsername);
-    }
+    // if (storedUsername) {
+    //   setUsername(storedUsername);
+    // }
     //for testing
   
 
@@ -121,7 +139,7 @@ const Header = () => {
           <div className="header-right">
             <div className="header-account" onMouseEnter={showDropdown} onMouseLeave={hideDropdown}>
               <a href="#">
-                {username != null ? <span>Hello, {username}</span> : <span>Hello</span>}
+                {usercontextname != null ? <span>Hello, {usercontextname}</span> : <span>Hello</span>}
                 <br />
                 <span>Account & Lists</span>
               </a>
@@ -176,6 +194,9 @@ const Header = () => {
           <div className="sub-header-links">
             <a href="#">Great Deals</a>
           </div>
+          <div className="sub-header-links">
+            <a href="./CreateMarketPlace">Create {usercontextname} Market place</a>
+          </div>
         </div>
       </header>
 
@@ -187,11 +208,11 @@ const Header = () => {
               <button className="back-btn" onClick={handleBackNavigation}>
                 &larr; Main Menu
               </button>
-              <h3>{currentCategory.name}</h3>
+              <p>{currentCategory.name}</p>
             </>
           ) : (
             <>
-              {username != null ? <span>Hello, {username}</span> : <span>Hello</span>}
+              {usercontextname != null ? <span>Hello, {usercontextname}</span> : <span>Hello</span>}
               <button className="close-btn" onClick={toggleSidebar}>
                 &times;
               </button>
@@ -216,7 +237,8 @@ const Header = () => {
             <>
               {dashboardCategories.map((category) => (
                 <div key={category.id} className="category-group">
-                  <h3 onClick={() => handleCategoryClick(category)}>{category.name}</h3>
+                  <p onClick={() => handleCategoryClick(category)}>{category.name}</p>
+                  <FontAwesomeIcon icon={faChevronRight} className="right-arrow-icon" />
                 </div>
               ))}
               {isAdmin && (

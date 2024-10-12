@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate,useLocation} from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import packageInfo from "../../package.json";
 import '../../src/Login.css';
+import { cartContext } from "./CartContext";
+import { UserContext } from "./UserMainContext";
+import { buildQueries } from '@testing-library/react';
 
 
 
@@ -21,6 +24,8 @@ function Login() {
 
   // Regex for validation
   const emailOrPhoneRegex = /^(\d{10}|[^\s@]+@[^\s@]+\.[^\s@]+)$/;
+  const {updateUser} = useContext(UserContext);
+  const { cartCount, GetCartItems } = useContext(cartContext);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -60,6 +65,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     
+   
     // Assume a login API call
     try {
       console.log(formData);
@@ -75,6 +81,9 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
 
+        updateUser(data.userName);
+        
+
         console.log(data);
 
         // Store the JWT token and user info
@@ -89,6 +98,8 @@ function Login() {
          if (isAuthenticated) {
           // Redirect to the main page if authenticated
           const redirectPath = location.state?.from?.pathname || '/';
+          await GetCartItems(); // Directly update cart count after login
+
           navigate(redirectPath);
         } else {
           setErrors('Authentication failed. Please try again.');

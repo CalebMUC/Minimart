@@ -200,9 +200,24 @@ height: 40px;
 }
 
 .category-group {
-    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
     border-bottom: 1px solid #ddd;
 }
+.category-group p {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .right-arrow-icon {
+    margin-left: 8px; /* Adds spacing between the text and the arrow */
+  }
+
+  .category-group :hover{
+    color: #ddd;
+  }
 
 .category-group h3 {
     margin: 0 0 10px 0;
@@ -217,7 +232,7 @@ height: 40px;
 }
 
 .category-group ul li {
-    margin-bottom: 8px;
+    margin-bottom: 3px;
 }
 
 .category-group ul li a {

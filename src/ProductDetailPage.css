@@ -1,3 +1,23 @@
+/* Root Variables */
+:root {
+  --color-primary: #007185; /* Amazon blue */
+  --color-secondary: #f0c14b; /* Amazon yellow */
+  --color-border: #ddd;
+  --color-background: #fff;
+  --color-text-dark: #111;
+  --color-text-light: #555;
+  --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* General Styles */
+body {
+  margin: 0;
+  font-family: 'Amazon Ember', Arial, sans-serif;
+  background-color: #f3f3f3;
+  color: var(--color-text-dark);
+  font-size: 16px;
+}
+
 .product-detail-container {
     display: flex;
     justify-content: space-between;

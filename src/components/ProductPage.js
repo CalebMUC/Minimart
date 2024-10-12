@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useContext } from 'react';
 import { CheckOutContext } from './CheckOutContext'; // Importing the checkout context
 import { Link, useNavigate } from 'react-router-dom';
 import packageInfo from '../../package.json';
+import RecentlyViewed from "./RecentlyViewed";
 import '../../src/ProductPage.css';
 
 const ProductPage = () => {
@@ -98,60 +99,76 @@ const ProductPage = () => {
     <div className="pageContent">
       <div className="outer-container">
         <div className="container1">
-          <div className="CartItems">
-            <h1>Shopping Cart</h1>
-            <a href="#deselect" onClick={DeselectItems}>Deselect all items</a>
+            <div className="CartItems">
+              <h1>Shopping Cart</h1>
+              {/* /{products.length > 0 && ( */}
+              <a href="#deselect" onClick={DeselectItems}>Deselect all items ertyu</a>
+              {/* //)} */}
 
-            {products.map((product, index) => (
-              <div key={index} className="productItem">
-                <div className="CheckBox">
-                  <input
-                    type="checkbox"
-                    id="productCheckBox"
-                    checked={checkOutData.some(item => item.productID === product.productID)}
-                    onChange={() => handleChecking(product)}
-                  />
-                </div>
-                <div className="productImage">
-                  <img src={`${product.productImage}`} alt={product.productName} />
-                </div>
-                <div className="productDetails">
-                  <p>{product.productName}</p>
-                  <p className={product.inStock ? "Instock" : "LowStock"}>
-                    {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
-                  </p>
-                  <div className="Quantity">
-                    <label htmlFor={`quantitySelect${index}`}>Qty:</label>
-                    <select
-                      id={`quantitySelect${index}`}
-                      value={product.quantity}
-                      onChange={(e) => {
-                        const newQuantity = parseInt(e.target.value);
-                        setProducts(products.map((p, i) =>
-                          i === index ? { ...p, quantity: newQuantity } : p
-                        ));
-                      }}
-                    >
-                      {[...Array(10).keys()].map((n) => (
-                        <option key={n} value={n + 1}>
-                          {n + 1}
-                        </option>
-                      ))}
-                    </select>
+              {products.length > 0 ? (
+                products.map((product, index) => (
+                  <div key={index} className="productItem">
+                    
+                    <div className="CheckBox">
+                      <input
+                        type="checkbox"
+                        id="productCheckBox"
+                        checked={checkOutData.some(item => item.productID === product.productID)}
+                        onChange={() => handleChecking(product)}
+                      />
+                    </div>
+                    <div className="productImage">
+                      <img src={`${product.productImage}`} alt={product.productName} />
+                    </div>
+                    <div className="productDetails">
+                      <p>{product.productName}</p>
+                      <p className={product.inStock ? "Instock" : "LowStock"}>
+                        {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
+                      </p>
+                      <div className="Quantity">
+                        <label htmlFor={`quantitySelect${index}`}>Qty:</label>
+                        <select
+                          id={`quantitySelect${index}`}
+                          value={product.quantity}
+                          onChange={(e) => {
+                            const newQuantity = parseInt(e.target.value);
+                            setProducts(products.map((p, i) =>
+                              i === index ? { ...p, quantity: newQuantity } : p
+                            ));
+                          }}
+                        >
+                          {[...Array(10).keys()].map((n) => (
+                            <option key={n} value={n + 1}>
+                              {n + 1}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="Actions">
+                        <a href="#delete">Remove</a>
+                        <a href="#saveForLater">Save for later</a>
+                        <a href="#compare">Compare with similar items</a>
+                        <a href="#share">Share</a>
+                      </div>
+                    </div>
+                    <div className="Price">
+                      <p>${product.price.toFixed(2)}</p>
+                    </div>
                   </div>
-                  <div className="Actions">
-                    <a href="#delete">Remove</a>
-                    <a href="#saveForLater">Save for later</a>
-                    <a href="#compare">Compare with similar items</a>
-                    <a href="#share">Share</a>
-                  </div>
+                ))
+              ) : (
+                <div className="emptyCart">
+                  <img src="../Images/11329060.png" alt="Empty Cart" />
+                  
+                  <h2>Your Cart is Empty</h2>
+                  <p>Looks like you haven't added anything to your cart yet.</p>
+                  <button onClick={() => navigate('/')} className="startShoppingBtn">
+                    Start Shopping
+                  </button>
                 </div>
-                <div className="Price">
-                  <p>${product.price.toFixed(2)}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+
 
           <div className="SavedItems">
             <div className="carouselContainer">
@@ -161,18 +178,55 @@ const ProductPage = () => {
                   &#8249;
                 </button>
                 <div className="carouselContent" ref={savedItemsRef}>
-                  {products.map((product, index) => (
-                    <div key={index} className="item">
-                      <Link to={`/ProductPage/${product.productName}`}>
-                        <img src={`/images/${product.productImage}`} alt={product.productName} />
-                        <p>{product.productName}</p>
-                        <p className={product.inStock ? "Instock" : "LowStock"}>
-                          {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
-                        </p>
-                        <p>${product.price.toFixed(2)}</p>
-                      </Link>
-                    </div>
-                  ))}
+                {products.map((product, index) => {
+                    const discount = 0.10; // 10% discount for now, can be dynamically passed later
+                    const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+
+                    return (
+                      <div key={index} className="item">
+                      <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                       
+                          {/* Discount tag */}
+                          <div className="discount-tag">
+                            -{(discount * 100).toFixed(0)}%
+                          </div>
+
+                          {/* Product image */}
+                          <img
+                            src={`${product.productImage}`}
+                            alt={product.productName}
+                            className="product-image" // Apply a class for consistent styling
+                          />
+
+                          {/* Product name (ellipsis after 3 lines) */}
+                          <div className="product-name">
+                            {product.productName}
+
+                          </div>
+
+                          {/* Stock information */}
+                          <div className={product.inStock ? "Instock" : "LowStock"}>
+                            {product.inStock
+                              ? "In Stock"
+                              : "Only a few left in stock - order soon."}
+                          </div>
+                          <div className="product-rating">
+                            {/* ⭐{product.rating} ({product.reviews}) */}
+                            ⭐{4.5} ({30000})
+                        </div>
+                          {/* Original price with strike-through */}
+                          <div className="original-price">
+                            <s>Was KSH {product.price.toLocaleString()}</s>
+                          </div>
+
+                          {/* Price after discount */}
+                          <div className="discounted-price">
+                            KSH {discountedPrice.toLocaleString()}
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
                 </div>
                 <button className="scrollBtn right" onClick={() => scrollRight(savedItemsRef)}>
                   &#8250;
@@ -183,19 +237,20 @@ const ProductPage = () => {
         </div>
 
         <div className="sidebarp">
-          <div className="CheckOut">
-            <h2>Subtotal ({checkOutData.length} items): ${subTotal.toFixed(2)}</h2>
-            <button onClick={handleCheckout} disabled={checkOutData.length === 0}>
-              Proceed to checkout
-            </button>
-          </div>
-          <div className="RecentlyViewed">
-            <h3>Recently Viewed Items</h3>
-          </div>
+        <div className="CheckOut">
+          <p>Subtotal ({checkOutData.length} items): ${subTotal.toFixed(2)}</p>
+          <button className='checkOutButton' onClick={handleCheckout} disabled={checkOutData.length === 0}>
+            Proceed to checkout
+          </button>
+        </div>
+
+          <aside className="RecentlyViewed">
+            <RecentlyViewed/>
+          </aside>
         </div>
       </div>
 
-      <div className="container3">
+      <div className="containerpp3">
         <div className="Complementary">
           <h2>Complement your products for a better experience</h2>
           <div className="carouselContainer">
@@ -204,19 +259,56 @@ const ProductPage = () => {
                 &#8249;
               </button>
               <div className="carouselContent" ref={complementaryRef}>
-                {products.map((product, index) => (
-                  <div key={index} className="item">
-                    <Link to={`/ProductPage/${product.productName}`}>
-                      <img src={`/images/${product.productImage}`} alt={product.productName} />
-                      <p>{product.productName}</p>
-                      <p className={product.inStock ? "Instock" : "LowStock"}>
-                        {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
-                      </p>
-                      <p>${product.price.toFixed(2)}</p>
-                    </Link>
-                  </div>
-                ))}
-              </div>
+                  {products.map((product, index) => {
+                    const discount = 0.10; // 10% discount for now, can be dynamically passed later
+                    const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+
+                    return (
+                      <div key={index} className="item">
+                      <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                       
+                          {/* Discount tag */}
+                          <div className="discount-tag">
+                            -{(discount * 100).toFixed(0)}%
+                          </div>
+
+                          {/* Product image */}
+                          <img
+                            src={`${product.productImage}`}
+                            alt={product.productName}
+                            className="product-image" // Apply a class for consistent styling
+                          />
+
+                          {/* Product name (ellipsis after 3 lines) */}
+                          <div className="product-name">
+                            {product.productName}
+
+                          </div>
+
+                          {/* Stock information */}
+                          <div className={product.inStock ? "Instock" : "LowStock"}>
+                            {product.inStock
+                              ? "In Stock"
+                              : "Only a few left in stock - order soon."}
+                          </div>
+                          <div className="product-rating">
+                            {/* ⭐{product.rating} ({product.reviews}) */}
+                            ⭐{4.5} ({30000})
+                        </div>
+                          {/* Original price with strike-through */}
+                          <div className="original-price">
+                            <s>Was KSH {product.price.toLocaleString()}</s>
+                          </div>
+
+                          {/* Price after discount */}
+                          <div className="discounted-price">
+                            KSH {discountedPrice.toLocaleString()}
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
               <button className="cont-scrollBtn right" onClick={() => scrollRight(complementaryRef)}>
                 &#8250;
               </button>
@@ -232,18 +324,55 @@ const ProductPage = () => {
                 &#8249;
               </button>
               <div className="carouselContent" ref={personalizedRef}>
-                {products.map((product, index) => (
-                  <div key={index} className="item">
-                    <Link to={`/ProductPage/${product.productName}`}>
-                      <img src={`/images/${product.productImage}`} alt={product.productName} />
-                      <p>{product.productName}</p>
-                      <p className={product.inStock ? "Instock" : "LowStock"}>
-                      {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
-                      </p>
-                      <p>${product.price.toFixed(2)}</p>
-                    </Link>
-                  </div>
-                ))}
+              {products.map((product, index) => {
+                    const discount = 0.10; // 10% discount for now, can be dynamically passed later
+                    const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+
+                    return (
+                      <div key={index} className="item">
+                      <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                       
+                          {/* Discount tag */}
+                          <div className="discount-tag">
+                            -{(discount * 100).toFixed(0)}%
+                          </div>
+
+                          {/* Product image */}
+                          <img
+                            src={`${product.productImage}`}
+                            alt={product.productName}
+                            className="product-image" // Apply a class for consistent styling
+                          />
+
+                          {/* Product name (ellipsis after 3 lines) */}
+                          <div className="product-name">
+                            {product.productName}
+
+                          </div>
+
+                          {/* Stock information */}
+                          <div className={product.inStock ? "Instock" : "LowStock"}>
+                            {product.inStock
+                              ? "In Stock"
+                              : "Only a few left in stock - order soon."}
+                          </div>
+                          <div className="product-rating">
+                            {/* ⭐{product.rating} ({product.reviews}) */}
+                            ⭐{4.5} ({30000})
+                        </div>
+                          {/* Original price with strike-through */}
+                          <div className="original-price">
+                            <s>Was KSH {product.price.toLocaleString()}</s>
+                          </div>
+
+                          {/* Price after discount */}
+                          <div className="discounted-price">
+                            KSH {discountedPrice.toLocaleString()}
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
               </div>
               <button className="scrollBtn right" onClick={() => scrollRight(personalizedRef)}>
                 &#8250;
@@ -260,18 +389,55 @@ const ProductPage = () => {
                 &#8249;
               </button>
               <div className="carouselContent" ref={relatedRef}>
-                {products.map((product, index) => (
-                  <div key={index} className="item">
-                    <Link to={`/ProductPage/${product.productName}`}>
-                      <img src={`/images/${product.productImage}`} alt={product.productName} />
-                      <p>{product.productName}</p>
-                      <p className={product.inStock ? "Instock" : "LowStock"}>
-                        {product.inStock ? "In Stock" : "Only a few left in stock - order soon."}
-                      </p>
-                      <p>${product.price.toFixed(2)}</p>
-                    </Link>
-                  </div>
-                ))}
+              {products.map((product, index) => {
+                    const discount = 0.10; // 10% discount for now, can be dynamically passed later
+                    const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+
+                    return (
+                      <div key={index} className="item">
+                      <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                       
+                          {/* Discount tag */}
+                          <div className="discount-tag">
+                            -{(discount * 100).toFixed(0)}%
+                          </div>
+
+                          {/* Product image */}
+                          <img
+                            src={`${product.productImage}`}
+                            alt={product.productName}
+                            className="product-image" // Apply a class for consistent styling
+                          />
+
+                          {/* Product name (ellipsis after 3 lines) */}
+                          <div className="product-name">
+                            {product.productName}
+
+                          </div>
+
+                          {/* Stock information */}
+                          <div className={product.inStock ? "Instock" : "LowStock"}>
+                            {product.inStock
+                              ? "In Stock"
+                              : "Only a few left in stock - order soon."}
+                          </div>
+                          <div className="product-rating">
+                            {/* ⭐{product.rating} ({product.reviews}) */}
+                            ⭐{4.5} ({30000})
+                        </div>
+                          {/* Original price with strike-through */}
+                          <div className="original-price">
+                            <s>Was KSH {product.price.toLocaleString()}</s>
+                          </div>
+
+                          {/* Price after discount */}
+                          <div className="discounted-price">
+                            KSH {discountedPrice.toLocaleString()}
+                          </div>
+                        </Link>
+                      </div>
+                    );
+                  })}
               </div>
               <button className="scrollBtn right" onClick={() => scrollRight(relatedRef)}>
                 &#8250;

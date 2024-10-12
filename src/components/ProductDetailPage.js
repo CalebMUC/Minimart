@@ -6,6 +6,7 @@ import '../../src/ProductDetailPage.css';
 import { cartContext } from "./CartContext";
 import  ProductImageCarousel  from "./ProductImageCouresel";
 import Dialogs from "./Dialogs.js";
+import RecentlyViewed from "./RecentlyViewed.js";
 
 const ProductDetail = () => {
   const { productName: encodedProductName, productID } = useParams(); // Extract both productName and productID
@@ -20,6 +21,37 @@ const ProductDetail = () => {
   const { cartCount, updateCartCount } = useContext(cartContext);
   const [showSuccessDialog,setSuccessDialog] = useState(false);
   const [dialogMessage,setDialogMessage] = useState(null);
+
+  const [recentlyViewed, setRecentlyViewed] = useState([]);
+
+  useEffect(() => {
+    if (!product) return;
+  
+    // Get the recently viewed items from localStorage or initialize an empty array
+    const savedProducts = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+  
+    // Filter out the current product if it's already in the list
+    const updatedProducts = savedProducts.filter(item => item.id !== product.productId);
+  
+    // Add the new product to the beginning of the list
+    updatedProducts.unshift({
+      id: product.productId,
+      name: product.productName,
+      image: product.imageUrl,
+      price: product.price,
+      rating: 4.3, // Example static rating
+      reviews: 31088, // Example static review count
+    });
+  
+    // Keep only the last 5 recently viewed products
+    if (updatedProducts.length > 5) updatedProducts.pop();
+  
+    // Save the updated recently viewed list back to localStorage
+    localStorage.setItem("recentlyViewed", JSON.stringify(updatedProducts));
+  
+    setRecentlyViewed(updatedProducts); // Update state for recently viewed items
+  }, [product]);
+  
 
 
   useEffect(() => {
@@ -44,9 +76,10 @@ const ProductDetail = () => {
       const matchedProduct = products.find((p) => p.productId  === productID);
 
       if (matchedProduct) {
-        console.log(matchedProduct)
+        console.log( "mand",matchedProduct)
         setProduct(matchedProduct);
-        
+
+
         // setProductID(`${matchedProduct.productId}`);
 ;
         console.log(productID)
@@ -106,7 +139,7 @@ const ProductDetail = () => {
       navigate('/Login', { state: { from: location } });
     } else {
       const response = await saveToCart();
-      
+
       console.log(response);
 
       if (response && response.responseMessage) {
@@ -139,20 +172,25 @@ const ProductDetail = () => {
   const productImages = [product.imageUrl];
 
   return (
-     
+
     <div className="product-detail-container">
 
       {/* Error message shown inline, allowing users to edit the form */}
-    
+
       {/* <div className="sidebarPDP"> */}
         {/* <img src={`${product.imageUrl}`} alt={product.productName} /> */}
         {/* call the ProductImageCorousel and pass the images */}
-        
+
         <ProductImageCarousel images={productImages} />
+
+
+        {/* //add viewed product to the RecentlyViewed */}
+
+       
       {/* </div> */}
 
       <div className="product-details">
-      {showSuccessDialog && <Dialogs 
+      {showSuccessDialog && <Dialogs
       message={dialogMessage}
        type="cart"
        onClose={handleCloseDialog} />}
@@ -162,7 +200,7 @@ const ProductDetail = () => {
           <p className={product.inStock > 1 ? "in-stock" : "out-of-stock"}>
             {product.inStock > 1 ? "In stock" : "Out of stock"}
           </p>
-          
+
           <div className="quantity">
             <label htmlFor="quantitySelect">Quantity:</label>
             <select

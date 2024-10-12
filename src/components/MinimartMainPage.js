@@ -129,24 +129,30 @@ const MainPage = () => {
                           />
 
                           {/* Product name (ellipsis after 3 lines) */}
-                          <p className="product-name">{product.productName}</p>
+                          <div className="product-name">
+                            {product.productName}
+
+                          </div>
 
                           {/* Stock information */}
-                          <p className={product.inStock ? "Instock" : "LowStock"}>
+                          <div className={product.inStock ? "Instock" : "LowStock"}>
                             {product.inStock
                               ? "In Stock"
                               : "Only a few left in stock - order soon."}
-                          </p>
-
+                          </div>
+                          <div className="product-rating">
+                            {/* ⭐{product.rating} ({product.reviews}) */}
+                            ⭐{4.5} ({30000})
+                        </div>
                           {/* Original price with strike-through */}
-                          <p className="original-price">
+                          <div className="original-price">
                             <s>Was KSH {product.price.toLocaleString()}</s>
-                          </p>
+                          </div>
 
                           {/* Price after discount */}
-                          <p className="discounted-price">
+                          <div className="discounted-price">
                             KSH {discountedPrice.toLocaleString()}
-                          </p>
+                          </div>
                         </Link>
                       </div>
                     );

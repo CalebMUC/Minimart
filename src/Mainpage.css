@@ -42,7 +42,7 @@
 
 /* Carousel Items */
 .item {
-  min-width: 300px;
+  min-width: 200px;
   max-width: 220px;
   text-align: center;
   background-color: #f8f8f8;
@@ -52,9 +52,13 @@
   transition: transform 0.3s ease;
 }
 
+.item a{
+  text-decoration: none;
+}
+
  .item img {
-  width: 100%;
-  height: 300px;
+  width: 150px;
+  height: 150px;
   object-fit: cover;
 } 
 
@@ -67,12 +71,13 @@
 
 .item p {
   margin: 10px 0;
-  color: #333;
+  color: #2e2e2e;
   font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
+
 
 .item p {
   display: -webkit-box;
@@ -94,16 +99,56 @@
   transform: scale(1.05);
   cursor: pointer;
 }
+
+.product-name{
+  color:#007185;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+/* Faded strike-through for original price */
 .original-price {
-  /* color: red; */
-  font-size: 14px;
-  text-decoration: line-through;
+  color: #999999; /* Faint gray for faded effect */
+  text-decoration: line-through; /* Line through the text */
+  font-size: 14px; /* Adjust font size if needed */
+  margin-bottom: 10px; /* Add spacing if needed */
+  opacity: 0.7; /* Additional fading */
 }
 
+
 .discounted-price {
-  color: green;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
+  color: #b12704;
+  margin-bottom: 5px;
+}
+
+.InStock{
+  color: green;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+
+} 
+.LowStock{
+  color: red;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  font-size: 10px;
+
 }
 
 .discount-tag {

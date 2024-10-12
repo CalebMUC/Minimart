@@ -4,6 +4,7 @@ import ReturnsAndOrdersPage from "../src/components/ReturnsAndOrdersPage";
 import ProductDetail from "../src/components/ProductDetailPage";
 import MainPage from "../src/components/MinimartMainPage";
 import Checkout from "../src/components/CheckOutPage";
+import CreateMarketPlace from "../src/components/CreateMarketPlace";
 import Layout from "../src/components/Layout";
 import SubCategories from "../src/components/SubCategory";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -13,11 +14,13 @@ import Register from "../src/components/Register";
 import Header from "../src/components/Header";
 import { CartProvider } from "./components/CartContext";
 import { CheckOutProvider } from "./components/CheckOutContext";
+import { UserProvider } from "./components/UserMainContext";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 // import "./index.css";
 
 const App = () => {
   return (
+  <UserProvider>
     <CartProvider>
       <CheckOutProvider>
         <Router>
@@ -31,6 +34,7 @@ const App = () => {
               <Route path="/product/:productName/:productID" element={<ProductDetail />} />
               <Route path="/products/:subCategoryName" element={<SubCategories />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/CreateMarketPlace" element={<CreateMarketPlace />} />
               <Route path="/Login" element={<Login />} />
               <Route path="/AddProducts" element={<AddProductPage />} />
               <Route path="/Register" element={<Register />} />
@@ -41,6 +45,7 @@ const App = () => {
         </Router>
       </CheckOutProvider>
     </CartProvider>
+    </UserProvider>
   );
 };
 
