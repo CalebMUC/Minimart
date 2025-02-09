@@ -20,6 +20,7 @@ const OrderModal = ({ show, onClose, order }) => {
             <tr>
               <td><strong>Placed on:</strong></td>
               <td>{new Date(order.orderDate).toLocaleDateString()}</td>
+              {/* <td>{order.orderDate}</td> */}
             </tr>
           </tbody>
         </table>
@@ -78,14 +79,20 @@ const OrderModal = ({ show, onClose, order }) => {
                   <thead>
                     <tr>
                       <th>Reference</th>
+                      <th>Method</th>
+                      <th>Phone Number</th>
                       <th>Amount</th>
+                      <th>Date</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {order.paymentDetails && Object.entries(order.paymentDetails).map(([key, value],index) => (
+                    {order.paymentDetails && order.paymentDetails.map((payment, index) => (
                       <tr key={index}>
-                        <td><strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong></td>
-                        <td>{value}</td>
+                        <td>{payment.paymentReference}</td>
+                        <td>{payment.paymentMethod}</td>
+                        <td>{payment.phonenumber}</td>
+                        <td>${payment.amount}</td>
+                        <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>
                       </tr>
                     ))}
                   </tbody>

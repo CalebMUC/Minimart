@@ -1,5 +1,9 @@
-import React, { useEffect, useRef, useContext } from 'react';
+import React, { useEffect, useRef, useContext, useState } from 'react';
 import { CheckOutContext } from './CheckOutContext'; // Importing the checkout context
+import { DeleteCartItems,SaveItems} from '../Data.js';
+import Dialogs from "./Dialogs.js";
+import CompareSimilarItems from "./Comparison.js";
+import { cartContext } from "./CartContext";
 import { Link, useNavigate } from 'react-router-dom';
 import packageInfo from '../../package.json';
 import RecentlyViewed from "./RecentlyViewed";
@@ -10,6 +14,18 @@ const ProductPage = () => {
 
   // State for storing fetched products
   const [products, setProducts] = React.useState([]);
+  const [savedProducts, setSavedProducts] = useState([]);
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+
+  const [cartID,setCartID] = useState(0);
+
+  const { cartCount, updateCartCount } = useContext(cartContext);
+  const [showSuccessDialog,setSuccessDialog] = useState(false);
+  const [showErrorDialog,setErrorDialog] = useState(false);
+  const [dialogMessage,setDialogMessage] = useState(null);
+
+  // const [cartItemID,setCartItemID] = useState(0);
 
   // Refs for each carousel container
   const savedItemsRef = useRef(null);
@@ -38,6 +54,7 @@ const ProductPage = () => {
 
         const data = await response.json();
         setProducts(data);
+        setCartID(data[0].cartID)
         console.log(data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -46,6 +63,53 @@ const ProductPage = () => {
 
     fetchProducts();
   }, []);
+
+   // Fetch the products data on component mount
+   useEffect(() => {
+    const fetchSavedItems = async () => {
+      try {
+        const response = await fetch(packageInfo.urls.GetSavedItems
+        //   , {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //     accept: '*/*',
+        //   },
+        //   body: JSON.stringify({
+        //     userID: localStorage.getItem('userID'),
+        //   }),
+        // }
+      );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setSavedProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchSavedItems();
+  }, []);
+
+  const handleOpenModal = (e) => {
+    e.preventDefault();
+    setShowCompareModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowCompareModal(false);
+  };
+
+  const handleCloseDialog = async () =>{
+    setSuccessDialog(false);
+    setDialogMessage(null);
+    setErrorDialog(false)
+  }
+
 
   // Function to handle item selection
   const handleChecking = (product) => {
@@ -89,20 +153,84 @@ const ProductPage = () => {
   // Function to handle checkout
   const handleCheckout = () => {
     if (checkOutData.length > 0) {
-      navigate("/checkout");
+      navigate("/MainCheckout");
     } else {
       alert('Please select items for checkout.');
     }
   };
+
+  const HandleDeleteCartItems = async (cartItemID,productID) =>{
+    
+    try{
+       // Construct the requestData object
+       const requestData = {
+        cartID: cartID, 
+        cartItemID: cartItemID,
+        productID : productID
+      };
+
+      var response =  await DeleteCartItems(requestData);
+
+      if (response && response.responseMessage) {
+        const newCount = parseInt(cartCount) - 1;
+        updateCartCount(newCount);
+        setSuccessDialog(true)
+        setDialogMessage("Product Removed  From cart succesfully");
+        // alert(response.responseMessage);
+      }
+
+    }catch(error){
+      console.error(error)
+    }
+
+  }
+
+  const HandleSaveItems = async (productID) =>{
+    
+    try{
+       // Construct the requestData object
+       const requestData = {
+        productID : productID
+      };
+
+      var response =  await SaveItems(requestData);
+
+      if (response.responseCode == 200 && response.responseMessage) {
+       
+        setSuccessDialog(true)
+        setErrorDialog(false)
+        setDialogMessage(response.responseMessage);
+        // alert(response.responseMessage);
+      }else if(response.responseCode == 500 && response.responseMessage){
+        setSuccessDialog(false)
+        setErrorDialog(true)
+        setDialogMessage("Failed to save Product");
+      }
+
+    }catch(error){
+      console.error(error)
+    }
+
+  }
 
   return (
     <div className="pageContent">
       <div className="outer-container">
         <div className="container1">
             <div className="CartItems">
+            {showSuccessDialog && <Dialogs
+                message={dialogMessage}
+                type="cart"
+                onClose={handleCloseDialog} />}
+
+                {showErrorDialog && <Dialogs
+                message={dialogMessage}
+                type="error"
+                onClose={handleCloseDialog} />}
+
               <h1>Shopping Cart</h1>
               {/* /{products.length > 0 && ( */}
-              <a href="#deselect" onClick={DeselectItems}>Deselect all items ertyu</a>
+              <a href="#deselect" onClick={DeselectItems}>Deselect all items</a>
               {/* //)} */}
 
               {products.length > 0 ? (
@@ -145,9 +273,29 @@ const ProductPage = () => {
                         </select>
                       </div>
                       <div className="Actions">
-                        <a href="#delete">Remove</a>
-                        <a href="#saveForLater">Save for later</a>
-                        <a href="#compare">Compare with similar items</a>
+                        <a href="#delete" onClick={ (e) =>{
+                          e.preventDefault();
+                          HandleDeleteCartItems(product.cartItemID,product.productID)
+                          }}>Remove
+                          </a>
+                        <a href="#saveForLater" onClick={(e) =>{
+                          e.preventDefault();
+                          HandleSaveItems(product.productID)}}>
+                          Save for later
+                          </a>
+                        <a href="#compare" onClick={
+                         handleOpenModal
+                          
+                        }>Compare with similar items</a>
+
+                         {/* Conditionally render the modal */}
+                        {showCompareModal && (
+                          <CompareSimilarItems
+                            product={product}
+                            similarProducts={similarProducts}
+                            onClose={handleCloseModal} // Pass onClose as a prop to close the modal
+                          />
+                        )}
                         <a href="#share">Share</a>
                       </div>
                     </div>
@@ -178,7 +326,7 @@ const ProductPage = () => {
                   &#8249;
                 </button>
                 <div className="carouselContent" ref={savedItemsRef}>
-                {products.map((product, index) => {
+                {savedProducts.map((product, index) => {
                     const discount = 0.10; // 10% discount for now, can be dynamically passed later
                     const discountedPrice = (product.price * (1 - discount)).toFixed(2);
 
@@ -193,7 +341,7 @@ const ProductPage = () => {
 
                           {/* Product image */}
                           <img
-                            src={`${product.productImage}`}
+                            src={`${product.imageUrl}`}
                             alt={product.productName}
                             className="product-image" // Apply a class for consistent styling
                           />

@@ -30,6 +30,9 @@ const OrdersList = ({ orders }) => {
           <div className="order-details-link">
             <button onClick={() => handleOpenModal(order)}>See Order Details</button>
           </div>
+          {/* <div className="downloadreceipt">
+            <button onClick={() => handleDownloadReceipt(order)}>DownloadIcon</button>
+          </div> */}
         </div>
       ))}
 

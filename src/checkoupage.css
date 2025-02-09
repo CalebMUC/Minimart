@@ -1,5 +1,5 @@
 /* Main Container */
-.MainContainer {
+/* .MainContainer {
     font-family: "Amazon Ember", Arial, sans-serif;
     max-width: 1000px;
     margin: auto;
@@ -8,7 +8,34 @@
     border: 1px solid #ddd;
     display: flex;
     gap: 20px;
-}
+} */
+
+.Checkout-MainContainer {
+    display: flex; /* Arrange child elements horizontally */
+    justify-content: space-between; /* Add space between left and right sections */
+    align-items: flex-start; /* Align items at the start */
+    gap: 20px; /* Add spacing between the sections */
+    padding: 20px;
+  }
+  
+  .left-section {
+    flex: 2; /* Take up more space compared to the right section */
+    max-width: 70%; /* Limit width for better responsiveness */
+    background-color: #f9f9f9; /* Optional: Background color */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add some shadow */
+  }
+  
+   .right-section {
+    flex: 1; 
+    max-width: 30%;  
+    background-color:#fff; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  } 
+  
 
 /* Section Headings */
 .address-section h2,
@@ -231,12 +258,12 @@ hr {
     border-radius: 8px;
     max-width: 300px;
     margin-left: auto;
-}
+} 
 .order-summary h2 {
     font-size: 18px;
     margin-bottom: 20px;
     color: #333;
-}
+} 
 
 .summary-item {
     display: flex;
@@ -264,9 +291,84 @@ hr {
 .checkout-btn:hover {
     background-color: #e6b339;
 }
-.left-section{
+
+.errors {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .payment-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .payment-option.selected {
+    border-color: #007bff; /* Highlight color */
+    background-color: #f0f8ff; /* Light background for selected option */
+  }
+  
+  .payment-option input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  .payment-method-logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .payment-method-name p {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .payment-option.disabled {
+    opacity: 0.5;
+    pointer-events: none; /* Disable clicks */
+  }
+  
+  .clear-payment-methods-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clear-payment-methods-button:hover {
+    background-color: #ff1a1a;
+  }
+  .clear-button {
+    margin-left: auto; /* Push the button to the right */
+    padding: 5px 10px;
+    background-color: #ff4444; /* Red color for the button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clear-button:hover {
+    background-color: #cc0000; /* Darker red on hover */
+  }
+/* .MainContainer .left-section{
+    flex: 1;
+    color: black;
+    background-color: black;
+} 
+ .MainContainer .right-section{
     flex: 2;
-}
+    /* color: blue; 
+    background-color: blue;
+}  */
 .phone-input {
     display: flex;
     align-items: center;

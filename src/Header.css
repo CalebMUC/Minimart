@@ -1,5 +1,6 @@
 .header {
-    background-color: #131a22;
+    /* background-color: #131a22; */
+    background-color:  #007bff;
     color: white;
     padding: 10px;
 }
@@ -24,7 +25,8 @@ height: 40px;
     display: flex;
     align-items: center;
     padding: 10px 20px;
-    background-color: #1a1a1a;
+    /* background-color: #1a1a1a; */
+    background-color: #007bff;
     /* Match the header background */
 }
 
@@ -34,18 +36,21 @@ height: 40px;
     margin-right: 100px;
 }
 
-.header-search {
+/* .header-search {
     display: flex;
     align-items: center;
     flex: 1;
-}
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+} */
 
-.search-input {
+/* .search-input {
     width: 100%;
     padding: 10px;
     border: none;
     border-radius: 4px;
-}
+} */
 
 .search-button {
     padding: 10px;
@@ -129,7 +134,8 @@ height: 40px;
 .sub-header {
     display: flex;
     align-items: center;
-    background-color: #232f3e;
+    /* background-color: #232f3e; */
+    background-color: #66b2ff;
     padding: 10px;
 }
 
@@ -183,7 +189,8 @@ height: 40px;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
-    background-color: #232f3e;
+    /* background-color: #232f3e; */
+    background-color: #66b2ff;
     color: #fff;
 }
 
@@ -268,5 +275,113 @@ height: 40px;
     text-decoration: none;
     color: black
 }
+.search-dropdown{
+    background-color:white;
+    /* color:#131a22; */
+    position: absolute;
+    top: 90%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2) ;
+    border-top: #131a22 solid 1px;
+    border-radius: 4px;
+    z-index: 10;
+}
+.search-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+  }
+
+  
+  .search-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .search-item strong {
+    font-weight: bold;
+    color: #333;
+  }
+  .search-item .icon {
+    margin-right: 8px; /* Space between icon and text */
+    color: #666; /* Icon color */
+  }
+  .header-search {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  form {
+    display: flex;
+    width: 100%;
+  }
+  
+  .search-input {
+    flex: 1;
+    height: 40px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  .search-button {
+    width: 50px;
+    height: 40px;
+    background-color: #f3a847;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .search-button i {
+    color: white;
+    font-size: 18px;
+  }
+  
+  .autocomplete-dropdown {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff; /* Ensure white background */
+    border: 1px solid #ddd;
+    z-index: 10; /* Increase z-index to make it appear above other elements */
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 4px;
+  }
+  
+  .autocomplete-item {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333; /* Ensure dark text for visibility */
+  }
+  
+  .autocomplete-item:hover {
+    background-color: #f3f3f3;
+  }
+  
+  .suggestion-icon {
+    margin-right: 8px;
+    color: #999; /* Icon color */
+  }
+  
+  
 
 

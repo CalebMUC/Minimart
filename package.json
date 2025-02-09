@@ -10,11 +10,14 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.0",
+    "react-icons": "^5.4.0",
+    "react-router-dom": "^6.28.2",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.2",
+    "react-slider": "^2.0.6",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4"
   },
@@ -39,21 +42,35 @@
     "GetCategoriesByIDUrl": "https://localhost:44334/api/Entities/GetCartItems",
     "GetCategories": " https://localhost:44334/api/Entities/GetDashBoardCategories",
     "GetSubCategory": "https://localhost:44334/api/Entities/SubCategoryID",
+    "GetBusinessTypes": "https://localhost:44334/api/Merchant/GetBusinessTypes",
+    "AddMerchants": "https://localhost:44334/api/Merchant/AddMerchants",
     "GetProductsByCategory": "https://localhost:44334/api/Entities/GetProductsByCategory",
-    "Login": "https://localhost:44334/api/Entities/Login",
+    "Login": "https://localhost:44334/api/Authentication/Login",
     "WeatherForecast": "https://localhost:44334/WeatherForecast",
-    "Register": "https://localhost:44334/api/Entities/Register",
+    "Register": "https://localhost:44334/api/Authentication/Register",
     "AddCartItems": "https://localhost:44334/api/Entities/AddToCart",
+    "DeleteCartItems": "https://localhost:44334/api/Entities/DeleteCartItems",
+    "GetSavedItems": "https://localhost:44334/api/Entities/GetSavedItems",
+    "SaveItems": "https://localhost:44334/api/Entities/SaveItems",
     "LoadCounties": "https://localhost:44334/api/Entities/counties",
     "LoadTowns": "https://localhost:44334/api/Entities/towns?countyId={countyId}",
     "LoadDeliveryStations": "https://localhost:44334/api/Entities/deliveryStations?townId={townId}",
     "AddNewAddress": "https://localhost:44334/api/Entities/AddAddress",
     "UpdateAddress": "https://localhost:44334/api/Entities/EditAddress",
     "AddOrder": "https://localhost:44334/api/Order/AddOrder",
-    "GetOrders":"https://localhost:44334/api/Order/GetOrders"
+    "GetOrders": "https://localhost:44334/api/Order/GetOrders",
+    "AddFeature": "https://localhost:44334/api/Category/AddFeatures",
+    "GetFeatures": "https://localhost:44334/api/Category/GetFeatures",
+    "GetSearchProducts": "https://localhost:44334/api/Category/GetSearchProducts/{id}",
+    "GetFilteredProducts": "https://localhost:44334/api/Category/GetFilteredProducts",
+    "GetSearchApi": "https://localhost:44334/api/Search/GetSearchResults",
+    "AddEditCategories": "https://localhost:44334/api/Category/AddEditCategories",
+    "GenerateReports": "https://localhost:44334/api/Report/Generate",
+    "ExportReports": "https://localhost:44334/api/Report/Export",
+    "GetAddressesByUserId": "https://localhost:44334/api/Entities/GetAddressesByUserId"
   },
-  "ImageUploads":{
-    "filepath":"D:/OrderApi"
+  "ImageUploads": {
+    "filepath": "D:/OrderApi"
   },
   "browserslist": {
     "production": [

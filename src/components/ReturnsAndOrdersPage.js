@@ -172,10 +172,7 @@ const ReturnsAndOrdersPage = () => {
         </>
       )}
 
-      <div className="prime-banner">
-        <p>Get free and faster delivery with a 30-day FREE trial.</p>
-        <button>Try Prime</button>
-      </div>
+ 
     </div>
   );
 };

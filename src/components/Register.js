@@ -78,9 +78,20 @@ function Register() {
     }
 
     if (name === 'phoneNumber') {
-      if (!phoneRegex.test(value)) {
+      //remove non numeric chaaracters from the input
+      const sanitizedValue = value.replace(/\D/g,'')
+
+      if (!phoneRegex.test(sanitizedValue)) {
         setErrors((prev) => ({ ...prev, phoneNumber: 'Phone number must be 9 digits' }));
-      } else {
+      }
+      else {
+         //Append the countryCode to the inputed Phonenumber
+
+         setFormData((prev)=>({
+          ...prev,
+          phoneNumber : `${selectedCountryCode.replace('+','')}${sanitizedValue}`
+        }))
+      
         setErrors((prev) => ({ ...prev, phoneNumber: '' }));
       }
     }
@@ -97,7 +108,9 @@ function Register() {
     if (name === 'confirmPassword') {
       if (value !== formData.password) {
         setErrors((prev) => ({ ...prev, confirmPassword: 'Passwords do not match' }));
-      } else {
+      } 
+      else {
+
         setErrors((prev) => ({ ...prev, confirmPassword: '' }));
       }
     }
@@ -127,19 +140,28 @@ function Register() {
       });
 
       if (response.ok) {
+
+
         const data = await response.json();
 
-        localStorage.setItem('userID', data.userID);
-        localStorage.setItem('username', data.username);
+        if(data.responseCode == 200){
+          localStorage.setItem('userID', data.userID);
+          localStorage.setItem('username', data.username);
+  
+          // Show success dialog
+          setSuccessMessage(data.responseMessage);
+          setShowSuccessDialog(true);
+  
+          // Redirect after 6 seconds
+          setTimeout(() => {
+            window.location.href = "http://localhost:3000"; // Redirect to localhost:3000
+          }, 3000);
+        }else if (data.responseCode == 400){
+          setErrorMessage(data.message || 'Registration failed');
+        }
 
-        // Show success dialog
-        setSuccessMessage('Registration Successful!');
-        setShowSuccessDialog(true);
 
-        // Redirect after 6 seconds
-        setTimeout(() => {
-          window.location.href = "http://localhost:3000"; // Redirect to localhost:3000
-        }, 6000);
+       
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.message || 'Registration failed');
@@ -157,9 +179,25 @@ function Register() {
     }
   };
 
+  const handleCloseModal = () => {
+    
+    setErrorMessage(false);
+    setSuccessMessage(false);
+    setShowSuccessDialog(false);
+    // setShowErrorDialog(false)
+
+
+  };
+
   return (
     <section className="register-container">
-      {showSuccessDialog && <Dialogs message={successMessage} />}
+      {/* {showSuccessDialog && <Dialogs message={successMessage} />} */}
+
+      {showSuccessDialog && <Dialogs 
+            message={successMessage} 
+            type="success"
+            onClose={handleCloseModal}
+            />}
 
       <div className="register-form">
         <div className="register-header">
@@ -208,7 +246,7 @@ function Register() {
               {/* Mobile number input */}
               <input
                 type="text"
-                placeholder="794129556" // Placeholder to guide the user on format
+                placeholder="712345678" // Placeholder to guide the user on format
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleInputChange}

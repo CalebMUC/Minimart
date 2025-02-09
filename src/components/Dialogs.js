@@ -12,7 +12,7 @@ const Dialogs = ({ message, type, onClose }) => {
     if (isSuccess || isCart) {
       const timer = setTimeout(() => {
         onClose(); // Close dialog after 10 seconds
-      }, 10000);
+      }, 3000);
       return () => clearTimeout(timer); // Clear timeout on unmount
     }
   }, [isSuccess, isCart, onClose]);

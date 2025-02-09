@@ -21,6 +21,7 @@ const ProductDetail = () => {
   const { cartCount, updateCartCount } = useContext(cartContext);
   const [showSuccessDialog,setSuccessDialog] = useState(false);
   const [dialogMessage,setDialogMessage] = useState(null);
+  const [boxContent,setBoxContent] = useState([])
 
   const [recentlyViewed, setRecentlyViewed] = useState([]);
 
@@ -79,10 +80,27 @@ const ProductDetail = () => {
         console.log( "mand",matchedProduct)
         setProduct(matchedProduct);
 
+          // Parse the box content if it's a stringified array
+          let parsedBoxContent;
+          try {
+            parsedBoxContent = JSON.parse(matchedProduct.box);
+          } catch (error) {
+            console.error("Failed to parse box content:", error);
+            parsedBoxContent = [];
+          }
+          
+          setBoxContent(Array.isArray(parsedBoxContent) ? parsedBoxContent : []);
+
 
         // setProductID(`${matchedProduct.productId}`);
 ;
         console.log(productID)
+        console.log(matchedProduct.keyFeatures)
+
+        console.log(matchedProduct.specification)
+      
+        
+      
       } else {
         setError("Product not found");
       }
@@ -93,14 +111,74 @@ const ProductDetail = () => {
     }
   };
 
-  const parseKeyValuePairs = (input) => {
-  if (!input) return [];
+ 
+//   const parseKeyValuePairs = (input) => {
+//   if (!input) return [];
 
-  return input
-    .split(/[\r\n]+/) // Split by either \r\n or \n
-    .map(line => line.split("\t").map(item => item.trim())) // Split by tabs
-    .filter(([key, value]) => key && value); // Ensure both key and value exist
+//   return input
+//     .split(/[\r\n]+/) // Split by either \r\n or \n
+//     .map(line => line.split("\t").map(item => item.trim())) // Split by tabs
+//     .filter(([key, value]) => key && value); // Ensure both key and value exist
+// };
+// const parseKeyValuePairs = (data) => {
+//   if (typeof data === 'string') {
+//     try {
+//       data = JSON.parse(data); // Parse stringified JSON if necessary
+//     } catch (error) {
+//       console.error('Failed to parse data:', error);
+//       return [];
+//     }
+//   }else if(Array.isArray(data) ){
+//     const arrayData = data
+//     .filter(item => item.includes(':')) // Ensure the string has a colon
+//     .map(item => {
+//     const [key, value] = item.split(/:(.+)/); // Split on the first colon
+//     return [key.trim(), value ? value.trim() : '']; // Trim whitespace
+//      });
+//   }
+//   return Object.entries(data); // Convert object to array of key-value pairs
+// };
+// const parseKeyValuePairs = (data) => {
+//   if (!Array.isArray(data)) return [];
+  
+//   // Map over each string and split at the first colon
+//   return data
+//     .filter(item => item.includes(':')) // Ensure the string has a colon
+//     .map(item => {
+//       const [key, value] = item.split(/:(.+)/); // Split on the first colon
+//       return [key.trim(), value ? value.trim() : '']; // Trim whitespace
+//     });
+// };
+
+const parseKeyValuePairs = (data) => {
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data); // Parse stringified JSON if necessary
+    } catch (error) {
+      console.error('Failed to parse data:', error);
+      return [];
+    }
+  }
+
+  if (Array.isArray(data)) {
+    return data
+      .filter(item => item.includes(':') && !/^\d+\s*:/.test(item)) // Ensure the string has a colon and no leading numbers
+      .map(item => {
+        const [key, value] = item.split(/:(.+)/); // Split on the first colon
+        return [key.trim(), value ? value.trim() : '']; // Trim whitespace
+      });
+  } else if (typeof data === 'object' && data !== null) {
+    return Object.entries(data).map(([key, value]) => [key.trim(), String(value).trim()]);
+  }
+
+  return [];
 };
+
+const displayBoxContent =  (data) =>{
+
+
+}
+
 
 
   const saveToCart = async () => {
@@ -228,22 +306,22 @@ const ProductDetail = () => {
       </div>
 
       <div className="features">
-        <h2>Features</h2>
-        <div className="key-features">
-          <h3>Key Features</h3>
-          <hr />
-          <ul>
-            {parseKeyValuePairs(product.keyFeatures).length > 0 ? (
-              parseKeyValuePairs(product.keyFeatures).map((feature, index) => (
-                <li key={index}>
-                  <strong>{feature[0]}:</strong> {feature[1]}
-                </li>
-              ))
-            ) : (
-              <li>No key features available</li>
-            )}
-          </ul>
-        </div>
+  <h2>Features</h2>
+  <div className="key-features">
+    <h3>Key Features</h3>
+    <hr />
+    <ul>
+  {parseKeyValuePairs(product.keyFeatures).length > 0 ? (
+    parseKeyValuePairs(product.keyFeatures).map(([key, value], index) => (
+      <li key={index}>
+        <strong>{key}:</strong> {value}
+      </li>
+    ))
+  ) : (
+    <li>No key features available</li>
+  )}
+</ul>
+  </div>
 
         <div className="specifications">
           <h3>Specifications</h3>
@@ -260,22 +338,21 @@ const ProductDetail = () => {
             )}
           </ul>
         </div>
-
         <div className="box-contents">
           <h3>What's In the Box</h3>
           <hr />
           <ul>
-            {parseKeyValuePairs(product.box).length > 0 ? (
-              parseKeyValuePairs(product.box).map((item, index) => (
-                <li key={index}>
-                  {item[0]}: {item[1]}
-                </li>
+            {boxContent.length > 0 ? (
+              boxContent.map((item, index) => (
+                <li key={index}>{item.trim()}</li>
               ))
             ) : (
-              <li>No box contents available</li>
+              <li>No items available</li>
             )}
           </ul>
         </div>
+
+
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import packageInfo from "../../package.json";
 import '../../src/Header.css';
 import '../../src/Dropdown.css';
 import { cartContext } from "./CartContext";
 import { UserContext } from "./UserMainContext";
+import axios from "axios"; // Add axios for API calls
 
 const Header = () => {
   const [categories, setCategories] = useState([]);
@@ -17,10 +17,13 @@ const Header = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [username, setUsername] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [searchResults, setSearchResults] = useState([]); // State for search results
+  const [autocompleteSuggestions, setAutocompleteSuggestions] = useState([]); // State for autocomplete suggestions
+  const [isSearchFocused, setIsSearchFocused] = useState(false); // State to track search input focus
 
-
-  const { cartCount, GetCartItems } = useContext(cartContext);
   const { usercontextname } = useContext(UserContext);
+  const { cartCount, GetCartItems } = useContext(cartContext);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,6 +48,38 @@ const Header = () => {
     fetchCategories();
     GetCartItems(); // Optionally call GetCartItems to load cart items when Header mounts
   }, []);
+
+  // Handle search input change
+  const handleSearchInputChange = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    // Fetch autocomplete suggestions
+    if (query.length > 2) {
+      try {
+        const response = await axios.get(`https://localhost:44334/api/Search/SearchProducts?query=${query}`);
+        setAutocompleteSuggestions(response.data);
+      } catch (error) {
+        console.error("Error fetching autocomplete suggestions:", error);
+      }
+    } else {
+      setAutocompleteSuggestions([]);
+    }
+  };
+
+  // Handle search submission
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      try {
+        const response = await axios.get(`https://localhost:44334/api/search?query=${searchQuery}`);
+        setSearchResults(response.data);
+        navigate("/search-results", { state: { results: response.data } }); // Navigate to search results page
+      } catch (error) {
+        console.error("Error searching:", error);
+      }
+    }
+  };
 
   // Handle hover events
   const showDropdown = () => setIsDropdownVisible(true);
@@ -92,30 +127,21 @@ const Header = () => {
     }
   }, [location.pathname]);
 
-  useEffect(()=>{
-    const handleStorageChange = () =>{
-      localStorage.getItem('username')
-    }
-    window.addEventListener ('storage',handleStorageChange)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      localStorage.getItem('username');
+    };
+    window.addEventListener('storage', handleStorageChange);
 
-    //clean up event listener on component un mount 
-    return () =>{
-      window.removeEventListener('storage',handleStorageChange)
-    }
-
-  }, [])
+    // Clean up event listener on component unmount
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   // Check for user and admin role on component mount
   useEffect(() => {
-    //const storedUsername = localStorage.getItem('username');
-    // const userRole = localStorage.getItem('userRole');
-    const userRole = 'admin';
-    // if (storedUsername) {
-    //   setUsername(storedUsername);
-    // }
-    //for testing
-  
-
+    const userRole = 'admin'; // For testing
     if (userRole === 'admin') {
       setIsAdmin(true);
     }
@@ -131,10 +157,37 @@ const Header = () => {
             <span>Minimart Logo</span>
           </div>
           <div className="header-search">
-            <input type="text" className="search-input" placeholder="Search Minimart" />
-            <button className="search-button">
-              <i className="fas fa-search"></i>
-            </button>
+            <form onSubmit={handleSearchSubmit}>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search Minimart"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} // Delay to allow click on suggestions
+              />
+              <button type="submit" className="search-button">
+                <i className="fas fa-search"></i>
+              </button>
+            </form>
+            {isSearchFocused && autocompleteSuggestions.length > 0 && (
+              <div className="autocomplete-dropdown">
+                {autocompleteSuggestions.map((suggestion, index) => (
+                  <div
+                    key={index}
+                    className="autocomplete-item"
+                    onMouseDown={() => {
+                      setSearchQuery(suggestion.productName);
+                      setIsSearchFocused(false);
+                    }}
+                  >
+                    <i className="fas fa-search suggestion-icon"></i>
+                    {suggestion.searchKeyWord} 
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="header-right">
             <div className="header-account" onMouseEnter={showDropdown} onMouseLeave={hideDropdown}>
@@ -242,15 +295,14 @@ const Header = () => {
                 </div>
               ))}
               {isAdmin && (
-                // React Fragment
                 <>
-                <div className="category-group">
-                  <h3 onClick={() => navigate('/AddProducts')}>Add Product</h3>
-                </div>
-                <div className="category-group">
-                <h3 onClick={() => navigate('/MaintainStations')}>Maintain Stations</h3>
-              </div>
-              </>
+                  <div className="category-group">
+                    <h3 onClick={() => navigate('/AddProducts')}>Add Product</h3>
+                  </div>
+                  <div className="category-group">
+                    <h3 onClick={() => navigate('/MaintainStations')}>Maintain Stations</h3>
+                  </div>
+                </>
               )}
             </>
           )}

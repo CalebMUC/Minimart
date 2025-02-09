@@ -15,7 +15,7 @@ body {
   font-family: 'Amazon Ember', Arial, sans-serif;
   background-color: #f3f3f3;
   color: var(--color-text-dark);
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .product-detail-container {
