@@ -42,7 +42,7 @@ body {
     flex-direction: column;
   }
   
-  .form-group {
+  /* .form-group {
     margin-bottom: 15px;
   }
   
@@ -60,7 +60,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
-  }
+  } */
   
   .form-group textarea {
     resize: vertical;

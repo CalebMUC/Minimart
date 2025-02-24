@@ -49,7 +49,7 @@ h2 {
     width: 100%;
 }
 
-.form-group {
+/* .form-group {
     display: flex;
     flex-direction: column;
     margin-bottom: 15px;
@@ -70,7 +70,7 @@ h2 {
     border: 1px solid #ccc;
     font-size: 14px;
     color: #333;
-}
+} */
 
 textarea {
     resize: none;
@@ -103,7 +103,7 @@ textarea {
 }
 
 .submitBtn button {
-    background-color: #007bff;
+    background-color: #ecb22e;
     color: #fff;
     padding: 10px 20px;
     border: none;
@@ -114,5 +114,5 @@ textarea {
 }
 
 .submitBtn button:hover {
-    background-color: #0056b3;
+    background-color: #ecb22e;
 }

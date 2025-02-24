@@ -4,7 +4,7 @@ import DeliveryModeSection from "./DeliveryModeSection";
 import PaymentSection from "./PaymentSection";
 import ItemsSection from "./ItemSection";
 import OrderSummary from "./OrderSummarySection";
-import "../../src/checkoupage.css";
+import "../../src/CSS/checkoupage.css";
 import { CheckOutContext } from './CheckOutContext.js';
 import { fetchAddressesByUserID, fetchCounties,Order } from "../Data.js";
 import { v4 as uuidv4 } from "uuid";

@@ -3,7 +3,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 800px;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
     display: flex;
@@ -18,7 +18,7 @@
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    width: 50vw; /* Increase horizontal size to 80% of the viewport */
+    width: 80vw; /* Increase horizontal size to 80% of the viewport */
     max-height: 90vh; /* Limits modal height to 90% of the viewport */
     overflow-y: auto; /* Scrolls content within the modal if it exceeds height */
     overflow-x: hidden; /* Prevent horizontal scrolling */

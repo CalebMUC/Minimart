@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import packageInfo from "../../package.json";
-import '../../src/ProductDetailPage.css';
+import '../../src/CSS/ProductDetailPage.css';
 import { cartContext } from "./CartContext";
 import  ProductImageCarousel  from "./ProductImageCouresel";
 import Dialogs from "./Dialogs.js";

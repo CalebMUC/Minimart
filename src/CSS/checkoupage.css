@@ -94,6 +94,17 @@
     font-size: 14px;
 }
 
+.global-form{
+    max-width: 28rem; /* Equivalent to max-w-md in Tailwind */
+    margin: 0 auto; /* Center the form */
+    background-color: white;
+    padding: 1.5rem; /* Equivalent to p-6 in Tailwind */
+    border-radius: 0.5rem; /* Equivalent to rounded-lg in Tailwind */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-md in Tailwind */
+    display: flex;
+    flex-direction: column;
+}
+
 /* Button Styles */
 .use-address-btn {
     background-color: #f0c14b;

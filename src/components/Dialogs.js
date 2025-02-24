@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import '../../src/Dialogs.css';
+import '../../src/CSS/Dialogs.css';
 
 const Dialogs = ({ message, type, onClose }) => {
   const isSuccess = type === 'success'; // Check if message is success or error

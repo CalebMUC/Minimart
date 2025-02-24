@@ -32,7 +32,7 @@
     align-items: center;
         padding: 8px 16px;
         margin: 8px 0;
-        background-color: #007bff;
+        background-color: #ecb22e;
         color: #fff;
         border: none;
         border-radius: 4px;
@@ -44,7 +44,7 @@
 .toggle-button:hover,
 .add-button:hover,
 .submit-button:hover {
-    background-color: #0056b3;
+    background-color: #ecb22e;
 }
 
 .form-card {
@@ -54,11 +54,11 @@
     background-color: #fff;
 }
 
-.form-group {
+/* .form-group {
     margin-bottom: 12px;
-}
+} */
 
-.form-label {
+/* .form-label {
     display: block;
     margin-bottom: 4px;
     font-weight: bold;
@@ -74,7 +74,7 @@
 .form-input:focus {
     outline: none;
     border-color: #007bff;
-}
+} */
 
 .subcategories-title {
     margin-top: 16px;

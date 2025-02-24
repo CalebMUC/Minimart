@@ -1,6 +1,6 @@
 import React, { useState, useEffect,useCallback } from "react";
 import { AddNewAddress, updateAddress,fetchCounties,fetchCountyTowns } from "../Data.js";
-import "../../src/checkoupage.css";
+import "../../src/CSS/checkoupage.css";
 import Dialogs from "./Dialogs.js";
 
 const AddressForm = ({ userID,
@@ -180,7 +180,7 @@ const [selectedTown, setselectedTown] = useState([]);
         />
       )}
   
-      <form onSubmit={handleSubmitAddressForm}>
+      <form className="global-form" onSubmit={handleSubmitAddressForm}>
         <div className="form-group">
           <label>Full Name</label>
           <input

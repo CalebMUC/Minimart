@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Slider from "react-slider";
-import "../../src/SearchFilterSideBar.css";
+import "../../src/CSS/SearchFilterSideBar.css";
 
 const SearchFilterSidebar = ({ features, setFilters }) => {
   const [priceRange, setPriceRange] = useState([0, 0]);

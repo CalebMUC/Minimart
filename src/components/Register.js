@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import '../../src/Register.css';
+import '../../src/CSS/Register.css';
 import packageInfo from "../../package.json";
 import Dialogs from "./Dialogs.js";
 
@@ -199,7 +199,7 @@ function Register() {
             onClose={handleCloseModal}
             />}
 
-      <div className="register-form">
+      <div className="register-conatiner">
         <div className="register-header">
           <div className="register-logo">
             <img src="../images/shopping-bag.png" alt="Logo" />
@@ -209,7 +209,8 @@ function Register() {
             <p>Create an Account</p>
           </div>
         </div>
-        <form onSubmit={handleSubmit}>
+       
+        <form className='register-form' onSubmit={handleSubmit}>
           <div className="register-input-field">
             <input
               type="text"

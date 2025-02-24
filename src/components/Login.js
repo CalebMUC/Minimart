@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import packageInfo from "../../package.json";
-import "../../src/Login.css";
+import "../../src/CSS/Login.css"; // Ensure the path is correct
 import { cartContext } from "./CartContext";
 import { UserContext } from "./UserMainContext";
 
@@ -68,16 +68,14 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
 
-        if(data.responseCode == 200){
-            
-            // Update user and local storage
-            updateUser(data.userName);
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("userID", data.userID);
-            localStorage.setItem("username", data.username);
-            localStorage.setItem("userRole", data.UserRole);
+        if (data.responseCode == 200) {
+          // Update user and local storage
+          updateUser(data.userName);
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("userID", data.userID);
+          localStorage.setItem("username", data.username);
+          localStorage.setItem("userRole", data.userRole);
         }
-
 
         const isAuthenticated = await verifyAuthentication(data.token);
 
@@ -115,7 +113,7 @@ function Login() {
 
   return (
     <section className="login-container">
-      <div className="login-form">
+      <div className="login-form-container">
         <div className="login-header">
           <div className="logo">
             <img src="../images/shopping-bag.png" alt="Logo" />
@@ -126,7 +124,7 @@ function Login() {
           </div>
         </div>
 
-        <form onSubmit={handleLogin}>
+        <form className="login-form" onSubmit={handleLogin}>
           <div className="form-input-field">
             <input
               type="text"

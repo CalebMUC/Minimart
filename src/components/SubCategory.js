@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import packageInfo from "../../package.json";
 import { Link } from 'react-router-dom';
-import '../../src/SubCategory.css';
+import '../../src/CSS/SubCategory.css';
 
 const SubCategories = () => {
   const { subCategoryName } = useParams();

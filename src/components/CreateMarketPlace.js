@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../../src/MarketPlace.css';
+import '../../src/CSS/MarketPlace.css';
 
 const Marketplace = () => {
     const [formData, setFormData] = useState({

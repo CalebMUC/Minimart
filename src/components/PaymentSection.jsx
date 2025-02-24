@@ -2,7 +2,7 @@ import React from "react";
 import Modal from "./Modal";
 import MpesaForm from "./MpesaForm";
 import CreditCardForm from "./CreditCardForm";
-import '../../src/checkoupage.css';
+import '../../src/CSS/checkoupage.css';
 
 const PaymentMethodSection = ({
   paymentMethods,

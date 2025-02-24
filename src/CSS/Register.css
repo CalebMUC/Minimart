@@ -6,14 +6,17 @@
     background-color: #f7f7f7;
 }
 
-.register-form {
+.register-container{
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
+    max-width: 800px;
+    margin: 0 auto;
 }
+
+
 
 .register-header {
     text-align: center;
@@ -44,8 +47,19 @@
     margin-top: 10px;
 }
 
+.register-form{
+    max-width: 28rem; /* Equivalent to max-w-md in Tailwind */
+    margin: 0 auto; /* Center the form */
+    background-color: white;
+    padding: 1.5rem; /* Equivalent to p-6 in Tailwind */
+    border-radius: 0.5rem; /* Equivalent to rounded-lg in Tailwind */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-md in Tailwind */
+    display: flex;
+    flex-direction: column;
+}
+
 .register-input-field {
-    position: relative;
+    /* position: relative; */
     margin-bottom: 15px;
 }
 
@@ -55,6 +69,7 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
+    outline: none;
 }
 
 .register-input-field input:focus {

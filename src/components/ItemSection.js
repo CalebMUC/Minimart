@@ -1,5 +1,5 @@
 import React from "react";
-import '../../src/checkoupage.css';
+import '../../src/CSS/checkoupage.css';
 
 const ItemsSection = ({ checkOutData,subTotal,isPaymentMethodSelected }) => {
   return (

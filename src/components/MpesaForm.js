@@ -32,7 +32,7 @@ const MpesaForm = ({ paymentMethods, setOrderData,orderData, subTotal, shippingC
       ...prevData,
       [name]: value,
     }));
-  };
+  };  
 
   const handleUseOption = useCallback(() => {
     // Validate the phone number
@@ -75,7 +75,7 @@ const MpesaForm = ({ paymentMethods, setOrderData,orderData, subTotal, shippingC
   return (
     <div className="payment-form">
       <h3>Enter Mpesa Details</h3>
-      <form>
+      <form className="global-form">
         {/* Mpesa Number Input */}
         <div className="form-group">
           <label>Mpesa Number</label>

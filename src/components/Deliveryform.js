@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import "../../src/checkoupage.css";
+import "../../src/CSS/checkoupage.css";
 import packageInfo from "../../package.json"
 
 const DeliveryForm = ({onPickupStationSelected,
@@ -84,7 +84,7 @@ const DeliveryForm = ({onPickupStationSelected,
   return (
     <div className="pickup-form">
       <h3>Select your pickup location:</h3>
-      <form>
+      <form className="global-form">
         {/* County Selection */}
         <div className="form-group">
           <label htmlFor="countyId">County:</label>

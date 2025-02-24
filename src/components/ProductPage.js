@@ -7,7 +7,7 @@ import { cartContext } from "./CartContext";
 import { Link, useNavigate } from 'react-router-dom';
 import packageInfo from '../../package.json';
 import RecentlyViewed from "./RecentlyViewed";
-import '../../src/ProductPage.css';
+import '../../src/CSS/ProductPage.css';
 
 const ProductPage = () => {
   const { checkOutData, addItemTocheckOut, removeItemFromCheckout, subTotal } = useContext(CheckOutContext); // Using the context

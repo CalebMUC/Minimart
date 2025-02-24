@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../../src/ProductFeature.css";
+import "../../src/CSS/ProductFeature.css";
 import Dialogs from "./Dialogs.js";
 import { FetchFeatures, fetchCategories, AddFeaturesAPI } from "../Data.js";
 

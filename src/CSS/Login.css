@@ -1,0 +1,138 @@
+/* Login.css */
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+}
+
+.login-form-container {
+    background: white;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); /* Each field in its own column */
+    gap: 1rem; /* Space between grid items */
+}
+.login-form{
+    max-width: 28rem; /* Equivalent to max-w-md in Tailwind */
+    margin: 0 auto; /* Center the form */
+    background-color: white;
+    padding: 1.5rem; /* Equivalent to p-6 in Tailwind */
+    border-radius: 0.5rem; /* Equivalent to rounded-lg in Tailwind */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-md in Tailwind */
+    display: flex;
+    flex-direction: column;
+}
+
+.login-header {
+    grid-column: 1 / -1; /* Span across all columns */
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.logo img {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+.details h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.details p {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 0.5rem;
+}
+
+.form-input-field {
+    display: grid;
+    gap: 0.5rem; /* Space between label and input */
+}
+
+.form-input-field input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-input-field input:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+.password-field {
+    position: relative;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #777;
+}
+
+.error {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.response-div {
+    grid-column: 1 / -1; /* Span across all columns */
+    color: red;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.form-button {
+    grid-column: 1 / -1; /* Span across all columns */
+}
+
+.form-button button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-button button:hover {
+    background-color: #0056b3;
+}
+
+.form-button button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.form-links {
+    grid-column: 1 / -1; /* Span across all columns */
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+.form-links a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.form-links a:hover {
+    text-decoration: underline;
+}

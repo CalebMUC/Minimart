@@ -1,148 +1,112 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faChevronRight, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // React Icons for the arrow
 import packageInfo from "../../package.json";
-import '../../src/Header.css';
-import '../../src/Dropdown.css';
+import "../../src/CSS/Header.css";
+import "../../src/CSS/Dropdown.css";
 import { cartContext } from "./CartContext";
-import { UserContext } from "./UserMainContext";
-import axios from "axios"; // Add axios for API calls
+import { fetchRoleModules, fetchSubModuleCategories } from "../Data.js";
 
 const Header = () => {
-  const [categories, setCategories] = useState([]);
-  const [dashboardCategories, setDashboardCategories] = useState([]);
-  const [currentCategory, setCurrentCategory] = useState(null);
+  const [dashboardModules, setDashboardModules] = useState([]); // Store modules and submodules
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [username, setUsername] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
-  const [searchResults, setSearchResults] = useState([]); // State for search results
-  const [autocompleteSuggestions, setAutocompleteSuggestions] = useState([]); // State for autocomplete suggestions
-  const [isSearchFocused, setIsSearchFocused] = useState(false); // State to track search input focus
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedSubModule, setSelectedSubModule] = useState(null); // Track selected submodule
 
-  const { usercontextname } = useContext(UserContext);
   const { cartCount, GetCartItems } = useContext(cartContext);
-
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Fetch categories from API
-  const fetchCategories = async () => {
+  // Fetch modules based on user role
+  const fetchModules = async () => {
     try {
-      const response = await fetch(packageInfo.urls.GetCategories);
-      if (!response.ok) {
-        throw new Error(`Network Error: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setCategories(data);
-      setDashboardCategories(data);
+      const token = localStorage.getItem("token");
+      const RoleID = token ? localStorage.getItem("userRole") || "User" : "User";
+
+      const response = await fetchRoleModules(RoleID);
+      setDashboardModules(response);
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching modules:", error);
     }
   };
 
-  // Fetch categories on component mount
+  // Fetch subcategories for a specific submodule
+  const fetchSubcategories = async (subModuleID) => {
+    try {
+      const response = await fetchSubModuleCategories(subModuleID);
+      setSubCategories(response);
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+    }
+  };
+
+  // Fetch modules and subcategories on component mount
   useEffect(() => {
-    fetchCategories();
+    fetchModules();
     GetCartItems(); // Optionally call GetCartItems to load cart items when Header mounts
   }, []);
 
-  // Handle search input change
-  const handleSearchInputChange = async (e) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-
-    // Fetch autocomplete suggestions
-    if (query.length > 2) {
-      try {
-        const response = await axios.get(`https://localhost:44334/api/Search/SearchProducts?query=${query}`);
-        setAutocompleteSuggestions(response.data);
-      } catch (error) {
-        console.error("Error fetching autocomplete suggestions:", error);
-      }
-    } else {
-      setAutocompleteSuggestions([]);
-    }
-  };
-
-  // Handle search submission
-  const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      try {
-        const response = await axios.get(`https://localhost:44334/api/search?query=${searchQuery}`);
-        setSearchResults(response.data);
-        navigate("/search-results", { state: { results: response.data } }); // Navigate to search results page
-      } catch (error) {
-        console.error("Error searching:", error);
-      }
-    }
-  };
-
-  // Handle hover events
+  // Handle hover events for dropdown
   const showDropdown = () => setIsDropdownVisible(true);
   const hideDropdown = () => setIsDropdownVisible(false);
 
   // Toggle the sidebar visibility
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
-    setCurrentCategory(null); // Reset to main categories when closing/reopening sidebar
   };
 
-  // Handle Logout
+  // Handle submodule click
+  const handleSubModuleClick = async (subModule) => {
+    try {
+      // Fetch subcategories for the submodule
+      const subCategories = await fetchSubModuleCategories(subModule.subModuleID);
+  
+      if (subCategories.length > 0) {
+        // If subcategories exist, display them
+        setSelectedSubModule(subModule);
+        setSubCategories(subCategories);
+      } else {
+        // If no subcategories exist, navigate to the submodule URL
+        navigate(subModule.subModuleUrl);
+        setSidebarOpen(false)
+      }
+    } catch (error) {
+      console.error("Error handling submodule click:", error);
+    }
+  };
+
+  // Handle logout
   const HandleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userID');
-    localStorage.removeItem('username');
-    localStorage.removeItem('userRole');
+    localStorage.removeItem("token");
+    localStorage.removeItem("userID");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
     setUsername(null);
     setIsAdmin(false);
   };
 
-  // Handle category click
-  const handleCategoryClick = (category) => {
-    if (!category) return;
-    if (category.subcategoryids && category.subcategoryids.length > 0) {
-      setCurrentCategory(category);
-    } else {
-      navigate(`/products/${category.name}`);
-    }
+  // Toggle visibility of submodules
+  const toggleSubmodules = (moduleId) => {
+    setDashboardModules((prevModules) =>
+      prevModules.map((module) =>
+        module.moduleID === moduleId
+          ? { ...module, showAll: !module.showAll }
+          : module
+      )
+    );
   };
-
-  // Handle back navigation to parent category
-  const handleBackNavigation = () => {
-    if (currentCategory?.parent) {
-      setCurrentCategory(currentCategory.parent);
-    } else {
-      setCurrentCategory(null);
-    }
-  };
-
-  // Hide sidebar on navigation to other pages
-  useEffect(() => {
-    if (location.pathname !== "/") {
-      setSidebarOpen(false);
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      localStorage.getItem('username');
-    };
-    window.addEventListener('storage', handleStorageChange);
-
-    // Clean up event listener on component unmount
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
 
   // Check for user and admin role on component mount
   useEffect(() => {
-    const userRole = 'admin'; // For testing
-    if (userRole === 'admin') {
+    const storedUsername = localStorage.getItem("username");
+    const userRole = localStorage.getItem("userRole"); // Replace with actual logic
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+    if (userRole === "admin") {
       setIsAdmin(true);
     }
   }, []);
@@ -153,46 +117,35 @@ const Header = () => {
         {/* Top Header */}
         <div className="header-top">
           <div className="header-left">
-            <img src="/images/shopping-bag.png" alt="Minimart Logo" className="header-logo" />
+            <img
+              src="/images/shopping-bag.png"
+              alt="Minimart Logo"
+              className="header-logo"
+            />
             <span>Minimart Logo</span>
           </div>
           <div className="header-search">
-            <form onSubmit={handleSearchSubmit}>
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search Minimart"
-                value={searchQuery}
-                onChange={handleSearchInputChange}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)} // Delay to allow click on suggestions
-              />
-              <button type="submit" className="search-button">
-                <i className="fas fa-search"></i>
-              </button>
-            </form>
-            {isSearchFocused && autocompleteSuggestions.length > 0 && (
-              <div className="autocomplete-dropdown">
-                {autocompleteSuggestions.map((suggestion, index) => (
-                  <div
-                    key={index}
-                    className="autocomplete-item"
-                    onMouseDown={() => {
-                      setSearchQuery(suggestion.productName);
-                      setIsSearchFocused(false);
-                    }}
-                  >
-                    <i className="fas fa-search suggestion-icon"></i>
-                    {suggestion.searchKeyWord} 
-                  </div>
-                ))}
-              </div>
-            )}
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search Minimart"
+            />
+            <button className="search-button">
+              <i className="fas fa-search"></i>
+            </button>
           </div>
           <div className="header-right">
-            <div className="header-account" onMouseEnter={showDropdown} onMouseLeave={hideDropdown}>
+            <div
+              className="header-account"
+              onMouseEnter={showDropdown}
+              onMouseLeave={hideDropdown}
+            >
               <a href="#">
-                {usercontextname != null ? <span>Hello, {usercontextname}</span> : <span>Hello</span>}
+                {username != null ? (
+                  <span>Hello, {username}</span>
+                ) : (
+                  <span>Hello</span>
+                )}
                 <br />
                 <span>Account & Lists</span>
               </a>
@@ -222,13 +175,13 @@ const Header = () => {
               )}
             </div>
             <div className="header-orders">
-              <a href="#" onClick={() => navigate('/ReturnsAndOrdersPage')}>
+              <a href="#" onClick={() => navigate("/Orders")}>
                 <span>Returns</span>
                 <span>& Orders</span>
               </a>
             </div>
             <div className="header-cart">
-              <a href="#" onClick={() => navigate('/ProductPage')}>
+              <a href="#" onClick={() => navigate("/ProductPage")}>
                 <i className="fas fa-shopping-cart"></i>
                 <span id="itemCount">{cartCount}</span>
                 <span>Cart</span>
@@ -247,66 +200,75 @@ const Header = () => {
           <div className="sub-header-links">
             <a href="#">Great Deals</a>
           </div>
-          <div className="sub-header-links">
-            <a href="./CreateMarketPlace">Create {usercontextname} Market place</a>
-          </div>
         </div>
       </header>
 
       {/* Sidebar */}
       <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          {currentCategory ? (
-            <>
-              <button className="back-btn" onClick={handleBackNavigation}>
-                &larr; Main Menu
-              </button>
-              <p>{currentCategory.name}</p>
-            </>
+          {username != null ? (
+            <span>Hello, {username}</span>
           ) : (
-            <>
-              {usercontextname != null ? <span>Hello, {usercontextname}</span> : <span>Hello</span>}
-              <button className="close-btn" onClick={toggleSidebar}>
-                &times;
-              </button>
-            </>
+            <span>Hello</span>
           )}
+          <button className="close-btn" onClick={toggleSidebar}>
+            &times;
+          </button>
         </div>
         <div className="sidebar-content">
-          {currentCategory ? (
-            <ul>
-              {currentCategory.subcategoryids.map((sub) => (
-                <li key={sub.id} className="sub-category-list">
-                  <a
-                    href="#"
-                    onClick={() => handleCategoryClick({ ...sub, parent: currentCategory })}
-                  >
-                    {sub.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <>
-              {dashboardCategories.map((category) => (
-                <div key={category.id} className="category-group">
-                  <p onClick={() => handleCategoryClick(category)}>{category.name}</p>
-                  <FontAwesomeIcon icon={faChevronRight} className="right-arrow-icon" />
+            {selectedSubModule ? (
+              <>
+                <button className="back-btn" onClick={() => setSelectedSubModule(null)}>
+                  &larr; Back to {selectedSubModule.ModuleName}
+                </button>
+                <div className="subcategory-group">
+                  <h4>{selectedSubModule.subModuleName}</h4>
+                  <ul>
+                    {subCategories.map((subCategory) => (
+                      <li key={subCategory.subCategoryID}>
+                        <Link to={subCategory.subCategoryUrl}>
+                          {subCategory.subCategoryName}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ))}
-              {isAdmin && (
-                <>
-                  <div className="category-group">
-                    <h3 onClick={() => navigate('/AddProducts')}>Add Product</h3>
-                  </div>
-                  <div className="category-group">
-                    <h3 onClick={() => navigate('/MaintainStations')}>Maintain Stations</h3>
-                  </div>
-                </>
-              )}
-            </>
-          )}
-        </div>
+              </>
+            ) : (
+              dashboardModules.map((module) => (
+                <div key={module.moduleID} className="module-group">
+                  <h3>{module.moduleName}</h3>
+                  <ul>
+                    {module.subModules.slice(
+                      0,
+                      module.showAll ? module.subModules.length : 5
+                    ).map((subModule) => (
+                      <li key={subModule.subModuleID}>
+                         <a
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault(); // Prevent default link behavior
+                            handleSubModuleClick(subModule);
+                          }}
+                        >
+                          {subModule.subModuleName}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  {module.subModules.length > 5 && (
+                    <button
+                      className="see-all-btn"
+                      onClick={() => toggleSubmodules(module.moduleID)}
+                    >
+                      {module.showAll ? "See Less" : "See All"}
+                      {module.showAll ? <FaChevronUp /> : <FaChevronDown />}
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
       </div>
     </>
   );

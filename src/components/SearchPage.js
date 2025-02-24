@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import SearchFilterSidebar from "./SearchFilterSidebar";
 import ProductGrid from "./ProductGrid";
-import "../../src/SearchPage.css";
+import "../../src/CSS/SearchPage.css";
 import { FetchSearchProducts, FetchFeatures,FetchFilteredProducts } from "../Data.js";
 import { useParams } from "react-router-dom";
 

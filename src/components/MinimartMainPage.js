@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../../src/Mainpage.css";
+import "../../src/CSS/Mainpage.css";
 import packageInfo from "../../package.json";
 import AdSlider from "../components/AdSlider";
 

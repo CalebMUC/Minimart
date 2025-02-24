@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import '../../src/RecentlyViewed.css';
+import '../../src/CSS/RecentlyViewed.css';
 
 const RecentlyViewed = () => {
   const [recentlyViewed, setRecentlyViewed] = useState([]);

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Modal from "./Modal";
 import DeliveryForm from "./Deliveryform";
-import '../../src/checkoupage.css';
+import '../../src/CSS/checkoupage.css';
 
 const DeliveryModeSection = ({
   deliveryModes,

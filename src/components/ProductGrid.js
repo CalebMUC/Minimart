@@ -1,7 +1,7 @@
 // ProductGrid.js
 import React from "react";
-import '../../src/SearchPage.css';
-import "../../src/Mainpage.css";
+import '../../src/CSS/SearchPage.css';
+import "../../src/CSS/Mainpage.css";
 import { Link, useNavigate } from 'react-router-dom';
 
 const ProductGrid = ({ products, currentPage, totalPages, onPageChange }) => {

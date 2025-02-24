@@ -1,9 +1,9 @@
-import packageInfo from "../package.json";
+import config from './config';
 
-// Function to handle adding a product
+// -----* Categories *-----
 export const AddEditCategories = async (formData) => {
   try {
-    const response = await fetch(packageInfo.urls.AddEditCategories, {
+    const response = await fetch(`${config.baseUrl}/api/Category/AddEditCategories`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -13,21 +13,102 @@ export const AddEditCategories = async (formData) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to add product");
+      throw new Error("Failed to add/edit category");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error adding product:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
+    console.error("Error adding/editing category:", error);
+    throw error;
   }
 };
 
-
-export const GenerateReports = async (formData) => {
+export const fetchCategories = async () => {
   try {
-    const response = await fetch(packageInfo.urls.GenerateReports, {
+    const response = await fetch(`${config.baseUrl}/api/Entities/GetDashBoardCategories`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error;
+  }
+};
+
+// -----* Addresses *-----
+export const fetchAddressesByUserID = async (userID) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Entities/GetAddressesByUserId/${userID}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch addresses");
+    }
+
+    const data = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching addresses:", error);
+    return [];
+  }
+};
+
+export const AddNewAddress = async (data) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Entities/AddAddress`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add new address: ${response.status}`);
+    }
+
+    const addedData = await response.json();
+    return addedData;
+  } catch (error) {
+    console.error("Error adding new address:", error);
+    throw error;
+  }
+};
+
+export const updateAddress = async (data) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Entities/EditAddress`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update address: ${response.status}`);
+    }
+
+    const updatedAddress = await response.json();
+    return updatedAddress;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// -----* Orders *-----
+export const Order = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Order/AddOrder`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -37,20 +118,58 @@ export const GenerateReports = async (formData) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to Get Reports");
+      throw new Error(`Failed to place order: ${response.status}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error Getting RepportData:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
+    console.error("Error placing order:", error);
+    throw error;
+  }
+};
+
+export const GetOrders = async () => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Order/GetOrders`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
+};
+
+// -----* Reports *-----
+export const GenerateReports = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Report/Generate`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to generate reports");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error generating reports:", error);
+    throw error;
   }
 };
 
 export const ExportReports = async (format) => {
   try {
-    const response = await fetch(packageInfo.urls.ExportReports, {
+    const response = await fetch(`${config.baseUrl}/api/Report/Export`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -60,21 +179,68 @@ export const ExportReports = async (format) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to Get Reports");
+      throw new Error("Failed to export reports");
     }
 
     const blob = await response.blob();
     return blob;
   } catch (error) {
-    console.error("Error Getting RepportData:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
+    console.error("Error exporting reports:", error);
+    throw error;
   }
 };
 
-// Function to handle adding a product
+// -----* Authentication *-----
+export const Login = async (credentials) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Authentication/Login`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+export const Register = async (userData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Authentication/Register`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to register");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error registering:", error);
+    throw error;
+  }
+};
+
+// -----* Products *-----
 export const AddProduct = async (formData) => {
   try {
-    const response = await fetch(packageInfo.urls.AddProducts, {
+    const response = await fetch(`${config.baseUrl}/api/Entities/AddProducts`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -91,278 +257,75 @@ export const AddProduct = async (formData) => {
     return data;
   } catch (error) {
     console.error("Error adding product:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
-  }
-};
-
-export const SaveAddresses = async (formDta) =>{
-  try{
-    const response = await fetch(
-      packageInfo.urls.SaveAddress,{
-        method: "POST",
-        headers:{
-          Accept : "*/*",
-          "Content-Type":"application/json"
-        },
-        body: JSON.stringify(formDta)
-      }
-    );
-
-
-
-  }catch(error){
-    console.error(error)
-  }
-}
-
-
-export const AddNewAddress = async (data) => {
-  try {
-  const response = await fetch(packageInfo.urls.AddNewAddress, {
-      method: "POST",
-      headers: {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-      },
-      body: JSON.stringify(data),  // Directly pass formData, not wrapped in { data }
-  });
-
-  if (!response.ok) {
-      throw new Error(`Failed to add new address: ${response.status}`);
-  }
-
-  const addedData = await response.json();
-
-  return addedData;
-
-  } catch (error) {
-  console.error("Error adding new address:", error);
-  throw error;
-  }
-};
-
-export const updateAddress = async (data) => {
-  try {
-  const response = await fetch(packageInfo.urls.UpdateAddress, {
-      method: "POST",
-      headers: {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-      },
-      body: JSON.stringify(data),
-  });
-
-  if (!response.ok) {
-      throw new Error(`Failed to update address: ${response.status}`);
-  }
-
-  const updatedAddress = await response.json();
-  
-  return updatedAddress;
-  } catch (error) {
     throw error;
   }
 };
 
-export const Order = async (formData) => {
+export const FetchProducts = async () => {
   try {
-    console.log("FormData being sent to API:", formData); // Log to check the data being sent
-
-    const response = await fetch(packageInfo.urls.AddOrder, {
-      method: "POST",
+    const response = await fetch(`${config.baseUrl}/api/Product/GetAllProducts`, {
+      method: "GET",
       headers: {
         Accept: "*/*",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData) // Make sure formData is correctly passed here
     });
 
+    // Check if the response is OK (status code 200-299)
     if (!response.ok) {
-      throw new Error(`Failed to place order: ${response.status}`);
+      throw new Error(`Failed to Get Products ${response.status}`);
     }
 
-    const data = await response.json(); // Ensure we are parsing the JSON response
-    console.log("Response from API:", data); // Log the response for debugging
-
-    return data;
-  } catch (error) {
-    console.error("Error in Order function:", error); // Log error if there's any issue
-    throw error;
-  }
-};
-
-export const AddMerchants = async (formData) => {
-  try {
-    //console.log("FormData being sent to API:", formData); // Log to check the data being sent
-
-    const response = await fetch(packageInfo.urls.AddMerchants, {
-      method: "POST",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData) // Make sure formData is correctly passed here
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to place order: ${response.status}`);
-    }
-
-    const data = await response.json(); // Ensure we are parsing the JSON response
-    //console.log("Response from API:", data); // Log the response for debugging
-
-    return data;
-  } catch (error) {
-    console.error("Error in Order function:", error); // Log error if there's any issue
-    throw error;
-  }
-};
-
-export const AddFeaturesAPI = async (formData) => {
-  try {
-    console.log("FormData being sent to API:", formData); // Log to check the data being sent
-
-    const response = await fetch(packageInfo.urls.AddFeature, {
-      method: "POST",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(formData) // Make sure formData is correctly passed here
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to place order: ${response.status}`);
-    }
-
-    const data = await response.json(); // Ensure we are parsing the JSON response
-    console.log("Response from API:", data); // Log the response for debugging
-
-    return data;
-  } catch (error) {
-    console.error("Error in Order function:", error); // Log error if there's any issue
-    throw error;
-  }
-};
-// Function to fetch categories from API
-export const FetchFeatures = async (formData) => {
-  try {
-    // var url = packageInfo.urls.GetFeatures.replace("{id}",subCategoryID)
-    var url = packageInfo.urls.GetFeatures;
-    const response = await fetch(url,{
-      method : "POST",
-      headers : {
-        Accept : "*/*",
-        "Content-Type":"application/json"
-      },
-      body : JSON.stringify(formData)
-    }
-      
-    );
-    if (!response.ok) {
-      throw new Error(`Network Error: ${response.statusText}`);
-    }
-
+    // Parse the JSON data
     const data = await response.json();
-    return data; // Return the fetched categories
+
+    // Return the data
+    return data;
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
+    console.error("Error in FetchProducts:", error); // Log the error for debugging
+    throw error; // Re-throw the error for the caller to handle
   }
 };
 
-// Function to fetch categories from API
 export const FetchFilteredProducts = async (requestData) => {
   try {
-    var url = packageInfo.urls.GetFilteredProducts;
-    const response = await fetch(url,{
-      method : "POST",
-      headers : {
-        Accept : "*/*",
-        "Content-Type":"application/json"
+    const response = await fetch(`${config.baseUrl}/api/Category/GetFilteredProducts`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
       },
-      body : JSON.stringify(requestData)
-    }
-      
-    );
+      body: JSON.stringify(requestData),
+    });
+
     if (!response.ok) {
       throw new Error(`Network Error: ${response.statusText}`);
     }
 
     const data = await response.json();
-    return data; // Return the fetched categories
+    return data;
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
+    console.error("Error fetching filtered products:", error);
+    throw error;
   }
 };
 
-
-// Function to fetch categories from API
 export const FetchSearchProducts = async (subCategoryID) => {
   try {
-    var url = packageInfo.urls.GetSearchProducts.replace("{id}",subCategoryID)
-    const response = await fetch(url);
+    const response = await fetch(`${config.baseUrl}/api/Category/GetSearchProducts/${subCategoryID}`);
     if (!response.ok) {
       throw new Error(`Network Error: ${response.statusText}`);
     }
 
     const data = await response.json();
-    return data; // Return the fetched categories
+    return data;
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
+    console.error("Error fetching search products:", error);
+    throw error;
   }
 };
 
-// Function to fetch categories from API
-export const fetchCategories = async () => {
-  try {
-    const response = await fetch(packageInfo.urls.GetCategories);
-    if (!response.ok) {
-      throw new Error(`Network Error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data; // Return the fetched categories
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
-  }
-};
-
-// Function to fetch categories from API
-export const fetchBusinesTypes = async () => {
-  try {
-    const response = await fetch(packageInfo.urls.GetBusinessTypes);
-    if (!response.ok) {
-      throw new Error(`Network Error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data; // Return the fetched categories
-  } catch (error) {
-    console.error("Error businessTypes categories:", error);
-    throw error; // Re-throw to allow the calling function to handle errors
-  }
-};
-
-// // Function to fetch categories from API
-// export const fetchCategories = async () => {
-//   try {
-//     const response = await fetch(packageInfo.urls.GetCategories);
-//     if (!response.ok) {
-//       throw new Error(`Network Error: ${response.statusText}`);
-//     }
-
-//     const data = await response.json();
-//     return data; // Return the fetched categories
-//   } catch (error) {
-//     console.error("Error fetching categories:", error);
-//     throw error; // Re-throw to allow the calling function to handle errors
-//   }
-// };
-
+// -----* Miscellaneous *-----
 export const fetchCountryCodes = async () => {
   try {
     const response = await fetch("https://restcountries.com/v3.1/all");
@@ -381,111 +344,159 @@ export const fetchCountryCodes = async () => {
 
 export const fetchCounties = async () => {
   try {
-    const response = await fetch(packageInfo.urls.LoadCounties);
+    const response = await fetch(`${config.baseUrl}/api/Entities/counties`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Fetched counties data:", data); // Logging raw data
     return data;
   } catch (error) {
     console.error("Error fetching counties:", error);
-    return []; // Return an empty array in case of an error
+    return [];
   }
 };
-export const fetchCountyTowns= async (countyId) => {
+
+export const fetchCountyTowns = async (countyId) => {
   try {
-    const response = await fetch(packageInfo.urls.LoadTowns.replace("{countyId}", countyId));
-    
+    const response = await fetch(`${config.baseUrl}/api/Entities/towns?countyId=${countyId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Fetched counties data:", data); // Logging raw data
     return data;
   } catch (error) {
-    console.error("Error fetching counties:", error);
-    return []; // Return an empty array in case of an error
+    console.error("Error fetching towns:", error);
+    return [];
   }
 };
 
-export const fetchAddress = async (userId) => {
-  try {
-    const response = await fetch(`https://localhost:44334/api/Entities/user/${userId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch address');
-    }
-
-    const data = await response.json();
-    return data; // Ensure this returns an array of addresses
-  } catch (error) {
-    console.error('Error fetching address:', error);
-    return null; // Return null if there's an error
-  }
-};
-// Save saved for later products
-
-//Get Save for later
-
+// -----* Save for Later *-----
 export const SaveItems = async (requestData) => {
   try {
-    const response = await fetch(packageInfo.urls.SaveItems, {
+    const response = await fetch(`${config.baseUrl}/api/Entities/SaveItems`, {
       method: "POST",
       headers: {
-        "Accept": "*/*",
+        Accept: "*/*",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestData),
     });
 
-    // console.log(response.json());
     if (!response.ok) {
-      throw new Error("Failed to add to cart");
+      throw new Error("Failed to save items");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error adding to cart:", error);
-    // setError("Error adding to cart");
+    console.error("Error saving items:", error);
+    throw error;
   }
 };
 
-//Remove item from cart
 export const DeleteCartItems = async (requestData) => {
   try {
-    const response = await fetch(packageInfo.urls.DeleteCartItems, {
+    const response = await fetch(`${config.baseUrl}/api/Entities/DeleteCartItems`, {
       method: "POST",
       headers: {
-        "Accept": "*/*",
+        Accept: "*/*",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestData),
     });
 
-    // console.log(response.json());
     if (!response.ok) {
-      throw new Error("Failed to add to cart");
+      throw new Error("Failed to delete cart items");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error adding to cart:", error);
-    // setError("Error adding to cart");
+    console.error("Error deleting cart items:", error);
+    throw error;
   }
 };
 
-export const fetchAddressesByUserID = async (userID) => {
+// -----* Role Modules *-----
+export const fetchRoleModules = async (RoleID) => {
   try {
-    const url = `${packageInfo.urls.GetAddressesByUserId}/${userID}`;
-    const response = await fetch(url, {
+    const response = await fetch(`${config.baseUrl}/api/SystemSecurity/role-modules?RoleID=${RoleID}`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching role modules:", error);
+    throw error;
+  }
+};
+
+export const fetchSubModuleCategories = async (subModuleID) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/SystemSecurity/submodule-categories?subModuleID=${subModuleID}`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching submodule categories:", error);
+    throw error;
+  }
+};
+
+// -----* Features *-----
+export const FetchFeatures = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Category/GetFeatures`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching features:", error);
+    throw error;
+  }
+};
+
+export const AddFeaturesAPI = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Category/AddFeatures`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add features: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding features:", error);
+    throw error;
+  }
+};
+
+// -----* Personal Information *-----
+export const FetchPersonalInformation = async (userId) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Entities/user/${userId}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -493,15 +504,150 @@ export const fetchAddressesByUserID = async (userID) => {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch addresses");
+      throw new Error("Failed to fetch personal information");
     }
 
     const data = await response.json();
-    return data || []; // Ensure addresses are extracted from the response structure
+    return data;
   } catch (error) {
-    console.error("Error fetching addresses:", error);
-    return [];
+    console.error("Error fetching personal information:", error);
+    throw error;
   }
 };
 
-//Get 
+export const SavePersonalInformation = async (userID, data) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Entities/UpdatePersonalInfo`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body: JSON.stringify({ userId: userID, ...data }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to save personal information: ${response.status}`);
+    }
+
+    const savedData = await response.json();
+    return savedData;
+  } catch (error) {
+    console.error("Error saving personal information:", error);
+    throw error;
+  }
+};
+
+//------* Merchants * -------
+export const AddMerchants = async (formData) =>{
+  try{
+     const response = await fetch(`${config.baseUrl}/api/SystemMerchant/AddMerchantsAsync`,{
+      method : "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body : JSON.stringify(formData)
+     });
+     if(!response.ok){
+      throw new Error(`Failed to add merchant ${response.status}`)
+     }
+     const data = response.json();
+
+     return data;
+
+  }catch(error){
+    throw error;
+  }
+}
+
+export const UpdateMerchants = async (formData) =>{
+  try{
+     const response = await fetch(`${config.baseUrl}/api/SystemMerchant/UpdateMerchantsAsync`,{
+      method : "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body : JSON.stringify(formData)
+     });
+     if(!response.ok){
+      throw new Error(`Failed to add merchant ${response.status}`)
+     }
+     const data = response.json();
+
+     return data;
+
+  }catch(error){
+    throw error;
+  }
+}
+export const FetchMerchants = async ()=>{
+  try{
+    var response = await fetch(
+      `${config.baseUrl}/api/SystemMerchant/GetAllMerchants`,{
+        method : "GET",
+        headers :{
+          Accept : "*/*",
+          "Content-type" : "application/json"
+        }
+      });
+
+      if(!response.ok){
+        throw new Error(`Failed to Get Merchants ${response.status}`)
+      }
+
+      const merchants = response.json();
+      return merchants;
+
+
+  }catch(error){
+    throw error;
+  }
+
+}
+
+export const FetchMerchantsById = async (merchantId)=>{
+  try{
+    const response = await fetch(`${config.baseUrl}/api/SystemMerchant/GetMerchantById?merchantID=${merchantId}`,{
+      method : "Get",
+      headers :{
+        Accept : "*/*",
+        "Content-type" : "application/json"
+      }
+    });
+    if(response.ok){
+      throw new Error(`Failed to get Merchant By ID ${response.json}`)
+    } 
+  
+    const merchantById = response.json();
+  
+    return merchantById;
+  }catch(error){
+    throw error;
+  }
+  
+}
+
+// ------** UPLOADS ** --------
+export const FileUploads = async (fileData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Entities/UploadImages`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        // Do NOT set Content-Type manually for FormData
+      },
+      body: fileData, // Send the FormData object directly
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to upload file: ${response.status}`);
+    }
+
+    const uploadedFile = await response.json(); // Parse the JSON response
+    return uploadedFile;
+  } catch (error) {
+    throw error;
+  }
+};

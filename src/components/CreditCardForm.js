@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import "../../src/checkoupage.css";
+import "../../src/CSS/checkoupage.css";
 
 const CreditCardForm = ({ paymentMethods, setOrderData, subTotal, shippingCost }) => {
   const [cardDetails, setCardDetails] = useState({
@@ -51,7 +51,7 @@ const CreditCardForm = ({ paymentMethods, setOrderData, subTotal, shippingCost }
   return (
     <div className="payment-form">
       <h3>Enter Credit Card Details</h3>
-      <form>
+      <form className="global-form">
         {/* Name on Card */}
         <div className="form-group">
           <label>Name on Card</label>

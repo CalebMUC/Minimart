@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../src/Modal.css';
+import '../../src/CSS/Modal.css';
 
 const Modal = ({ isVisible, onClose, children }) => {
   if (!isVisible) {

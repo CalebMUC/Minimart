@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Modal from './Modal.js'; 
 import { Link, useNavigate } from 'react-router-dom';
-import '../../src/Comparison.css';
+import '../../src/CSS/Comparison.css';
 
 const CompareSimilarItems =({product,similarProducts,onClose}) =>{
 

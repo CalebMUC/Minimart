@@ -10,9 +10,16 @@ import Layout from "../src/components/Layout";
 import SubCategories from "../src/components/SubCategory";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "../src/components/Login";
-import AddProductPage from "../src/components/AddProducts";
-import AddCategories from "../src/components/AddCategories";
-import Merchants from "../src/components/Merchants";  
+
+import AddProductPage from "../src/components/Products/AddProducts";
+import AddCategories from "../src/components/Products/AddCategories";
+// import AddProductForm from "../src/components/Products/AddproductForm";
+
+
+import Merchants from "../src/components/Merchants/MaintainMerchants";
+import MerchantOrders from "../src/components/Merchants/MerchantOrders";
+
+// import Merchants from "../src/components/Merchants";  
 import ProductFeatures from "../src/components/ProductFeatures";
 import Register from "../src/components/Register";
 import SearchPage from "../src/components/SearchPage";
@@ -29,11 +36,15 @@ import OrderSummarySection  from "../src/components/OrderSummarySection";
 import ItemSection from "../src/components/ItemSection";
 import PaymentSection from "../src/components/PaymentSection";
 
+import GeneralSettings from "../src/components/Settings/GeneralSettings";
+
 import Header from "../src/components/Header";
 import { CartProvider } from "./components/CartContext";
 import { CheckOutProvider } from "./components/CheckOutContext";
 import { UserProvider } from "./components/UserMainContext";
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import AccountSection from "./components/Settings/AccountSection/AccountSection";
+import PersonalInformation from "./components/Settings/AccountSection/PersonalInformation";
 // import "./index.css";
 
 const App = () => {
@@ -44,6 +55,9 @@ const App = () => {
         <Router>
           {/* <Header /> */}
           <Routes>
+          <Route path="/Login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
+          <Route path="/Settings/GeneralSettings" element={<GeneralSettings />} />
             <Route path="/" element={<Layout />}>
               {/* Load MainPage when the root URL is accessed */}
               <Route index element={<MainPage />} />
@@ -66,13 +80,24 @@ const App = () => {
               <Route path="/AddressSection" element={<AddressSection />} />
 
               <Route path="/CreateMarketPlace" element={<CreateMarketPlace />} />
-              <Route path="/Login" element={<Login />} />
-              <Route path="/AddProducts" element={<AddProductPage />} />
-              <Route path="/AddCategories" element={<AddCategories />} />
-              <Route path="/Merchants" element={<Merchants />} />
+              
+
+              {/* <Route path="/AddProducts" element={<AddProductPage />} /> */}
+
+              <Route path="/Products/AddCategories" element={<AddCategories />} />
+              <Route path="/Products/AddProducts" element={<AddProductPage />} />
+
+              
+              <Route path="/Settings/AccountSection/AccountSection" element={<AccountSection />} />
+              <Route path="/Settings/AccountSection/PersonalInformatiom" element={<PersonalInformation />} />
+              {/* <Route path="/Products/AddProductForm" element={<AddProductForm />} /> */}
+
+              <Route path="/Merchants/MaintainMerchants" element={<Merchants />} />
+              <Route path="/Merchants/MerchantOrders" element={<MerchantOrders />} />
+
               <Route path="/Reports" element={<Reports />} />
               <Route path="/ProductFeatures" element={<ProductFeatures />} />
-              <Route path="/Register" element={<Register />} />
+              
               <Route path="/SearchPage/:Name/:categoryID/:subCategoryID" element={<SearchPage />} />
               <Route path="/ProductPage" element={<ProductPage />} />
               <Route path="/ReturnsAndOrdersPage" element={<ReturnsAndOrdersPage />} />

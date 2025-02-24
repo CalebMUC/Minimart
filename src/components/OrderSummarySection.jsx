@@ -1,4 +1,4 @@
-import '../../src/checkoupage.css';
+import '../../src/CSS/checkoupage.css';
 import React from "react";
 
 const OrderSummary = ({ checkOutData, totalOrderedAmount, totalDeliveryFees, totalPaymentAmount,PlaceOrder }) => {

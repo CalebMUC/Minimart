@@ -1,0 +1,302 @@
+:root {
+    --color-primary: #007185; /* Amazon blue */
+    --color-secondary: #f0c14b; /* Amazon yellow */
+    --color-border: #ddd;
+    --color-background: #fff;
+    --color-text-dark: #111;
+    --color-text-light: #555;
+    --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Personal Information */
+.main-personal-information{
+    width: 90%;
+    display: flex;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+/* Billing Address */
+/* Main Container */
+.main-billing-address {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  /* Add Billing Address Button */
+  .add-billing-address button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .add-billing-address button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Billing Address Cards */
+  .billing-address-cards {
+    margin-top: 20px;
+  }
+  
+  .billing-address-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 20px;
+  }
+  
+  .address-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    min-width: 250px; /* Minimum width for each card */
+    max-width: 300px; /* Maximum width for each card */
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: space-between; /* Space out content */
+    align-items: flex-start;
+  }
+  
+  .address-card p {
+    margin: 5px 0;
+  }
+  
+  .billing-address-actions a {
+    color: var(--color-primary);
+    text-decoration: none;
+    margin-right: 10px;
+  }
+  
+  .billing-address-actions a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Modal Styling */
+  .modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  /* Dialog Styling */
+  .dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  .success-dialog {
+    border: 2px solid #4caf50;
+  }
+  
+  .error-dialog {
+    border: 2px solid #f44336;
+  }
+  
+  .dialog button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color: #a88734;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .dialog button:hover {
+    background-color: #e6b12e;
+  }
+
+  /* Change Password */
+  /* Main Container */
+.main-change-password {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Section Title */
+  .section-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .change-password-form{
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Form Group */
+  .change-form-group {
+    margin-bottom: 15px;
+  }
+  
+  .change-form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  /* Password Input Container */
+  .password-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .toggle-password:hover {
+    color: #333;
+  }
+  
+  /* Error Messages */
+  .error {
+    color: #ff0000;
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  /* Manage Accounts */
+  /* Main Container */
+.account-management {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Heading */
+  .account-management h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Accounts List */
+  .accounts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Account Card */
+  .account-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+  }
+  
+  .account-card.active {
+    border-color: #28a745;
+  }
+  
+  /* Account Content */
+  .account-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .check-icon {
+    color: #4caf50;
+    font-size: 18px;
+  }
+  
+  /* Switch Button */
+  .account-card button {
+    padding: 8px 16px;
+    background-color: #ecb22e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .account-card button:hover {
+    background-color: #ecb22e;
+  }
+  
+  /* Add Account Button */
+  .add-account-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .add-account-button:hover {
+    background-color: #007bff;
+  }
+  
+  .add-account-button span {
+    font-size: 20px;
+  }
