@@ -1,55 +1,125 @@
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrashAlt, FaPlus, FaSearch } from "react-icons/fa";
 import Swal from "sweetalert2";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem, GridOverlay } from "@mui/x-data-grid";
 import Modal from "../Modal"; // Ensure you have a Modal component
-import { fetchCategories } from "../../Data"; // Ensure this is the correct import
+import { fetchCategories, fetchCategoriesNew,UpdateCategories, AddNewCategories } from "../../Data"; // Ensure this is the correct import
 import "../../CSS/categoryform.css"; // Import the CSS file
 import CategoryForm from "../../components/Products/CategoryForm";
-import { FaSearch } from "react-icons/fa";
 
 const AddCategories = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [currentCategory, setCurrentCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
-  const [subcategories, setSubcategories] = useState([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [searchQuery, setSearchQuery] = useState({
-      categoryID: "",
-      categoryName : "",
-      subCategory: "",
-    });
+    categoryID: 0,
+    categoryName: "",
+  });
+
+  // Custom No Rows Overlay Component
+  const NoRowsOverlay = () => (
+    <GridOverlay>
+      <div style={{ textAlign: "center", padding: "20px" }}>
+        No categories found. Add a new category to get started.
+      </div>
+    </GridOverlay>
+  );
+
+  const loadCategories = async () => {
+    try {
+      const fetchedCategories = await fetchCategoriesNew();
+      if (fetchedCategories.length === 0) {
+        setCategories([]); // Set categories to an empty array
+        setError("No categories found. Add a new category to get started.");
+      } else {
+        // const categoriesWithFallbacks = fetchedCategories.map((cat) => ({
+        //   id: cat.categoryId, // Fallback for missing ID
+        //   name: cat.categoryName || "Unnamed Category",
+        //   slug: cat.slug ?? "-",
+        //   description: cat.description || "No description",
+        //   parentCategoryId: cat.parentCategoryId || null,
+        //   isActive: cat.isActive !== undefined ? cat.isActive : true,
+        //   createdAt: cat.createdOn || "Unknown Date",
+        //   updatedAt: cat.updatedOn || "Unknown Date",
+        // }));
+        setCategories(fetchedCategories);
+      }
+    } catch (error) {
+      setError("Failed to load categories");
+    }
+  };
 
   // Fetch categories on component mount
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const fetchedCategories = await fetchCategories();
-        console.log("Fetched Categories:", fetchedCategories); // Debugging
-        setCategories(fetchedCategories.map(category => ({
-          ...category,
-          subcategories: category.subcategoryids || [] // Ensure subcategories is always an array
-        })));
-      } catch (error) {
-        setError("Failed to load categories");
-      }
-    };
     loadCategories();
   }, []);
 
   // Columns for the DataGrid
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "name", headerName: "Category Name", width: 150 },
-    { field: "description", headerName: "Description", width: 200 },
+    { field: "categoryId", headerName: "ID", width: 70 },
     {
-      field: "subcategoryids",
-      headerName: "Subcategories",
+      field: "categoryName",
+      headerName: "Category Name",
+      width: 150,
+    },
+    {
+      field: "slug",
+      headerName: "Slug",
+      width: 150,
+    },
+    {
+      field: "description",
+      headerName: "Description",
       width: 200,
+    },
+    // {
+    //   field: "type",
+    //   headerName: "Type",
+    //   width: 120,
+    //   valueGetter: (params) => {
+    //     const parentCategoryId = params; // Use params.value
+    //     return parentCategoryId !== 0 ? "SubCategory" : "Main Category";
+    //   },
+    // },
+    {
+      field: "parentCategoryId",
+      headerName: "Parent Category",
+      width: 150,
       valueGetter: (params) => {
-        if (!params) return "";
-        return params.map((sub) => sub.name).join(", ");
+        const parentCategoryId = params; // Use params.value
+        if (parentCategoryId == 0) {
+          return "Top-level Category";
+        }
+        const parentCategory = categories.find((cat) => cat.categoryId == parentCategoryId);
+        return parentCategory ? parentCategory.categoryName : "Unknown";
+      },
+    },
+    {
+      field: "isActive",
+      headerName: "Is Active",
+      width: 100,
+      type: "boolean",
+      valueGetter: (params) => params.value ?? true, // Use params.value
+    },
+    {
+      field: "createdOn",
+      headerName: "Created At",
+      width: 150,
+      type: "date",
+      valueGetter: (params) => {
+        const dateString = params; // Use params.value
+        return dateString ? new Date(dateString) : null;
+      },
+    },
+    {
+      field: "updatedOn",
+      headerName: "Updated At",
+      width: 150,
+      type: "date",
+      valueGetter: (params) => {
+        const dateString = params; // Use params.value
+        return dateString ? new Date(dateString) : null;
       },
     },
     {
@@ -66,16 +136,30 @@ const AddCategories = () => {
         <GridActionsCellItem
           icon={<FaTrashAlt />}
           label="Delete"
-          onClick={() => handleDelete(params.row.id)}
+          onClick={() => handleDelete(params.row.categoryId)}
         />,
       ],
     },
   ];
+  
 
   // Open modal for adding/editing
   const openModal = (category = null) => {
-    setCurrentCategory(category);
-    setModalOpen(true);
+
+    if(localStorage.getItem('token') != null && localStorage.getItem('userID') != null){
+      setCurrentCategory(category);
+      setModalOpen(true);
+    }else{
+          Swal.fire({
+            title : "Error",
+            icon : "Error",
+            text : "Please Login to continue adding Categories!",
+            showConfirmButton : true
+            
+          }
+          )
+        }
+  
   };
 
   // Close modal
@@ -84,24 +168,45 @@ const AddCategories = () => {
     setCurrentCategory(null);
   };
 
+  const handleAddCategory = () =>{
+    //check if the user is logged and token is valid
+
+  }
+
   // Handle save (add or edit)
-  const handleSave = (category) => {
-    if (category.id) {
-      // Edit existing category
-      setCategories((prev) =>
-        prev.map((c) => (c.id === category.id ? category : c))
-      );
-    } else {
-      // Add new category
-      setCategories((prev) => [...prev, { ...category, id: Date.now() }]);
+  const handleSave = async (category) => {
+    try {
+      let response ;
+      if (currentCategory?.categoryId) {
+        // Edit existing category
+        category.categoryId = currentCategory.categoryId
+
+        response = await UpdateCategories(category)
+
+     
+      } else {
+        // Add new category
+        category.userName = localStorage.getItem("username")
+        response = await AddNewCategories(category)
+      }
+      if (response.responseStatusId === 200) {
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: `Category ${category.categoryId ? "updated" : "added"} successfully!`,
+        timer: 2000,
+      });
+      loadCategories();
     }
-    closeModal();
-    Swal.fire({
-      icon: "success",
-      title: "Success",
-      text: `Category ${category.id ? "updated" : "added"} successfully!`,
-      timer: 2000,
-    });
+    closeModal();// close modal
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+      });
+          
+    }
   };
 
   // Handle delete
@@ -127,66 +232,59 @@ const AddCategories = () => {
     });
   };
 
+  // Handle search
+  const handleSearch = () => {
+    if(searchQuery.categoryID != "" || searchQuery.categoryName != ""){
+      const filteredCategories = categories.filter((cat) => {
+        const matchesCategoryID =
+          !searchQuery.categoryID || cat.categoryId == searchQuery.categoryID;
+        const matchesCategoryName =
+          !searchQuery.categoryName ||
+          cat.categoryName.toLowerCase().includes(searchQuery.categoryName.toLowerCase());
+        return matchesCategoryID && matchesCategoryName;
+      });
+      setCategories(filteredCategories);
+    }else{
+      loadCategories();
+    }
+   
+  };
+
   return (
     <div className="categories-container">
+
       <h1 className="categories-title">Categories</h1>
-      <button
-        onClick={() => openModal()}
-        className="add-category-button"
-      >
+      <button onClick={ () => openModal()} className="add-category-button">
         <FaPlus className="icon" /> Add Category
       </button>
 
-      {/* Search Orders */}
-            <div className="full-search-container">
-              {/* Order ID Input */}
-              <input
-                type="text"
-                placeholder="Category ID"
-                className="full-search-input"
-                value={searchQuery.categoryID}
-                onChange={(e) => setSearchQuery({ ...searchQuery, CategoryID: e.target.value })}
-              />
-      
-              {/* Category Dropdown */}
-                <select
-                  className="full-search-dropdown"
-                  value={searchQuery.category}
-                  onChange={(e) => {
-                    setSearchQuery({ ...searchQuery, category: e.target.value, subCategory: "" });
-                    // Fetch subcategories based on the selected category
-                    const selectedCategory = categories.find(cat => cat.id === parseInt(e.target.value));
-                    setSubcategories(selectedCategory ? selectedCategory.subcategories : []);
-                  }}
-                >
-                  <option value="">--Category--</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
+      {/* Search Bar */}
+      <div className="full-search-container">
+        <input
+          type="text"
+          placeholder="Category ID"
+          className="full-search-input"
+          value={searchQuery.categoryID}
+          onChange={(e) =>
+            setSearchQuery({ ...searchQuery, categoryID: e.target.value })
+          }
+        />
+        <input
+          type="text"
+          placeholder="Category Name"
+          className="full-search-input"
+          value={searchQuery.categoryName}
+          onChange={(e) =>
+            setSearchQuery({ ...searchQuery, categoryName: e.target.value })
+          }
+        />
+        <button className="full-search-button" onClick={handleSearch}>
+          <FaSearch /> Search
+        </button>
+      </div>
 
-                {/* Subcategory Dropdown */}
-                <select
-                  className="full-search-dropdown"
-                  value={searchQuery.subCategory}
-                  onChange={(e) => setSearchQuery({ ...searchQuery, subCategory: e.target.value })}
-                  disabled={!searchQuery.category} // Disable if no category is selected
-                >
-                  <option value="">--SubCategory--</option>
-                  {subcategories.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.name}
-                    </option>
-                  ))}
-                </select>
-      
-              {/* Search Button */}
-              <button className="full-search-button">
-                <FaSearch /> Search
-              </button>
-            </div>
+      {/* Display error message if no categories are found */}
+      {error && <div className="error-message">{error}</div>}
 
       {/* Material-UI DataGrid */}
       <div className="data-grid-container">
@@ -196,6 +294,10 @@ const AddCategories = () => {
           pageSize={5}
           rowsPerPageOptions={[5, 10]}
           checkboxSelection
+          getRowId={(row) => row.categoryId}
+          components={{
+            NoRowsOverlay: NoRowsOverlay, // Custom No Rows Overlay
+          }}
         />
       </div>
 
@@ -204,6 +306,7 @@ const AddCategories = () => {
         <Modal isVisible={isModalOpen} onClose={closeModal}>
           <CategoryForm
             category={currentCategory}
+            categories={categories}
             onSave={handleSave}
             onCancel={closeModal}
           />
@@ -212,7 +315,5 @@ const AddCategories = () => {
     </div>
   );
 };
-
-
 
 export default AddCategories;

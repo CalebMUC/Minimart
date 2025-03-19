@@ -85,10 +85,10 @@
   }
   
   .product-form-group label {
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 500;
   }
-  
+
   .product-form-group input,
   .product-form-group select,
   .product-form-group textarea {

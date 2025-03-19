@@ -242,6 +242,7 @@ const MainCheckOutPage = () => {
       price: product.price,
       discount: 0,
       deliveryFee: 0,
+      merchantId : product.merchantId
     }));
     setOrderData((prevOrderData) => ({
       ...prevOrderData,
@@ -315,6 +316,7 @@ const MainCheckOutPage = () => {
       price: product.price,
       discount: 0,
       deliveryFee: 0,
+      MerchantId : product.merchantId
     }));
   
     // Prepare payment details

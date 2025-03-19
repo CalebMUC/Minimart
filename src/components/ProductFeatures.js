@@ -177,7 +177,9 @@ const ProductFeature = () => {
 
         <div className="form-group">
           <label htmlFor="category">Category</label>
-          <select id="category" name="category" value={selectedCategoryId} onChange={handleCategoryChange} required>
+          <select id="category" name="category"
+           value={selectedCategoryId} 
+           onChange={handleCategoryChange} required>
             <option value="" disabled>Select Category</option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>{category.name}</option>
@@ -205,7 +207,10 @@ const ProductFeature = () => {
 
         <div className="form-group">
           <label>Feature Name</label>
-          <input type="text" value={featureName} onChange={handleFeatureNameChange} placeholder="Enter feature name" />
+          <input type="text"
+           value={featureName}
+          
+           onChange={handleFeatureNameChange} placeholder="Enter feature name in the provided format" />
         </div>
 
         <div className="form-group">

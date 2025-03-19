@@ -45,7 +45,7 @@ export default function AccountManagement() {
   };
 
   const handleModalClose = () =>{
-    setIsModalOpen
+    setIsModalOpen(false)
   }
 
   return (

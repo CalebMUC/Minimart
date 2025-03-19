@@ -41,6 +41,8 @@
 
 /* Data Grid Styling */
 .data-grid-container {
+  height:400px;
+  width: 100%;
   background: white;
   border-radius: 10px;
   padding: 10px;

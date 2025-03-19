@@ -3,10 +3,11 @@ import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import Modal from "../Modal"; // Ensure you have a Modal component
-import { AddProduct, fetchCategories, FetchFeatures,FetchProducts } from "../../Data.js";
+import { AddProduct, fetchCategories, FetchFeatures,FetchProducts,FetchMerchants,EditProduct} from "../../Data.js";
 import packageInfo from "../../../package.json";
 import '../../CSS/productForm.css';
 import { FaSearch } from "react-icons/fa";
+import { parse } from "path-browserify";
 
 const AddProducts = () => {
   const [products, setProducts] = useState([]);
@@ -17,13 +18,14 @@ const AddProducts = () => {
   const [currentProduct, setCurrentProduct] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState(null);
+  const [merchants, setMerchants] = useState([]);
   const [searchQuery, setSearchQuery] = useState({
     productID: "",
     productName: "",
     category: "",
     subCategory: "",
   });
-
+  const [filteredProducts, setFilteredProducts] = useState([]);
   // Fetch categories on component mount
   useEffect(() => {
     const loadCategories = async () => {
@@ -37,13 +39,30 @@ const AddProducts = () => {
     loadCategories();
   }, []);
 
-  useEffect(() => {
+   // Fetch all merchants
+    const GetAllMerchants = async () => {
+      try {
+        const response = await FetchMerchants();
+        if (response) {
+          setMerchants(response);
+        }
+      } catch (error) {
+        console.error("Error fetching merchants:", error);
+      }
+    };
+  
+    useEffect(() => {
+      GetAllMerchants();
+    }, []);
+
     const GetProducts = async () => {
       try {
         const response = await FetchProducts();
         console.log("API Response:", response); // Log the response for debugging
         if (Array.isArray(response)) {
           setProducts(response);
+          setFilteredProducts(response); // Initialize filteredProducts with products
+
         } else {
           setError("Invalid data format received from FetchProducts");
         }
@@ -52,15 +71,21 @@ const AddProducts = () => {
         setError("Failed to load products. Please try again later.");
       }
     };
+
+  useEffect(() => {
     GetProducts();
   }, []);
+
+  useEffect(() => {
+    setFilteredProducts(products); // Initialize filteredProducts with products
+  }, [products]);
 
   // Columns for the DataGrid
   const columns = [
     { field: "productId", headerName: "ProductID", width: 70 },
     { field: "productName", headerName: "Product Name", width: 150 },
     { field: "category", headerName: "Category", width: 120 },
-    { field: "subcategoryid", headerName: "Subcategory", width: 120 },
+    { field: "subCategoryName", headerName: "Subcategory", width: 120 },
     { field: "price", headerName: "Price", width: 100 },
     { field: "inStock", headerName: "Quantity", width: 100 },
     {
@@ -85,8 +110,20 @@ const AddProducts = () => {
 
   // Open modal for adding/editing
   const openModal = (product = null) => {
-    setCurrentProduct(product);
-    setModalOpen(true);
+    if(localStorage.getItem('token') != null && localStorage.getItem('userID') != null){
+      setCurrentProduct(product);
+      setModalOpen(true);
+    }else{
+      Swal.fire({
+        title : "Error",
+        icon : "Error",
+        text : "Please Login to continue adding Products!",
+        showConfirmButton : true
+        
+      }
+      )
+    }
+   
   };
 
   // Close modal
@@ -95,36 +132,85 @@ const AddProducts = () => {
     setCurrentProduct(null);
   };
 
+  const handleGridSearch = async () =>{
+    const {productID,productName,category,subCategory} =  searchQuery;
+    const filtered = products.filter((product)=>{
+      const matchesProductID = 
+      productID ? product.productId.toString().includes(productID): true
+
+      const matchesProductName = productName ? 
+      product.productName.toString(productName) : true
+      const matchesCategory = category ?
+       product.categoryId === parseInt(category,10) : true
+
+       const matchesSubCategory = subCategory
+       ? product.subCategoryId === subCategory
+       : true;
+
+       return(
+        matchesProductID &&
+        matchesProductName &&
+        matchesCategory && 
+        matchesSubCategory
+       )
+
+    })
+
+    setFilteredProducts(filtered);
+
+  }
+
   // Handle save (add or edit)
   const handleSave = async (product) => {
     try {
-      const productID = generateProductID(product);
-      if (!productID) {
-        setError("Please select a category and subcategory.");
-        return;
+      let response;
+  
+      // Check if the product has an ID (indicating it's an edit operation)
+      if (currentProduct?.productId) {
+        // If editing, use the existing productID
+        product.productID = currentProduct.productId;
+        product.CreatedBy = localStorage.getItem("username"); 
+        response = await EditProduct(product);
+      } else {
+        // If adding a new product, generate a productID
+        const productID = generateProductID(product);
+        if (!productID) {
+          setError("Please select a category and subcategory.");
+          return;
+        }
+  
+        // Add the generated productID to the payload
+        const finalData = {
+          ...product,
+          ProductID: productID,
+          CreatedBy: localStorage.getItem("username"),
+        };
+  
+        response = await AddProduct(finalData);
       }
-
-      const finalData = {
-        ...product,
-        ProductID: productID,
-        CreatedBy: localStorage.getItem("username"),
-      };
-
-      const response = await AddProduct(finalData);
-      setProducts((prev) =>
-        product.id
-          ? prev.map((p) => (p.id === product.id ? product : p))
-          : [...prev, { ...product, id: Date.now() }]
-      );
-      closeModal();
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: `Product ${product.id ? "updated" : "added"} successfully!`,
-        timer: 2000,
-      });
+  
+      // Handle the response
+      if (response.responseStatusId === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: `Product ${currentProduct?.productId ? "updated" : "added"} successfully!`,
+          timer: 2000,
+        });
+        GetProducts(); // Refresh the product list
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: `${response.responseMessage}!`,
+          showConfirmButton: true,
+        });
+      }
+  
+      closeModal(); // Close the modal after saving
     } catch (error) {
       setError("Failed to save product");
+      console.error("Error in handleSave:", error);
     }
   };
 
@@ -154,7 +240,7 @@ const AddProducts = () => {
   // Generate a unique product ID
   const generateProductID = (product) => {
     const { categoryID, subcategory } = product;
-    if (categoryID && subcategory) {
+    if (categoryID != null && subcategory != null) {
       const categoryName = categories.find((cat) => cat.id === parseInt(categoryID))?.name || "";
       const subcategoryName = subcategories.find((sub) => sub.id === parseInt(subcategory))?.name || "";
       const catCode = categoryName.substring(0, 2).toUpperCase();
@@ -227,7 +313,7 @@ const AddProducts = () => {
   </select>
 
   {/* Search Button */}
-  <button className="full-search-button">
+  <button onClick={handleGridSearch} className="full-search-button">
     <FaSearch /> Search
   </button>
 </div>
@@ -235,7 +321,7 @@ const AddProducts = () => {
       {/* Material-UI DataGrid */}
       <div className="data-grid-container">
         <DataGrid
-          rows={products}
+          rows={filteredProducts}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10]}
@@ -249,6 +335,7 @@ const AddProducts = () => {
         <Modal isVisible={isModalOpen} onClose={closeModal}>
           <ProductForm
             product={currentProduct}
+            merchants={merchants}
             categories={categories}
             subcategories={subcategories}
             onSave={handleSave}
@@ -266,99 +353,238 @@ const AddProducts = () => {
 
 // Product Form Component
 const ProductForm = ({
-    product,
-    categories,
-    subcategories,
-    onSave,
-    onCancel,
-    setSubcategories,
-    isUploading,
-    setIsUploading,
-  }) => {
-    const [formData, setFormData] = useState(
-      product || {
-        productName: "",
-        productImage: null,
-        productDetails: "",
-        productFeatures: "",
-        productSpecifications: [],
-        boxContent: [],
-        price: "",
-        discount: "",
-        categoryID: 0,
-        Quantity: "",
-        subcategory: "",
-        CreatedBy: localStorage.getItem("username"),
-        ProductID: "",
-        category: "",
-        SearchKeyword: "",
+  product,
+  merchants,
+  categories,
+  subcategories,
+  onSave,
+  onCancel,
+  setSubcategories,
+  isUploading,
+  setIsUploading,
+}) => {
+  // Parse the product data correctly
+  const initialFormData = product
+  ? {
+      ...product,
+      merchantID: product.merchantID || 0, // Bind merchantID
+      Quantity: product.inStock || 0, // Bind stockQuantity to Quantity
+      categoryID: product.categoryId || "", // Bind categoryId to categoryID
+      subcategory: product.subCategoryId || "", // Bind subcategory
+      boxContent: product.box ? JSON.parse(product.box) : [], // Parse JSON string into array
+      SearchKeyword: product.searchKeyWord || "", // Map searchKeyWord to SearchKeyword
+      productDetails: product.productDescription || "", // Map productDescription to productDetails
+      productSpecifications: product.specification ? JSON.parse(product.specification) : [], // Parse JSON string into array
+      productImage: product.imageUrl || null, // Map imageUrl to productImage
+      productFeatures: product.keyFeatures ? JSON.parse(product.keyFeatures) : {}, // Parse keyFeatures into an object
+    }
+  : {
+      merchantID: 0,
+      productName: "",
+      productImage: null,
+      productDetails: "",
+      productFeatures: {},
+      productSpecifications: [],
+      boxContent: [],
+      price: "",
+      discount: "",
+      categoryID: "",
+      Quantity: "",
+      subcategory: "",
+      subCategoryName: "",
+      CreatedBy: localStorage.getItem("username"),
+      ProductID: "",
+      category: "",
+      SearchKeyword: "",
+    };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [features, setFeatures] = useState([]);
+  const [selectedCategoryId, setSelectedCategory] = useState(null);
+  const [selectedSubCategoryId, setSelectedSubCategory] = useState(0);
+  const [selectedFeatures, setSelectedFeatures] = useState({});
+  const [error, setError] = useState(null);
+  
+  const [selectedMerchantID, setSelectedMerchantID] = useState(null);
+  const [showMerchantsModal, setShowMerchantsModal] = useState(false);
+  const [searchInputMerchants, setSearchInputMerchants] = useState("");
+  const [showFeaturesModal, setShowFeaturesModal] = useState(false); 
+  const [defaultSubcategoryId,setDefaultSubcategoryID] =  useState(0);
+
+  //Fetch Subcategries when editing
+  useEffect(()=>{
+    if(product?.categoryId){
+
+      const selectedCategory = categories.find((cat) => cat.id === parseInt(product.categoryId,10));
+      if(selectedCategory && Array.isArray(selectedCategory.subcategoryids)){
+        setSubcategories(selectedCategory.subcategoryids)
       }
-    );
+    }
+  },[product,categories,subcategories])
+
+  // Fetch features for the selected subcategory when editing
+  useEffect(() => {
+    if (product?.subCategoryId) {
+      const requestData = {
+        categoryID: product.categoryId,
+        subCategoryID: product.subCategoryId,
+      };
+      FetchFeatures(requestData)
+        .then((response) => {
+          setFeatures(response);
+        })
+        .catch((error) => {
+          console.error("Failed to load features", error);
+        });
+    }
+  }, [product]);
+
   
-    const [features, setFeatures] = useState([]);
-    const [selectedCategoryId, setSelectedCategory] = useState(null);
-    const [selectedSubCategoryId, setSelectedSubCategory] = useState(null);
-    const [selectedFeatures, setSelectedFeatures] = useState({});
-    const [error, setError] = useState(null);
+  // Initialize selectedFeatures with product.keyFeatures
+  useEffect(() => {
+    if (product?.keyFeatures) {
+      setSelectedFeatures(JSON.parse(product.keyFeatures));
+    }
+  }, [product]);
+
+    // Find the merchant name based on product.merchantID
+    const merchantName = merchants.find(
+      (merchant) => merchant.merchantID === product?.merchantID
+    )?.businessName || "";
+ 
+
+
+  // useEffect(() => {
+  //   if (categories.length > 0) {
+  //     loadDefaultSubcategory();
+  //   }
+  // }, [categories]); // Run this effect whenever `categories` changes
   
-    // Handle input changes
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setFormData({ ...formData, [name]: value });
+  // const loadDefaultSubcategory = async () => {
+  //   if (categories.length > 0 && categories[0].subcategoryids && categories[0].subcategoryids.length > 0) {
+  //     const defaultSubcategoryId = categories[0].subcategoryids[0].id;
+  
+  //     setDefaultSubcategoryID(defaultSubcategoryId);
+
+  //     setSelectedCategory(categories[0].id)
+  
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       categoryID: categories[0].id,
+  //       subcategory: defaultSubcategoryId.toString(),
+  //     }));
+  
+  //     setSubcategories(categories[0].subcategoryids);
+  
+  //     try {
+  //       const requestData = {
+  //         categoryID: categories[0].id,
+  //         subCategoryID: defaultSubcategoryId,
+  //       };
+  //       const response = await FetchFeatures(requestData);
+  //       setFeatures(response);
+  //     } catch (error) {
+  //       console.error("Failed to fetch features:", error);
+  //     }
+  //   }
+  // };
+  
+    // Handle merchant search input change
+    const handleMerchantSearchChange = (e) => {
+      setSearchInputMerchants(e.target.value);
+      setFormData((prevData)=>({
+        ...prevData,
+        merchantID : parseInt(selectedMerchantID)
+    }))
     };
   
-    const handleCategoryChange = async (e) => {
-      const categoryId = parseInt(e.target.value, 10);
-      const categoryName = e.target.options[e.target.selectedIndex]?.text || "";
+    // Handle merchant selection
+    const handleMerchantSelect = (merchant) => {
+      setShowMerchantsModal(false);
+      setSelectedMerchantID(merchant.merchantID);
+      setSearchInputMerchants(merchant.merchantName)
+      setFormData((prevData)=>({
+        ...prevData,
+        merchantID : parseInt(merchant.merchantID)
+    }))
+
+    };
+
+    const handleRadioChange = (featureName,option) =>{
+      setSelectedFeatures((prev) =>({
+        ...prev,
+        [featureName]: option
+      }))
+    }
+
+  // Handle input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSpecificationsChange = (e) => {
+    //const lines = e.target.value
+      //.split("\n") // Split the text input into lines
+      //.map(line => line.trim()) // Trim whitespace from each line
+      //.filter(line => line !== ""); // Filter out empty lines
+
+      const inputValue = e.target.value
+
+      const specificationArray = inputValue
+      .split("/n")
+      .map((line)=> line.trim())
+      .filter((line) => line !== "")
   
-      // Reset the features and subcategories
-      setSelectedCategory(categoryId);
-      setFeatures([]);
-      setSubcategories([]);
-  
+    setFormData((prevData) => ({
+      ...prevData,
+      productSpecifications:specificationArray ,  // Update state with the array of lines
+    }));
+  };
+
+  // Handle category change
+  const handleCategoryChange = async (e) => {
+    const categoryId = e.target.value;
+    const categoryName = e.target.options[e.target.selectedIndex]?.text || "";
+
+    // Reset the features and subcategories
+    setSelectedCategory(categoryId);
+    setFeatures([]);
+    setSubcategories([]);
+
+    if (categoryId) {
       // Find selected category
-      const selectedCategory = categories.find((cat) => cat.id === categoryId);
+      const selectedCategory = categories.find((cat) => cat.id === parseInt(categoryId, 10));
       if (selectedCategory && Array.isArray(selectedCategory.subcategoryids) && selectedCategory.subcategoryids.length > 0) {
-        const defaultSubcategoryId = selectedCategory.subcategoryids[0].id.toString();
-  
-        // Update the form data with the default subcategory
-        setFormData({
-          ...formData,
-          categoryID: categoryId,
-          category: categoryName,
-          subcategory: defaultSubcategoryId, // Automatically set to the first subcategory
-        });
-  
         // Update the subcategories state
         setSubcategories(selectedCategory.subcategoryids);
-  
-        // Fetch features for the default subcategory
-        try {
-          const requestData = {
-            categoryID: categoryId,
-            subCategoryID: defaultSubcategoryId,
-          };
-  
-          const response = await FetchFeatures(requestData);
-          setFeatures(response); // Set fetched features
-        } catch (error) {
-          console.error("Failed to fetch features for subcategory:", error);
-        }
-      } else {
-        // If no subcategories exist, reset related fields
-        setFormData({
-          ...formData,
-          categoryID: categoryId,
-          category: categoryName,
-          subcategory: "", // Clear subcategory ID if none available
-        });
       }
-    };
-  
-    const handleSubcategoryChange = async (e) => {
-      const subCategoryId = parseInt(e.target.value, 10);
-      setSelectedSubCategory(subCategoryId);
-  
+
+      // Update the form data with the selected category
+      setFormData({
+        ...formData,
+        categoryID: categoryId,
+        category: categoryName,
+        subcategory: "", // Reset subcategory when category changes
+      });
+    } else {
+      // If no category is selected, reset related fields
+      setFormData({
+        ...formData,
+        categoryID: "",
+        category: "",
+        subcategory: "",
+      });
+    }
+  };
+
+  // Handle subcategory change
+  const handleSubcategoryChange = async (e) => {
+    const subCategoryId = parseInt(e.target.value, 10);
+    const subCategoryName = e.target.options[e.target.selectedIndex]?.text || "";
+    setSelectedSubCategory(subCategoryId);
+
+    if(subCategoryId){
       try {
         const requestData = {
           categoryID: selectedCategoryId,
@@ -373,291 +599,403 @@ const ProductForm = ({
       setFormData({
         ...formData,
         subcategory: subCategoryId.toString(),
+        subCategoryName : subCategoryName
       });
-    };
-  
-    const handleCheckBoxChange = (featurename, option) => {
-      setSelectedFeatures((prev) => {
-        const updatedFeatures = { ...prev };
-        if (!updatedFeatures[featurename]) {
-          updatedFeatures[featurename] = [];
-        }
-  
-        if (updatedFeatures[featurename].includes(option)) {
-          updatedFeatures[featurename] = updatedFeatures[featurename].filter(
-            (item) => item !== option
-          );
-        } else {
-          updatedFeatures[featurename].push(option);
-        }
-  
-        if (updatedFeatures[featurename].length === 0) {
-          delete updatedFeatures[featurename];
-        }
-  
-        return updatedFeatures;
+    }else{
+      setFormData({
+        ...formData,
+        subcategory: "",
+        subCategoryName : ""
       });
-    };
-  
-    const handleRadioChange = (featureName, option) => {
-      setSelectedFeatures((prev) => ({
-        ...prev,
-        [featureName]: option,
-      }));
-    };
-  
-    const handleSpecificationsChange = (e) => {
-      const { value } = e.target;
-      const specifications = value.split("\n").reduce((acc, line) => {
-        const [key, val] = line.split(":").map((item) => item.trim());
-        if (key && val) {
-          acc[key] = val;
-        }
-        return acc;
-      }, {});
-  
-      setFormData((prevData) => ({
-        ...prevData,
-        productSpecifications: JSON.stringify(specifications),
-      }));
-    };
-  
-    const handleBoxContentChange = (e) => {
-      const { value } = e.target;
-      setFormData((prevData) => ({
-        ...prevData,
-        boxContent: value.split("\n").map((item) => item.trim()),
-      }));
-    };
-  
-    // Handle image upload
-    const handleImageChange = async (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        setIsUploading(true);
-        try {
-          const imageData = new FormData();
-          imageData.append('file', file);
-          const response = await fetch(packageInfo.urls.UploadImages, {
-            method: 'POST',
-            body: imageData,
-          });
-          if (!response.ok) {
-            throw new Error('Failed to upload image');
-          }
-          const data = await response.json();
-          setFormData((prevData) => ({
-            ...prevData,
-            productImage: data.url,
-          }));
-          setIsUploading(false);
-        } catch (uploadError) {
-          setError("Failed to upload image");
-          setIsUploading(false);
-        }
+    }
+
+   
+  };
+
+  // Handle box content change
+  const handleBoxContentChange = (e) => {
+    const { value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      boxContent: value.split("\n").map((item) => item.trim()),
+    }));
+  };
+
+  const handleAddFeature = () =>{
+    if(product?.keyFeatures){
+      setShowFeaturesModal(true)
+      
+    }else{
+      if(features.length > 0){
+        setShowFeaturesModal(true)
+      }else{
+        Swal.fire({
+          title : "Error",
+          icon : "Error",
+          text : `Features not maintained for the selected category/subcategory`,
+          showConfirmButton : true
+        })
       }
-    };
-  
-    return (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSave(formData);
-        }}
-        className="product-form"
-      >
-         <h3 className="form-title">{product ? "Edit Product" : "Add Product"}</h3> 
+    }
+   
+  }
 
-        <div className="product-form-grid">
+  // Handle image upload
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setIsUploading(true);
+      try {
+        const imageData = new FormData();
+        imageData.append("file", file);
+        const response = await fetch(packageInfo.urls.UploadImages, {
+          method: "POST",
+          body: imageData,
+        });
+        if (!response.ok) {
+          throw new Error("Failed to upload image");
+        }
+        const data = await response.json();
+        setFormData((prevData) => ({
+          ...prevData,
+          productImage: data.url,
+        }));
+        setIsUploading(false);
+      } catch (uploadError) {
+        setError("Failed to upload image");
+        setIsUploading(false);
+      }
+    }
+  };
 
-          <div className="product-form-group">
-            <label htmlFor="productName">Product Name</label>
-            <input
-              type="text"
-              id="productName"
-              name="productName"
-              value={formData.productName}
-              onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
-              required
-            />
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+          // Merge selectedFeatures into formData
+          // Format the payload to match the expected structure
+      const finalPayload = {
+        merchantID: parseInt(formData.merchantID, 10), // Ensure it's a number
+        productName: formData.productName,
+        productID: formData.ProductID || "", // Ensure it's a string
+        categoryID: parseInt(formData.categoryID, 10), // Ensure it's a number
+        searchKeyWord: formData.SearchKeyword, // Map SearchKeyword to searchKeyWord
+        category: formData.category,
+        subcategory: formData.subcategory,
+        subcategoryName: formData.subCategoryName,
+        createdBy: localStorage.getItem('username'),
+        productDetails: formData.productDetails,
+        productSpecifications: JSON.stringify(formData.productSpecifications), // Convert array to JSON string
+        productFeatures: JSON.stringify(selectedFeatures), // Convert object to JSON string
+        boxContent: JSON.stringify(formData.boxContent), // Convert array to JSON string
+        price: parseFloat(formData.price), // Ensure it's a number
+        quantity: parseInt(formData.Quantity, 10), // Ensure it's a number
+        discount: parseFloat(formData.discount), // Ensure it's a number
+        productImage: formData.productImage || "", // Ensure it's a string
+      };
+
+      // Call onSave with the formatted payload
+      onSave(finalPayload);
+    }}
+      className="product-form"
+    >
+      <h3 className="form-title">{product ? "Edit Product" : "Add Product"}</h3>
+
+      <div className="product-form-grid">
+
+        <div className="search-merchants">
+          <input
+            type="text"
+            placeholder="Search by Merchant Name or ID"
+            value={searchInputMerchants}
+            onChange={handleMerchantSearchChange}
+          />
+          <button onClick={() => setShowMerchantsModal(true)}>
+            <FaSearch />
+          </button>
+        </div>
+
+         {/* Merchants Modal */}
+      {showMerchantsModal && (
+        <div className="search-modal">
+          <div className="search-modal-content">
+            <h4>Select Merchant</h4>
+            <ul>
+              {merchants
+                .filter((merchant) =>
+                  merchant.businessName
+                    .toLowerCase()
+                    .includes(searchInputMerchants.toLowerCase()) ||
+                  merchant.merchantID.toString().includes(searchInputMerchants)
+                )
+                .map((merchant) => (
+                  <li
+                    key={merchant.merchantID}
+                    onClick={() => handleMerchantSelect(merchant)}
+                  >
+                    {merchant.businessName} (ID: {merchant.merchantID}, Status:{" "}
+                    {merchant.status})
+                  </li>
+                ))}
+            </ul>
+            <button onClick={() => setShowMerchantsModal(false)}>Close</button>
           </div>
-  
+        </div>
+      )}
+
+
+        {/* Product Name */}
+        <div className="product-form-group">
+          <label htmlFor="productName">Product Name</label>
+          <input
+            type="text"
+            id="productName"
+            name="productName"
+            value={formData.productName}
+            onChange={(e) => setFormData({ ...formData, productName: e.target.value })}
+            required
+          />
+        </div>
+
+        {/* Search Keyword */}
+        <div className="product-form-group">
+          <label htmlFor="SearchKeyword">Search Keyword</label>
+          <input
+            type="text"
+            id="searchKeyword"
+            name="searchKeyword"
+            value={formData.SearchKeyword}
+            onChange={(e) => setFormData({ ...formData, SearchKeyword: e.target.value })}
+            required
+          />
+        </div>
+
+        {/* Category */}
+        <div className="product-form-group">
+          <label htmlFor="category">Category</label>
+          <select
+            id="category"
+            name="category"
+            value={formData.categoryID}
+            onChange={handleCategoryChange}
+            required
+          >
+            {/* <option value="" disabled>
+              Select a category
+            </option> */}
+
+            <option value="">---Select---</option>
+
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Subcategory */}
+        {subcategories.length > 0 && ( 
           <div className="product-form-group">
-            <label htmlFor="SearchKeyword">Search Keyword</label>
-            <input
-              type="text"
-              id="searchKeyword"
-              name="searchKeyword"
-              value={formData.searchKeyword}
-              onChange={(e) => setFormData({ ...formData, SearchKeyword: e.target.value })}
-              required
-            />
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="category">Category</label>
+            <label htmlFor="subcategory">Subcategory</label>
             <select
-              id="category"
-              name="category"
-              value={formData.categoryID}
-              onChange={handleCategoryChange}
-              required
+              id="subcategory"
+              name="subcategory"
+              value={formData.subcategory}
+              onChange={handleSubcategoryChange}
             >
-              <option value="" disabled>Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
+              <option value="">---Select---</option>
+
+              {subcategories.map((subcategory) => (
+                <option key={subcategory.id} value={subcategory.id}>
+                  {subcategory.name}
                 </option>
               ))}
             </select>
           </div>
-  
-          {subcategories.length > 0 && (
-            <div className="product-form-group">
-              <label htmlFor="subcategory">Subcategory (Optional)</label>
-              <select
-                id="subcategory"
-                name="subcategory"
-                value={formData.subcategory}
-                onChange={handleSubcategoryChange}
-              >
-                {subcategories.map((subcategory) => (
-                  <option key={subcategory.id} value={subcategory.id}>
-                    {subcategory.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-  
-          <div className="product-form-group">
-            <label htmlFor="productImage">Product Image</label>
-            <input
-              type="file"
-              id="productImage"
-              accept="image/*"
-              onChange={handleImageChange}
-              required
-            />
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="productDetails">Product Details</label>
-            <textarea
-              id="productDetails"
-              name="productDetails"
-              value={formData.productDetails}
-              onChange={(e) => setFormData({ ...formData, productDetails: e.target.value })}
-              rows="4"
-              required
-            ></textarea>
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="productFeatures">Product Features</label>
-            <div className="features-list">
-              {features.map((feature) => (
-                <div key={feature.featureName} className="feature-item">
-                  <h4>{feature.featureName}</h4>
-                  <ul>
-                    {feature.featureOptions.options.map((option) => (
-                      <li key={option}>
-                        <input
-                          type="radio"
-                          value={feature.featureName}
-                          onChange={(e) => handleRadioChange(feature.featureName, option)}
-                          checked={selectedFeatures[feature.featureName] === option}
-                        />{" "}
-                        {option}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="productSpecifications">Product Specifications</label>
-            <textarea
-              id="productSpecifications"
-              name="productSpecifications"
-              value={formData.productSpecifications}
-              onChange={handleSpecificationsChange}
-              rows="4"
-              placeholder="Enter each specification on a new line. E.g., Operating System: Chrome OS"
-              required
-            ></textarea>
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="boxContent">Box Content</label>
-            <textarea
-              id="boxContent"
-              name="boxContent"
-              value={formData.boxContent.join("\n")}
-              onChange={handleBoxContentChange}
-              rows="3"
-              placeholder="Enter each item on a new line."
-              required
-            ></textarea>
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="Quantity">Quantity</label>
-            <select
-              id="Quantity"
-              name="Quantity"
-              value={formData.Quantity}
-              onChange={(e) => setFormData({ ...formData, Quantity: e.target.value })}
-              required
-            >
-              <option value="" disabled>Select quantity</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select>
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="price">Price</label>
-            <input
-              type="number"
-              id="price"
-              name="price"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              required
-            />
-          </div>
-  
-          <div className="product-form-group">
-            <label htmlFor="discount">Discount</label>
-            <input
-              type="number"
-              id="discount"
-              name="discount"
-              value={formData.discount}
-              onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
-              required
-            />
-          </div>
+         )} 
 
-         
+        {/* Product Image */}
+        {/* <div className="product-form-group">
+          <label htmlFor="productImage">Product Image</label>
+          <input
+            type="file"
+            id="productImage"
+            accept="image/*"
+            onChange={handleImageChange}
+            required
+          />
+        </div> */}
+
+        
+        {/* Product Image */}
+        <div className="product-form-group">
+          <label htmlFor="productImage">Product Image</label>
+          {formData.productImage && (
+            <img
+              src={formData.productImage}
+              alt="Product"
+              style={{ width: "100px", height: "50px", marginBottom: "10px" }}
+            />
+          )}
+          <input
+            type="file"
+            id="productImage"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
         </div>
 
-        <div className="addproduct-form-actions">
-                {/* <button type="button" onClick={onCancel} className="cancel-button">
-                Cancel
-                </button> */}
-                <button type="submit" className="save-button">
-                Save
-                </button>
-            </div>
+        {/* Product Details */}
+        <div className="product-form-group">
+          <label htmlFor="productDetails">Product Details</label>
+          <textarea
+            id="productDetails"
+            name="productDetails"
+            value={formData.productDetails}
+            onChange={(e) => setFormData({ ...formData, productDetails: e.target.value })}
+            rows="4"
+            required
+          ></textarea>
+        </div>
 
-      </form>
-      
-    );
-  };
+        {/* Add Product Feature Button */}
+        <div className="form-group">
+          <label htmlFor="productFeatures">Product Features</label>
+          <button
+            type="button"
+            onClick={handleAddFeature}
+            className="add-product-button"
+          >
+            <FaPlus />  Add Product Feature
+          </button>
+        </div>
+
+        {/* Product Features Modal */}
+        {showFeaturesModal && (
+          <div className="search-modal">
+            <div className="search-modal-content">
+              <h3>Product Features</h3>
+              <div>
+                {features.map((feature) => (
+                  <div key={feature.featureName}>
+                    <h4>{feature.featureName}</h4>
+                    <ul>
+                      {feature.featureOptions.options.map((option) => (
+                        <li key={option}>
+                          <input
+                            type="radio"
+                            value={option}
+                            onChange={() => handleRadioChange(feature.featureName, option)}
+                            checked={selectedFeatures[feature.featureName] === option}
+                          />{" "}
+                          {option}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <button className="search-close-button" onClick={() => setShowFeaturesModal(false)}>
+                X
+              </button>
+
+            </div>
+          </div>
+        )}
+
+      <div className="form-group">
+        <label htmlFor="productSpecifications">Product Specifications(Fearures unique to the product)</label>
+        <textarea
+          id="productSpecifications"
+          name="productSpecifications"
+          value={formData.productSpecifications.join("\n")}
+          onChange={handleSpecificationsChange}
+          rows="4"
+          placeholder="Enter each specification on a new line. E.g., Operating System: Chrome OS"
+          required
+        >
+          
+        </textarea>
+        </div>
+
+        {/* Box Content */}
+        <div className="product-form-group">
+          <label htmlFor="boxContent">Box Content</label>
+          <textarea
+            id="boxContent"
+            name="boxContent"
+            value={formData.boxContent.join("\n")}
+            onChange={handleBoxContentChange}
+            rows="3"
+            placeholder="Enter each item on a new line."
+            required
+          ></textarea>
+        </div>
+
+        {/* Quantity */}
+        <div className="product-form-group">
+          <label htmlFor="Quantity">Quantity</label>
+          {/* <select
+            id="Quantity"
+            name="Quantity"
+            value={formData.Quantity}
+            onChange={(e) => setFormData({ ...formData, Quantity: e.target.value })}
+            required
+          >
+            <option value="" disabled>
+              Select quantity
+            </option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select> */}
+
+          <input
+            type="number"
+             id="Quantity"
+            name="Quantity"
+            value={formData.Quantity}
+            onChange={(e) => setFormData({ ...formData, Quantity: e.target.value })}
+            required
+          />
+        </div>
+
+        {/* Price */}
+        <div className="product-form-group">
+          <label htmlFor="price">Price</label>
+          <input
+            type="number"
+            id="price"
+            name="price"
+            value={formData.price}
+            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+            required
+          />
+        </div>
+
+        {/* Discount */}
+        <div className="product-form-group">
+          <label htmlFor="discount">Discount</label>
+          <input
+            type="number"
+            id="discount"
+            name="discount"
+            value={formData.discount}
+            onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
+            required
+          />
+        </div>
+      </div>
+
+      {/* Form Actions */}
+      <div className="addproduct-form-actions">
+        <button type="submit" className="save-button">
+          Save
+        </button>
+      </div>
+    </form>
+  );
+};
 
 export default AddProducts;

@@ -1,52 +1,69 @@
 import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import Modal from "../Modal"; // Ensure you have a Modal component
-import "../../CSS/MerchantOrders.css"; // Import the CSS file
-import { FaSearch } from "react-icons/fa";
-import { FetchMerchants } from "../../Data";
+import "../../CSS/MerchantOrders.css";
+import { FaPrint, FaSearch, FaEdit } from "react-icons/fa";
+import { FetchMerchants, GetMerchantOrders, GetOrderDetails } from "../../Data";
+import OrderModal from '../OrderModal';
 
 const MerchantOrders = () => {
-  const { merchantId, orderID } = useParams(); // Get merchantId and orderID from URL
+  const { merchantId, orderID } = useParams();
   const [orders, setOrders] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isModalOpen, setModalOpen] = useState(false);
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchQuery, setSearchQuery] = useState({
+    orderID: "",
+    productName: "",
+    status: "",
+    time: "",
+  });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [merchants, setMerchants] = useState([]);
-  const [showMerchantsModal, setShowMerchantsModal] = useState(false);
-  const [searchInputMerchants, setSearchInputMerchants] = useState("");
-  const [selectedMerchantID, setSelectedMerchantID] = useState(null);
 
-  // Fetch all merchants
-  const GetAllMerchants = async () => {
-    try {
-      const response = await FetchMerchants();
-      if (response) {
-        setMerchants(response);
-      }
-    } catch (error) {
-      console.error("Error fetching merchants:", error);
-    }
-  };
-
+  const [orderStatus] = useState([
+    "Processing",
+    "Pending Confirmation",
+    "Waiting to be Shipped",
+    "Shipped",
+    "Available For Pickup",
+    "Delivered",
+    "Return In Progress",
+    "Returned",
+    "Refunded"
+  ]);
   useEffect(() => {
+    const GetAllMerchants = async () => {
+      try {
+        const response = await FetchMerchants();
+        if (response) {
+          setMerchants(response);
+        }
+      } catch (error) {
+        console.error("Error fetching merchants:", error);
+      }
+    };
     GetAllMerchants();
   }, []);
 
-  // Fetch orders based on merchantId and orderID
-  const fetchOrders = async (merchantId, orderID = null) => {
+  const fetchOrders = async (merchantId, orderID) => {
     try {
-      let url = `https://api.minimartke.com/merchant/orders?merchantId=${merchantId}`;
-      if (orderID) {
-        url += `&orderID=${orderID}`;
+      const requestData = {
+        MerchantId: merchantId,
+        OrderID: orderID === "null" ? "" : orderID
+      };
+      const response = await GetMerchantOrders(requestData);
+      if (response.length > 0) {
+        setOrders(response);
+        setFilteredOrders(response);
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "Error",
+          text: "No Pending Orders",
+        });
       }
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch orders");
-      }
-      const data = await response.json();
-      setOrders(data);
     } catch (error) {
       Swal.fire({
         icon: "error",
@@ -56,39 +73,58 @@ const MerchantOrders = () => {
     }
   };
 
-  // Fetch orders when merchantId or orderID changes (URL mode)
   useEffect(() => {
     if (merchantId) {
-      // If the page is called from a URL, hide the search-merchants section
-      // because we already know the merchant from the URL
       fetchOrders(merchantId, orderID);
     }
   }, [merchantId, orderID]);
 
-  // Filter orders by search query
-  const searchedOrders = orders.filter(
-    (order) =>
-      order.orderID.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.status.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Handle merchant search input change
-  const handleMerchantSearchChange = (e) => {
-    setSearchInputMerchants(e.target.value);
+  const handleGridSearch = () => {
+    const { orderID, productName, status } = searchQuery;
+    const filtered = orders.filter((order) => {
+      const matchesOrderID = orderID ? order.orderId.toString().includes(orderID) : true;
+      const matchesProductName = productName ? new RegExp(productName, "i").test(order.productName.toString()) : true;
+      const matchesStatus = status ? order.status === status : true;
+      return matchesOrderID && matchesProductName && matchesStatus;
+    });
+    setFilteredOrders(filtered);
   };
 
-  // Handle merchant selection
-  const handleMerchantSelect = (merchant) => {
-    setShowMerchantsModal(false);
-    setSelectedMerchantID(merchant.merchantID);
-    // Fetch orders based on the selected merchant ID
-    fetchOrders(merchant.merchantID, null);
+  const handleEditOrder = (order) => {
+    setUpdateModalOpen(true);
   };
 
-  // Columns for the DataGrid
+  const handleViewOrderDetails = async (OrderId) => {
+    try {
+      const orderDetails = await GetOrderDetails(OrderId);
+      if (orderDetails.length > 0) {
+        setSelectedOrder(orderDetails[0]);
+        setModalOpen(true);
+      } else {
+        Swal.fire({
+          icon: "warning",
+          title: "No Details",
+          text: "No order details found!",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to fetch order details.",
+      });
+    }
+  };
+
+  const handleUpdateOrderStatus = (status) => {
+    // Implement the logic to update the order status
+    console.log("Updating order status to:", status);
+    setUpdateModalOpen(false);
+  };
+
   const columns = [
-    { field: "orderID", headerName: "Order ID", width: 120 },
+    { field: "orderId", headerName: "Order ID", width: 200 },
     { field: "productName", headerName: "Product Name", width: 150 },
     { field: "quantity", headerName: "Quantity", width: 100 },
     { field: "price", headerName: "Price", width: 100 },
@@ -96,18 +132,20 @@ const MerchantOrders = () => {
     {
       field: "actions",
       headerName: "Actions",
+      type: "actions",
       width: 100,
-      renderCell: (params) => (
-        <button
-          onClick={() => {
-            setSelectedOrder(params.row);
-            setModalOpen(true);
-          }}
-          className="view-details-button"
-        >
-          View Details
-        </button>
-      ),
+      getActions: (params) => [
+        <GridActionsCellItem
+          icon={<FaEdit />}
+          label="Edit"
+          onClick={() => handleEditOrder(params.row)}
+        />,
+        <GridActionsCellItem
+          icon={<FaPrint />}
+          label="View Details"
+          onClick={() => handleViewOrderDetails(params.row.orderId)}
+        />
+      ],
     },
   ];
 
@@ -115,52 +153,7 @@ const MerchantOrders = () => {
     <div className="merchant-orders-container">
       <h1 className="merchant-orders-title">Merchant Orders</h1>
 
-      {/* Search Merchants (only show if not called from URL) */}
-      {!merchantId && (
-        <div className="search-merchants">
-          <input
-            type="text"
-            placeholder="Search by Merchant Name or ID"
-            value={searchInputMerchants}
-            onChange={handleMerchantSearchChange}
-          />
-          <button onClick={() => setShowMerchantsModal(true)}>
-            <FaSearch />
-          </button>
-        </div>
-      )}
-
-      {/* Merchants Modal */}
-      {showMerchantsModal && (
-        <div className="search-modal">
-          <div className="search-modal-content">
-            <h4>Select Merchant</h4>
-            <ul>
-              {merchants
-                .filter((merchant) =>
-                  merchant.businessName
-                    .toLowerCase()
-                    .includes(searchInputMerchants.toLowerCase()) ||
-                  merchant.merchantID.toString().includes(searchInputMerchants)
-                )
-                .map((merchant) => (
-                  <li
-                    key={merchant.merchantID}
-                    onClick={() => handleMerchantSelect(merchant)}
-                  >
-                    {merchant.businessName} (ID: {merchant.merchantID}, Status:{" "}
-                    {merchant.status})
-                  </li>
-                ))}
-            </ul>
-            <button onClick={() => setShowMerchantsModal(false)}>Close</button>
-          </div>
-        </div>
-      )}
-
-      {/* Search Orders */}
       <div className="full-search-container">
-        {/* Order ID Input */}
         <input
           type="text"
           placeholder="Order ID"
@@ -168,8 +161,6 @@ const MerchantOrders = () => {
           value={searchQuery.orderID}
           onChange={(e) => setSearchQuery({ ...searchQuery, orderID: e.target.value })}
         />
-
-        {/* Product Name Input */}
         <input
           type="text"
           placeholder="Product Name"
@@ -177,21 +168,16 @@ const MerchantOrders = () => {
           value={searchQuery.productName}
           onChange={(e) => setSearchQuery({ ...searchQuery, productName: e.target.value })}
         />
-
-        {/* Status Dropdown */}
         <select
           className="full-search-dropdown"
           value={searchQuery.status}
           onChange={(e) => setSearchQuery({ ...searchQuery, status: e.target.value })}
         >
           <option value="">--Status--</option>
-          <option value="Pending">Pending</option>
-          <option value="Active">Active</option>
-          <option value="Delivered">Delivered</option>
-          <option value="Cancelled">Cancelled</option>
+          {orderStatus.map((status, index) => (
+            <option key={index} value={status}>{status}</option>
+          ))}
         </select>
-
-        {/* Time Dropdown */}
         <select
           className="full-search-dropdown"
           value={searchQuery.time}
@@ -203,69 +189,94 @@ const MerchantOrders = () => {
           <option value="5hrs">5hrs ago</option>
           <option value="1day">1 day ago</option>
         </select>
-
-        {/* Search Button */}
-        <button className="full-search-button">
+        <button onClick={handleGridSearch} className="full-search-button">
           <FaSearch /> Search
         </button>
       </div>
 
-
-      {/* Material-UI DataGrid */}
       <div className="data-grid-container">
         <DataGrid
-          rows={searchedOrders}
+          rows={filteredOrders}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10]}
           checkboxSelection
+          getRowId={(row) => row.orderId}
         />
       </div>
 
-      {/* Order Details Modal */}
-      {isModalOpen && (
-        <Modal isVisible={isModalOpen} onClose={() => setModalOpen(false)}>
-          <OrderDetails order={selectedOrder} />
-        </Modal>
+      {isModalOpen && selectedOrder && (
+        <OrderModal
+          show={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          order={selectedOrder}
+        />
+      )}
+
+      {isUpdateModalOpen && (
+        <UpdateOrderModal
+          show={isUpdateModalOpen}
+          onClose={() => setUpdateModalOpen(false)}
+          onUpdate={handleUpdateOrderStatus}
+        />
       )}
     </div>
   );
 };
 
-// Order Details Component
-const OrderDetails = ({ order }) => {
-  if (!order) return null;
+const UpdateOrderModal = ({ show, onClose, onUpdate }) => {
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [orderStatus] = useState([
+    "Processing",
+    "Pending Confirmation",
+    "Waiting to be Shipped",
+    "Shipped",
+    "Available For Pickup",
+    "Delivered",
+    "Return In Progress",
+    "Returned",
+    "Refunded"
+  ]);
+
+  if (!show) return null;
 
   return (
-    <div className="order-details-modal">
-      <h3>Order Details</h3>
-      <div>
-        <p>
-          <strong>Order ID:</strong> {order.orderID}
-        </p>
-        <p>
-          <strong>Product Name:</strong> {order.productName}
-        </p>
-        <p>
-          <strong>Quantity:</strong> {order.quantity}
-        </p>
-        <p>
-          <strong>Price:</strong> ${order.price}
-        </p>
-        <p>
-          <strong>Status:</strong> {order.status}
-        </p>
-        <p>
-          <strong>Customer Name:</strong> {order.customerName}
-        </p>
-        <p>
-          <strong>Customer Email:</strong> {order.customerEmail}
-        </p>
-        <p>
-          <strong>Shipping Address:</strong> {order.shippingAddress}
-        </p>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    {/* Modal Container */}
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+      <h2 className="text-lg font-semibold mb-4">Update Order Status</h2>
+
+      {/* Status Dropdown */}
+      <select
+        className="w-full p-2 border border-gray-300 rounded-md mb-4"
+        value={selectedStatus}
+        onChange={(e) => setSelectedStatus(e.target.value)}
+      >
+        <option value="">Select Status</option>
+        {orderStatus.map((status, index) => (
+          <option key={index} value={status}>
+            {status}
+          </option>
+        ))}
+      </select>
+
+      {/* Buttons */}
+      <div className="flex justify-end space-x-4">
+        <button
+          className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+          onClick={onClose}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-blue-300 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          onClick={() => onUpdate(selectedStatus)}
+        >
+          Update
+        </button>
       </div>
     </div>
+  </div>
   );
 };
 

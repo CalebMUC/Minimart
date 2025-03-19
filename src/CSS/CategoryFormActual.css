@@ -12,7 +12,7 @@
 }
 
 .category-form-title {
-  font-size: 1.5rem; /* Equivalent to text-2xl in Tailwind */
+  font-size: 12px; /* Equivalent to text-2xl in Tailwind */
   font-weight: 700; /* Equivalent to font-bold in Tailwind */
   color: #1a202c; /* Equivalent to text-gray-800 in Tailwind */
   text-align: center;

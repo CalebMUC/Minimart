@@ -93,11 +93,11 @@ const ProductDetail = () => {
 
 
         // setProductID(`${matchedProduct.productId}`);
-;
-        console.log(productID)
-        console.log(matchedProduct.keyFeatures)
+// ;
+//         console.log(productID)
+//         console.log(matchedProduct.keyFeatures)
 
-        console.log(matchedProduct.specification)
+//         console.log(matchedProduct.specification)
       
         
       
@@ -221,10 +221,14 @@ const displayBoxContent =  (data) =>{
       console.log(response);
 
       if (response && response.responseMessage) {
-        const newCount = parseInt(cartCount) + 1;
-        updateCartCount(newCount);
+
+        if(response.responseCode == 0 ){
+          const newCount = parseInt(cartCount) + 1;
+          updateCartCount(newCount);
+        }
+
         setSuccessDialog(true)
-        setDialogMessage("Product Added to cart succesfully");
+        setDialogMessage(response.responseMessage);
         // alert(response.responseMessage);
       }
     }

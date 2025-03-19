@@ -123,7 +123,8 @@ const ProductPage = () => {
         productName: product.productName,
         productImage: product.productImage,
         price: product.price,
-        quantity: product.quantity
+        quantity: product.quantity,
+        merchantId : product.merchantId
       });
     }
   };

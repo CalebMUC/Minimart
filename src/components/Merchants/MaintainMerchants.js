@@ -5,12 +5,21 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import Modal from "../Modal"; // Ensure you have a Modal component
 import "../../CSS/Merchants/merchants.css"; // Import the CSS file
 import { Typography } from "@mui/material";
+import { FaSearch } from "react-icons/fa";
 import { FetchMerchants, AddMerchants, UpdateMerchants, FileUploads } from '../../Data'; // Import necessary functions
 
 const MaintainMerchants = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [currentMerchant, setCurrentMerchant] = useState(null);
   const [merchants, setMerchants] = useState([]);
+  const [searchQuery, setSearchQuery] = useState({
+        merchantID: "",
+        merchantName : "",
+        phone: "",
+        status : "",
+        businessType : "",
+        businessNature : ""
+      });
 
   // Fetch all merchants
   const GetAllMerchants = async () => {
@@ -156,6 +165,79 @@ const MaintainMerchants = () => {
       <button onClick={() => openModal()} className="add-merchant-button">
         <FaPlus /> Add Merchant
       </button>
+
+      {/* Search Merchants */}
+            <div className="full-search-container">
+              {/* Order ID Input */}
+              <input
+                type="text"
+                placeholder="Order ID"
+                className="full-search-input"
+                value={searchQuery.merchantID}
+                onChange={(e) => setSearchQuery({ ...searchQuery, merchantID: e.target.value })}
+              />
+      
+              {/* Product Name Input */}
+              <input
+                type="text"
+                placeholder="Merchant Name"
+                className="full-search-input"
+                value={searchQuery.merchantName}
+                onChange={(e) => setSearchQuery({ ...searchQuery, merchantName: e.target.value })}
+              />
+
+            <select
+                className="full-search-dropdown"
+                value={searchQuery.businessType}
+                onChange={(e) => setSearchQuery({ ...searchQuery, businessType: e.target.value })}
+              >
+              <option value="">--Business Type--</option>
+              <option value="Sole Proprietorship">Sole Proprietorship</option>
+              <option value="Partnership">Partnership</option>
+              <option value="Limited Company">Limited Company</option>
+              <option value="SME">Small Medium Enterprise</option>
+              </select>
+
+              <select
+                className="full-search-dropdown"
+                value={searchQuery.businessNature}
+                onChange={(e) => setSearchQuery({ ...searchQuery, businessNature: e.target.value })}
+              >
+              <option value="">--BusinessNature--</option>
+              <option value="Retail">Retail</option>
+              <option value="Wholesale">Wholesale</option>
+              <option value="Services">Services</option>
+              <option value="Online">Online</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="794129559"
+                className="full-search-input"
+                value={searchQuery.phone}
+                onChange={(e) => setSearchQuery({ ...searchQuery, phone: e.target.value })}
+              />
+      
+              {/* Status Dropdown */}
+              <select
+                className="full-search-dropdown"
+                value={searchQuery.status}
+                onChange={(e) => setSearchQuery({ ...searchQuery, status: e.target.value })}
+              >
+                <option value="">--Status--</option>
+                <option value="Active">Active</option>
+                <option value="inActive">InActive</option>
+                
+              </select>
+      
+              {/* Time Dropdown */}
+              
+      
+              {/* Search Button */}
+              <button className="full-search-button">
+                <FaSearch /> Search
+              </button>
+            </div>
 
       {/* Material-UI DataGrid */}
       <div className="data-grid-container">

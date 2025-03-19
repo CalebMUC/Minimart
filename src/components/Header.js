@@ -175,7 +175,7 @@ const Header = () => {
               )}
             </div>
             <div className="header-orders">
-              <a href="#" onClick={() => navigate("/Orders")}>
+              <a href="#" onClick={() => navigate("/ReturnsAndOrdersPage")}>
                 <span>Returns</span>
                 <span>& Orders</span>
               </a>

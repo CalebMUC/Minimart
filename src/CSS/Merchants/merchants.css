@@ -67,8 +67,9 @@
     background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     z-index: 1000;
+    overflow-y: auto
   }
   
   .search-modal-content {
@@ -241,7 +242,20 @@
   .full-search-button:hover {
     background-color: #2563eb; /* Darker blue on hover */
   }
+  .search-close-button {
+    position: absolute;
+    top: 10px;
+    right: 1000;
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333; /* Visible color */
+  }
   
+  .search-close-button:hover {
+    color: red; /* Highlighted when hovered */
+  }
   /* Responsive Design */
   @media (max-width: 768px) {
     .search-container {
