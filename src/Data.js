@@ -24,21 +24,21 @@ export const AddEditCategories = async (formData) => {
   }
 };
 
-export const fetchCategories = async () => {
-  try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/GetDashBoardCategories`);
-    if (!response.ok) {
-      throw new Error(`Network Error: ${response.statusText}`);
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error;
-  }
-};
+// export const fetchCategories = async () => {
+//   try {
+//     const response = await fetch(`${config.baseUrl}/api/Entities/GetDashBoardCategories`);
+//     if (!response.ok) {
+//       throw new Error(`Network Error: ${response.statusText}`);
+//     }
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error("Error fetching categories:", error);
+//     throw error;
+//   }
+// };
 
-export const fetchCategoriesNew = async () => {
+export const FetchAllCategories = async () => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Category/GetAllCategories`);
     if (!response.ok) {
@@ -107,6 +107,48 @@ export const FetchNestedCategories = async () =>{
     throw error;
   }
 }
+
+export const GetCategoriesById = async (categoryId) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Category/GetCategoriesById?CategoryId=${categoryId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch categories");
+    }
+
+    const data = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+};
+
+export const DeleteCategoriesById = async (categoryId) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Category/DeleteCategoriesById?CategoryId=${categoryId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch categories");
+    }
+
+    const data = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+};
 
 // -----* Addresses *-----
 export const fetchAddressesByUserID = async (userID) => {
@@ -199,6 +241,29 @@ export const Order = async (formData) => {
   }
 };
 
+export const UpdateOrderStatus = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Order/UpdateOrderStatus`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to place order: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error placing order:", error);
+    throw error;
+  }
+};
+
 export const GetOrders = async () => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Order/GetOrders`);
@@ -212,6 +277,22 @@ export const GetOrders = async () => {
     throw error;
   }
 };
+
+export const GetOrderStatus = async () => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Order/GetOrderStatus`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
+};
+
+
 
 export const GetMerchantOrders = async (formData) => {
   try {
@@ -350,6 +431,123 @@ export const Login = async (credentials) => {
   }
 };
 
+export const SendEmailValidationCode = async (credentials) => {
+  try {
+    
+    const response = await fetch(`${config.baseUrl}/api/Authentication/SendEmailVerificationCode`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+
+export const SendResetCode = async (credentials) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Authentication/SendResetCode`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+export const VerifyEmailValidationCode = async (credentials) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Authentication/VerifyEmailValidationCode`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+export const VerifyResetCode = async (credentials) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Authentication/VerifyResetCode`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
+export const ResetPassword = async (credentials) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Authentication/ResetPassword`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
+
 export const Register = async (userData) => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Authentication/Register`, {
@@ -376,7 +574,7 @@ export const Register = async (userData) => {
 // -----* Products *-----
 export const AddProduct = async (formData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/AddProducts`, {
+    const response = await fetch(`${config.baseUrl}/api/Product/AddProducts`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -400,6 +598,52 @@ export const AddProduct = async (formData) => {
 export const EditProduct = async (formData) => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Product/EditProducts`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add product");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding product:", error);
+    throw error;
+  }
+};
+
+export const LoadProductImages = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Product/LoadProductImages`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to add product");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error adding product:", error);
+    throw error;
+  }
+};
+
+export const GetProductsByCategory = async (formData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Product/GetProductsByCategory`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -446,45 +690,9 @@ export const FetchProducts = async () => {
   }
 };
 
-export const FetchFilteredProducts = async (requestData) => {
-  try {
-    const response = await fetch(`${config.baseUrl}/api/Category/GetFilteredProducts`, {
-      method: "POST",
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    });
 
-    if (!response.ok) {
-      throw new Error(`Network Error: ${response.statusText}`);
-    }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching filtered products:", error);
-    throw error;
-  }
-};
-
-export const FetchSearchProducts = async (subCategoryID) => {
-  try {
-    const response = await fetch(`${config.baseUrl}/api/Category/GetSearchProducts/${subCategoryID}`);
-    if (!response.ok) {
-      throw new Error(`Network Error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error fetching search products:", error);
-    throw error;
-  }
-};
-
-// -----* Miscellaneous *-----
+// -----* Deliverables *-----
 export const fetchCountryCodes = async () => {
   try {
     const response = await fetch("https://restcountries.com/v3.1/all");
@@ -503,7 +711,7 @@ export const fetchCountryCodes = async () => {
 
 export const fetchCounties = async () => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/counties`);
+    const response = await fetch(`${config.baseUrl}/api/Deliveries/counties`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -517,7 +725,7 @@ export const fetchCounties = async () => {
 
 export const fetchCountyTowns = async (countyId) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/towns?countyId=${countyId}`);
+    const response = await fetch(`${config.baseUrl}/api/Deliveries/towns?countyId=${countyId}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -529,10 +737,57 @@ export const fetchCountyTowns = async (countyId) => {
   }
 };
 
-// -----* Save for Later *-----
+// -----* Carts *-----
+
+export const AddCartItems = async (requestData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Cart/AddCartItems`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save items");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error saving items:", error);
+    throw error;
+  }
+};
+
+export const GetCartItems = async (requestData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Cart/GetCartItems`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save items");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error saving items:", error);
+    throw error;
+  }
+};
+
 export const SaveItems = async (requestData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/SaveItems`, {
+    const response = await fetch(`${config.baseUrl}/api/Cart/SaveItems`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -555,7 +810,7 @@ export const SaveItems = async (requestData) => {
 
 export const DeleteCartItems = async (requestData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/DeleteCartItems`, {
+    const response = await fetch(`${config.baseUrl}/api/Cart/DeleteCartItems`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -575,6 +830,7 @@ export const DeleteCartItems = async (requestData) => {
     throw error;
   }
 };
+
 
 // -----* Role Modules *-----
 export const fetchRoleModules = async (RoleID) => {
@@ -609,7 +865,7 @@ export const fetchSubModuleCategories = async (subModuleID) => {
 
 export const FetchAllFeatures = async () => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Category/GetAllFeatures`, {
+    const response = await fetch(`${config.baseUrl}/api/Features/GetAllFeatures`, {
       method: "GET",
       headers: {
         Accept: "*/*",
@@ -631,9 +887,9 @@ export const FetchAllFeatures = async () => {
 
 export const FetchFeatures = async (formData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Category/GetFeatures`, {
+    const response = await fetch(`${config.baseUrl}/api/Features/GetFeatures`, {
       method: "POST",
-      headers: {
+      headers: { 
         Accept: "*/*",
         "Content-Type": "application/json",
       },
@@ -654,7 +910,7 @@ export const FetchFeatures = async (formData) => {
 
 export const AddFeaturesAPI = async (formData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Category/AddFeatures`, {
+    const response = await fetch(`${config.baseUrl}/api/Features/AddFeatures`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -810,6 +1066,68 @@ export const FetchMerchantsById = async (merchantId)=>{
   }
   
 }
+
+export const DeleteMerchants = async (formData) =>{
+  try{
+     const response = await fetch(`${config.baseUrl}/api/SystemMerchant/DeleteMerchantsAsync`,{
+      method : "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
+      body : JSON.stringify(formData)
+     });
+     if(!response.ok){
+      throw new Error(`Failed to add merchant ${response.status}`)
+     }
+     const data = response.json();
+
+     return data;
+
+  }catch(error){
+    throw error;
+  }
+}
+
+// ------** Search ** --------
+
+export const FetchFilteredProducts = async (requestData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Category/GetFilteredProducts`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching filtered products:", error);
+    throw error;
+  }
+};
+
+export const FetchSearchProducts = async (subCategoryID) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Category/GetSearchProducts/${subCategoryID}`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching search products:", error);
+    throw error;
+  }
+};
 
 // ------** UPLOADS ** --------
 export const FileUploads = async (fileData) => {

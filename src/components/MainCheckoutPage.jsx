@@ -316,7 +316,8 @@ const MainCheckOutPage = () => {
       price: product.price,
       discount: 0,
       deliveryFee: 0,
-      MerchantId : product.merchantId
+      MerchantId : product.merchantId,
+      imageUrl : ""
     }));
   
     // Prepare payment details
@@ -357,7 +358,7 @@ const MainCheckOutPage = () => {
     const payload = {
       orderID: orderID,
       userID: parseInt(userID), // Ensure userID is an integer
-      orderedBy : localStorage.getItem("userName"),
+      orderedBy : localStorage.getItem("username"),
       products: products,
       totalOrderAmount: totalOrderedAmount,
       totalDeliveryFees: totalDeliveryFees,

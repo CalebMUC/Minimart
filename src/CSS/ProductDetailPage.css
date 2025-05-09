@@ -10,13 +10,13 @@
 }
 
 /* General Styles */
-body {
+/* body {
   margin: 0;
   font-family: 'Inter', 'sans-serif';
   background-color: #f3f3f3;
   color: var(--color-text-dark);
   font-size: 14px;
-}
+} */
 
 .product-detail-container {
     display: flex;

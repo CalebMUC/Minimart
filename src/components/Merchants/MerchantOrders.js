@@ -4,14 +4,20 @@ import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import "../../CSS/MerchantOrders.css";
 import { FaPrint, FaSearch, FaEdit } from "react-icons/fa";
-import { FetchMerchants, GetMerchantOrders, GetOrderDetails } from "../../Data";
+import { FetchMerchants, GetMerchantOrders, GetOrderDetails,GetOrderStatus,UpdateOrderStatus } from "../../Data";
 import OrderModal from '../OrderModal';
+import { Description } from "@mui/icons-material";
+// import Dialogs from "./Dialogs.js";
 
 const MerchantOrders = () => {
   const { merchantId, orderID } = useParams();
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderTracking, setOrderTracking] = useState({
+    ProductID : "",
+    OrderID : ""
+  });
   const [searchQuery, setSearchQuery] = useState({
     orderID: "",
     productName: "",
@@ -22,17 +28,8 @@ const MerchantOrders = () => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [merchants, setMerchants] = useState([]);
 
-  const [orderStatus] = useState([
-    "Processing",
-    "Pending Confirmation",
-    "Waiting to be Shipped",
-    "Shipped",
-    "Available For Pickup",
-    "Delivered",
-    "Return In Progress",
-    "Returned",
-    "Refunded"
-  ]);
+  const [orderStatus,setOrderStatus] = useState([]);
+
   useEffect(() => {
     const GetAllMerchants = async () => {
       try {
@@ -79,6 +76,20 @@ const MerchantOrders = () => {
     }
   }, [merchantId, orderID]);
 
+  const FetchOrderStatus =async () =>{
+    try{
+      var response = await GetOrderStatus();
+      setOrderStatus(response)
+
+    }catch(error){
+      console.error()
+    }
+  }
+
+  useEffect(()=>{
+    FetchOrderStatus();
+  },[])
+
   const handleGridSearch = () => {
     const { orderID, productName, status } = searchQuery;
     const filtered = orders.filter((order) => {
@@ -90,7 +101,11 @@ const MerchantOrders = () => {
     setFilteredOrders(filtered);
   };
 
-  const handleEditOrder = (order) => {
+  const handleEditOrder = async (order) => {
+    setOrderTracking({
+      ProductID : order.productID,
+      OrderID : order.orderId
+    })
     setUpdateModalOpen(true);
   };
 
@@ -117,14 +132,32 @@ const MerchantOrders = () => {
     }
   };
 
-  const handleUpdateOrderStatus = (status) => {
+  const handleUpdateOrderStatus = async (data) => {
     // Implement the logic to update the order status
-    console.log("Updating order status to:", status);
+    var response = await UpdateOrderStatus(data);
+    if(response.responseStatusId == 200){
+      Swal.fire({
+        icon : "success",
+        title : "Success",
+        text : response.responseMessage,
+
+      })
+    }else{
+      Swal.fire({
+        icon : "success",
+        title : "Success",
+        text : response.responseMessage,
+
+      })
+    }
+
+
     setUpdateModalOpen(false);
-  };
+  }; 
 
   const columns = [
     { field: "orderId", headerName: "Order ID", width: 200 },
+    { field: "productID", headerName: "Product ID", width: 200 },
     { field: "productName", headerName: "Product Name", width: 150 },
     { field: "quantity", headerName: "Quantity", width: 100 },
     { field: "price", headerName: "Price", width: 100 },
@@ -174,8 +207,8 @@ const MerchantOrders = () => {
           onChange={(e) => setSearchQuery({ ...searchQuery, status: e.target.value })}
         >
           <option value="">--Status--</option>
-          {orderStatus.map((status, index) => (
-            <option key={index} value={status}>{status}</option>
+          {orderStatus.map((statusobj, index) => (
+            <option key={index} value={statusobj.statusId}>{statusobj.status}</option>
           ))}
         </select>
         <select
@@ -218,29 +251,51 @@ const MerchantOrders = () => {
           show={isUpdateModalOpen}
           onClose={() => setUpdateModalOpen(false)}
           onUpdate={handleUpdateOrderStatus}
+          orderStatus={orderStatus}
+         orderTracking ={orderTracking}
         />
       )}
     </div>
   );
 };
 
-const UpdateOrderModal = ({ show, onClose, onUpdate }) => {
+const UpdateOrderModal = ({ show, onClose, onUpdate,orderStatus,orderTracking }) => {
   const [selectedStatus, setSelectedStatus] = useState("");
-  const [orderStatus] = useState([
-    "Processing",
-    "Pending Confirmation",
-    "Waiting to be Shipped",
-    "Shipped",
-    "Available For Pickup",
-    "Delivered",
-    "Return In Progress",
-    "Returned",
-    "Refunded"
-  ]);
+  const [description, setDescription] = useState("");
+  //const [orderStatus,setOrderStatus] = useState([
+    // "Processing",
+    // "Pending Confirmation",
+    // "Waiting to be Shipped",
+    // "Shipped",
+    // "Available For Pickup",
+    // "Delivered",
+    // "Return In Progress",
+    // "Returned",
+    // "Refunded"
+  //]);
+
+  const[updateOrderStatus,setOrderStatus] = useState({
+    statusId : 0,
+    description : "",
+    orderId : "",
+    productId : "",
+    updatedBy : ""
+})
+
+useEffect(() => {
+  setOrderStatus({
+    statusId: parseInt(selectedStatus,10) || 0,
+    description: selectedStatus?.description || "",
+    orderId: orderTracking.OrderID || "",
+    productId: orderTracking.ProductID || "",
+    updatedBy: localStorage.getItem("username") || ""
+  });
+}, [selectedStatus, orderTracking]);
 
   if (!show) return null;
 
   return (
+    
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
     {/* Modal Container */}
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -253,12 +308,31 @@ const UpdateOrderModal = ({ show, onClose, onUpdate }) => {
         onChange={(e) => setSelectedStatus(e.target.value)}
       >
         <option value="">Select Status</option>
-        {orderStatus.map((status, index) => (
-          <option key={index} value={status}>
-            {status}
+        {orderStatus.map((statusobj, index) => (
+          <option key={index} value={statusobj.statusId}>
+            {statusobj.status}
           </option>
         ))}
       </select>
+      {selectedStatus &&(
+         <div className=" flex flex-col mt-2">
+         <label className="text-sm">Update Reason:</label>
+         <textarea
+          className="border"
+          rows={3}
+          value={updateOrderStatus.description} // Use updateOrderStatus.description instead of finding from orderStatus
+          placeholder="Enter update reason"
+          onChange={(e) =>
+            setOrderStatus((prev) => ({
+              ...prev,
+              description: e.target.value, // Update correctly
+            }))
+          }
+          required
+        />
+       </div>
+      )}
+     
 
       {/* Buttons */}
       <div className="flex justify-end space-x-4">
@@ -269,8 +343,8 @@ const UpdateOrderModal = ({ show, onClose, onUpdate }) => {
           Cancel
         </button>
         <button
-          className="bg-blue-300 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-          onClick={() => onUpdate(selectedStatus)}
+          className="bg-actions text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          onClick={() => onUpdate(updateOrderStatus)}
         >
           Update
         </button>
@@ -278,6 +352,7 @@ const UpdateOrderModal = ({ show, onClose, onUpdate }) => {
     </div>
   </div>
   );
+
 };
 
 export default MerchantOrders;

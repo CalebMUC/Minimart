@@ -1,6 +1,6 @@
-body {
+/* body {
     margin: 0;
-    font-family: 'Amazon Ember', Arial, sans-serif;
+    font-family: 'Inter', 'sans-serif';
     background-color: #f3f3f3;
     color: var(--color-text-dark);
 }
@@ -8,7 +8,7 @@ body {
   .marketplace-creation {
     display: flex;
     min-height: 100vh;
-    background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max'); /* Replace with a creative background */
+    background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max'); 
     background-size: cover;
     background-position: center;
   }
@@ -60,7 +60,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 14px;
-  } */
+  } 
   
   .form-group textarea {
     resize: vertical;
@@ -101,7 +101,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-  } */
+  } 
   
   .container {
     width: 50%;
@@ -113,7 +113,7 @@ body {
   
   /* h1, h2 {
     text-align: center;
-  } */
+  } 
   
   .input-group {
     margin: 15px 0;
@@ -168,4 +168,4 @@ body {
     color: lightgray;
   }
   
-  
+   */

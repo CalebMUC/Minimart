@@ -1,4 +1,4 @@
-.orders-page {
+/* .orders-page {
     padding: 20px;
   }
   
@@ -65,18 +65,18 @@
     right: 0; /* Aligns the link to the far right 
     top: 50%; /* Vertically centers the link 
     transform: translateY(-50%); /* Adjusts for centering 
-  } */
+  } 
   .order-details-link {
 display: flex;
-    justify-content: flex-end; /* Aligns the link to the far right */
+    justify-content: flex-end; /* Aligns the link to the far right 
     margin-left: auto;
   }
   .order-details-link a {
     text-decoration: none;
-    color: #007bff; /* Style link color */
+    color: #007bff; /* Style link color 
   }
   
   .order-details-link a:hover {
     text-decoration: underline;
   }
-  
+   */

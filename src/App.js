@@ -22,6 +22,9 @@ import MerchantOrders from "../src/components/Merchants/MerchantOrders";
 import MerchantDashboard from "./components/Merchants/MerchantDashboard";
 import MerchabtsSidebar from "./components/Merchants/MerchantsSidebar"
 
+import OrderDetails from "./components/Orders/OrderDetails"
+import OrderTracking from "./components/Orders/OrderTracking"
+
 import AdminDashboard from "../src/components/Administrator/AdminDashboard";
 import AdminMainContent from "../src/components/Administrator/AdminMainContent";
 import AdminOrders from "../src/components/Administrator/AdminOrders";
@@ -38,6 +41,15 @@ import DeliveryForm from "../src/components/Deliveryform";
 import MpesaForm from "../src/components/MpesaForm";
 import CreditCardForm from "../src/components/CreditCardForm";
 import AddressForm from "../src/components/AddressForm";
+
+import ForgotPassword from "../src/components/Authorization/ForgotPassword";
+import VerifyResetCode from "../src/components/Authorization/ResetCodeVerification";
+import ResetPassword from "../src/components/Authorization/ResetPassword";
+
+import PasswordResetFlow from "../src/components/Authorization/PasswordResetFlow";
+
+import RegistrationFlow from "../src/components/Authorization/RegistrationFlow";
+import EmailCodeVerification from "../src/components/Authorization/EmailCodeVerification";
 
 //jsx
 import DeliveryModeSection from "../src/components/DeliveryModeSection";
@@ -56,6 +68,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import AccountSection from "./components/Settings/AccountSection/AccountSection";
 import PersonalInformation from "./components/Settings/AccountSection/PersonalInformation";
 import "./index.css";
+// import { ResetPassword } from "./Data";
 
 const App = () => {
   return (
@@ -67,6 +80,19 @@ const App = () => {
           {/* <Header /> */}
           <Routes>
           <Route path="/Login" element={<Login />} />
+
+          <Route path="/Authorization/ForgotPassword" element={<ForgotPassword />} />
+
+          <Route path="/Authorization/ResetCodeVerification" element={<VerifyResetCode />} />
+
+          <Route path="/Authorization/ResetPassword" element={<ResetPassword />} />
+
+          <Route path="/Authorization/PasswordResetFlow" element={<PasswordResetFlow />} />
+
+          <Route path="/Authorization/RegistrationFlow" element={<RegistrationFlow />} />
+
+          <Route path="/EmailCodeVerification" element={<EmailCodeVerification />} />
+
           <Route path="/Register" element={<Register />} />
           <Route path="/Settings/GeneralSettings" element={<GeneralSettings />} />
           <Route path="/Merchants/MerchantDashboard" element={<MerchantDashboard />} />
@@ -76,6 +102,9 @@ const App = () => {
           <Route path="/Merchants/MaintainMerchants" element={<Merchants />} />
           <Route path="/Merchants/:merchantId/:orderID" element={<MerchantOrders />} />
           <Route path="/Admin/Orders" element={<AdminOrders />} />
+
+          <Route path="/Orders/OrderDetails" element={<OrderDetails />} />
+          <Route path="/Orders/OrderTracking" element={<OrderTracking />} />
 
           <Route path="/Adminstrator/AdminDashboard" element={<AdminDashboard />} />
           <Route path="/Adminstrator/AdminMainContent" element={<AdminMainContent />} />

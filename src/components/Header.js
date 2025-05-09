@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa"; // React Icons for the arrow
+import { FaChevronDown, FaChevronUp, FaSearch, FaBars, FaTimes, FaUser, FaCog, FaMobileAlt, FaSignOutAlt, FaSignInAlt, FaShoppingCart } from "react-icons/fa";
 import packageInfo from "../../package.json";
-import "../../src/CSS/Header.css";
-import "../../src/CSS/Dropdown.css";
 import { cartContext } from "./CartContext";
 import { fetchRoleModules, fetchSubModuleCategories } from "../Data.js";
 
 const Header = () => {
-  const [dashboardModules, setDashboardModules] = useState([]); // Store modules and submodules
+  const [dashboardModules, setDashboardModules] = useState([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [username, setUsername] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [subCategories, setSubCategories] = useState([]);
-  const [selectedSubModule, setSelectedSubModule] = useState(null); // Track selected submodule
+  const [selectedSubModule, setSelectedSubModule] = useState(null);
 
   const { cartCount, GetCartItems } = useContext(cartContext);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Fetch modules based on user role
   const fetchModules = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -33,7 +30,6 @@ const Header = () => {
     }
   };
 
-  // Fetch subcategories for a specific submodule
   const fetchSubcategories = async (subModuleID) => {
     try {
       const response = await fetchSubModuleCategories(subModuleID);
@@ -43,42 +39,34 @@ const Header = () => {
     }
   };
 
-  // Fetch modules and subcategories on component mount
   useEffect(() => {
     fetchModules();
-    GetCartItems(); // Optionally call GetCartItems to load cart items when Header mounts
+    GetCartItems();
   }, []);
 
-  // Handle hover events for dropdown
   const showDropdown = () => setIsDropdownVisible(true);
   const hideDropdown = () => setIsDropdownVisible(false);
 
-  // Toggle the sidebar visibility
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  // Handle submodule click
   const handleSubModuleClick = async (subModule) => {
     try {
-      // Fetch subcategories for the submodule
       const subCategories = await fetchSubModuleCategories(subModule.subModuleID);
   
       if (subCategories.length > 0) {
-        // If subcategories exist, display them
         setSelectedSubModule(subModule);
         setSubCategories(subCategories);
       } else {
-        // If no subcategories exist, navigate to the submodule URL
         navigate(subModule.subModuleUrl);
-        setSidebarOpen(false)
+        setSidebarOpen(false);
       }
     } catch (error) {
       console.error("Error handling submodule click:", error);
     }
   };
 
-  // Handle logout
   const HandleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
@@ -88,7 +76,6 @@ const Header = () => {
     setIsAdmin(false);
   };
 
-  // Toggle visibility of submodules
   const toggleSubmodules = (moduleId) => {
     setDashboardModules((prevModules) =>
       prevModules.map((module) =>
@@ -99,10 +86,9 @@ const Header = () => {
     );
   };
 
-  // Check for user and admin role on component mount
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
-    const userRole = localStorage.getItem("userRole"); // Replace with actual logic
+    const userRole = localStorage.getItem("userRole");
     if (storedUsername) {
       setUsername(storedUsername);
     }
@@ -113,120 +99,176 @@ const Header = () => {
 
   return (
     <>
-      <header className="header">
+      {/* Header */}
+      <header className="bg-blue-600 text-white">
         {/* Top Header */}
-        <div className="header-top">
-          <div className="header-left">
-            <img
-              src="/images/shopping-bag.png"
-              alt="Minimart Logo"
-              className="header-logo"
-            />
-            <span>Minimart Logo</span>
+        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
+          {/* Left Section - Logo */}
+          <div className="flex items-center space-x-2">
+            <div className="bg-white p-1 rounded shadow-md">
+              <img
+                src="/images/shopping-bag.png"
+                alt="Minimart Logo"
+                className="w-8 h-8"
+              />
+            </div>
+            <span className="font-semibold hidden md:block">Minimart</span>
           </div>
-          <div className="header-search">
-            <input
-              type="text"
-              className="search-input"
-              placeholder="Search Minimart"
-            />
-            <button className="search-button">
-              <i className="fas fa-search"></i>
-            </button>
+
+          {/* Center Section - Search */}
+          <div className="flex-1 max-w-xl mx-4">
+            <div className="relative">
+              <input
+                type="text"
+                className="w-full py-2 px-4 rounded-l focus:outline-none text-gray-800"
+                placeholder="Search Minimart"
+              />
+              <button className="absolute right-0 top-0 h-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-4 rounded-r flex items-center justify-center">
+                <FaSearch />
+              </button>
+            </div>
           </div>
-          <div className="header-right">
-            <div
-              className="header-account"
+
+          {/* Right Section - Navigation */}
+          <div className="flex items-center space-x-6">
+            {/* Account Dropdown */}
+            <div 
+              className="relative group"
               onMouseEnter={showDropdown}
               onMouseLeave={hideDropdown}
             >
-              <a href="#">
-                {username != null ? (
-                  <span>Hello, {username}</span>
-                ) : (
-                  <span>Hello</span>
-                )}
-                <br />
-                <span>Account & Lists</span>
-              </a>
+              <div className="flex flex-col items-center cursor-pointer">
+                <span className="text-xs">
+                  {username ? `Hello, ${username}` : "Hello"}
+                </span>
+                <span className="text-sm font-semibold">Account & Lists</span>
+              </div>
+              
               {isDropdownVisible && (
-                <div className="dropdown-content">
-                  <Link to="/Login">
-                    <i className="fas fa-sign-in-alt"></i>
-                    Sign In
-                  </Link>
-                  <Link to="/profile">
-                    <i className="fas fa-user"></i>
-                    My Profile
-                  </Link>
-                  <Link to="/account-settings">
-                    <i className="fas fa-cog"></i>
-                    Account Settings
-                  </Link>
-                  <Link to="/device-management">
-                    <i className="fas fa-mobile-alt"></i>
-                    Device Management
-                  </Link>
-                  <Link onClick={HandleLogout} to="/Login">
-                    <i className="fas fa-sign-out-alt"></i>
-                    Sign Out
-                  </Link>
+                <div className="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 text-gray-800">
+                  <div className="py-1">
+                    {username ? (
+                      <>
+                        <Link
+                          to="/profile"
+                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                        >
+                          <FaUser className="mr-2" /> My Profile
+                        </Link>
+                        <Link
+                          to="/account-settings"
+                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                        >
+                          <FaCog className="mr-2" /> Account Settings
+                        </Link>
+                        <Link
+                          to="/device-management"
+                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                        >
+                          <FaMobileAlt className="mr-2" /> Device Management
+                        </Link>
+                        <button
+                          onClick={HandleLogout}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                        >
+                          <FaSignOutAlt className="mr-2" /> Sign Out
+                        </button>
+                      </>
+                    ) : (
+                      <Link
+                        to="/Login"
+                        className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                      >
+                        <FaSignInAlt className="mr-2" /> Sign In
+                      </Link>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
-            <div className="header-orders">
-              <a href="#" onClick={() => navigate("/ReturnsAndOrdersPage")}>
-                <span>Returns</span>
-                <span>& Orders</span>
-              </a>
+
+            {/* Returns & Orders */}
+            <div 
+              className="flex flex-col items-center cursor-pointer"
+              onClick={() => navigate("/ReturnsAndOrdersPage")}
+            >
+              <span className="text-xs">Returns</span>
+              <span className="text-sm font-semibold">& Orders</span>
             </div>
-            <div className="header-cart">
-              <a href="#" onClick={() => navigate("/ProductPage")}>
-                <i className="fas fa-shopping-cart"></i>
-                <span id="itemCount">{cartCount}</span>
-                <span>Cart</span>
-              </a>
+
+            {/* Cart */}
+            <div 
+              className="flex items-center cursor-pointer relative"
+              onClick={() => navigate("/ProductPage")}
+            >
+              <div className="relative">
+                <FaShoppingCart className="text-2xl" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+              <span className="ml-1 text-sm font-semibold hidden md:block">Cart</span>
             </div>
           </div>
         </div>
+
         {/* Sub Header */}
-        <div className="sub-header">
-          <div className="sub-header-menu">
-            <a href="#" onClick={toggleSidebar}>
-              <i className="fas fa-bars"></i>
+        <div className="bg-blue-400">
+          <div className="container mx-auto px-4 py-2 flex items-center">
+            {/* Sidebar Toggle */}
+            <button 
+              className="flex items-center mr-4 hover:underline"
+              onClick={toggleSidebar}
+            >
+              <FaBars className="mr-1" />
               <span>All</span>
-            </a>
-          </div>
-          <div className="sub-header-links">
-            <a href="#">Great Deals</a>
+            </button>
+
+            {/* Navigation Links */}
+            <div className="flex space-x-4">
+              <a href="#" className="hover:underline">Great Deals</a>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Sidebar */}
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <div className="sidebar-header">
-          {username != null ? (
-            <span>Hello, {username}</span>
-          ) : (
-            <span>Hello</span>
-          )}
-          <button className="close-btn" onClick={toggleSidebar}>
-            &times;
-          </button>
-        </div>
-        <div className="sidebar-content">
+      <div className={`fixed inset-y-0 left-0 w-72 bg-white shadow-xl z-50 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
+        <div className="h-full flex flex-col">
+          {/* Sidebar Header */}
+          <div className="bg-blue-400 text-white px-4 py-3 flex justify-between items-center">
+            <div>
+              {username ? `Hello, ${username}` : "Hello"}
+            </div>
+            <button 
+              onClick={toggleSidebar}
+              className="text-white hover:text-gray-200"
+            >
+              <FaTimes className="text-xl" />
+            </button>
+          </div>
+
+          {/* Sidebar Content */}
+          <div className="flex-1 overflow-y-auto p-4">
             {selectedSubModule ? (
               <>
-                <button className="back-btn" onClick={() => setSelectedSubModule(null)}>
-                  &larr; Back to {selectedSubModule.ModuleName}
+                <button 
+                  onClick={() => setSelectedSubModule(null)}
+                  className="text-blue-600 hover:text-blue-800 mb-4 flex items-center"
+                >
+                  <span className="mr-1">&larr;</span> Back to {selectedSubModule.ModuleName}
                 </button>
-                <div className="subcategory-group">
-                  <h4>{selectedSubModule.subModuleName}</h4>
-                  <ul>
+                <div className="mb-6">
+                  <h4 className="font-bold text-lg mb-2">{selectedSubModule.subModuleName}</h4>
+                  <ul className="space-y-2">
                     {subCategories.map((subCategory) => (
                       <li key={subCategory.subCategoryID}>
-                        <Link to={subCategory.subCategoryUrl}>
+                        <Link 
+                          to={subCategory.subCategoryUrl}
+                          className="block py-1 text-gray-700 hover:text-blue-600"
+                        >
                           {subCategory.subCategoryName}
                         </Link>
                       </li>
@@ -236,40 +278,53 @@ const Header = () => {
               </>
             ) : (
               dashboardModules.map((module) => (
-                <div key={module.moduleID} className="module-group">
-                  <h3>{module.moduleName}</h3>
-                  <ul>
+                <div key={module.moduleID} className="mb-6">
+                  <h3 className="font-bold text-lg mb-2">{module.moduleName}</h3>
+                  <ul className="space-y-1">
                     {module.subModules.slice(
                       0,
                       module.showAll ? module.subModules.length : 5
                     ).map((subModule) => (
                       <li key={subModule.subModuleID}>
-                         <a
-                          href="#"
+                        <button
                           onClick={(e) => {
-                            e.preventDefault(); // Prevent default link behavior
+                            e.preventDefault();
                             handleSubModuleClick(subModule);
                           }}
+                          className="w-full text-left py-1 text-gray-700 hover:text-blue-600"
                         >
                           {subModule.subModuleName}
-                        </a>
+                        </button>
                       </li>
                     ))}
                   </ul>
                   {module.subModules.length > 5 && (
                     <button
-                      className="see-all-btn"
+                      className="text-blue-600 hover:text-blue-800 mt-2 flex items-center"
                       onClick={() => toggleSubmodules(module.moduleID)}
                     >
                       {module.showAll ? "See Less" : "See All"}
-                      {module.showAll ? <FaChevronUp /> : <FaChevronDown />}
+                      {module.showAll ? (
+                        <FaChevronUp className="ml-1" />
+                      ) : (
+                        <FaChevronDown className="ml-1" />
+                      )}
                     </button>
                   )}
                 </div>
               ))
             )}
           </div>
+        </div>
       </div>
+
+      {/* Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={toggleSidebar}
+        />
+      )}
     </>
   );
 };
