@@ -98,10 +98,10 @@ const AddProducts = () => {
   const columns = [
     { field: "productId", headerName: "ProductID", width: 70 },
     { field: "productName", headerName: "Product Name", width: 150 },
-    { field: "category", headerName: "Category", width: 120 },
+    { field: "categoryName", headerName: "Category", width: 120 },
     { field: "subCategoryName", headerName: "Subcategory", width: 120 },
     { field: "price", headerName: "Price", width: 100 },
-    { field: "inStock", headerName: "Quantity", width: 100 },
+    { field: "stockQuantity", headerName: "Quantity", width: 100 },
     {
       field: "actions",
       headerName: "Actions",
@@ -187,7 +187,7 @@ const AddProducts = () => {
         response = await AddProduct(finalData);
       }
 
-      if (response.responseStatusId === 200) {
+      if (response.responseCode === 200) {
         Swal.fire({
           icon: "success",
           title: "Success",
@@ -236,14 +236,23 @@ const AddProducts = () => {
 
   // Generate a unique product ID
   const generateProductID = (product) => {
-    const { categoryID, subcategory } = product;
-    if (categoryID != null && subcategory != null) {
-      const categoryName = categories.find((cat) => cat.id === parseInt(categoryID))?.name || "";
-      const subcategoryName = subcategories.find((sub) => sub.id === parseInt(subcategory))?.name || "";
+    const { categoryId, subCategoryId } = product;
+    if (categoryId != null && subCategoryId != null) {
+      // const categoryName = categories.find((cat) => cat.id === parseInt(categoryID))?.name || "";
+      // const subcategoryName = subcategories.find((sub) => sub.id === parseInt(subcategory))?.name || "";
+
+      const categoryName = product.categoryName;
+      const subCategoryName = product.subCategoryName;
+      const subSubCategoryName = product.subSubCategoryName;
+
       const catCode = categoryName.substring(0, 2).toUpperCase();
-      const subCatCode = subcategoryName.substring(0, 2).toUpperCase();
-      const uniqueNumber = Date.now();
-      return `${catCode}${subCatCode}${uniqueNumber}`;
+      const subCatCode = subCategoryName.substring(0, 2).toUpperCase();
+      const subSubCatCode = subSubCategoryName !== "" ? subCategoryName.substring(0, 2).toUpperCase() : "";
+      const uniqueNumber = String(Date.now()).slice(-4);
+
+      const baseCode = subSubCatCode ? `${catCode}${subCatCode}${subSubCatCode}` : `${catCode}${subCatCode}`
+
+      return `${baseCode}${uniqueNumber}`;
     }
     return "";
   };
@@ -386,7 +395,7 @@ const ProductForm = ({
     ? {
         ...product,
         merchantID: product.merchantID || 0,
-        Quantity: product.inStock || 0,
+        Quantity: product.stockQuantity || 0,
         categoryId: product.categoryId || "",
         subcategoryId: product.subCategoryId || "",
         subSubCategoryId : product.subSubCategoryId || "",
@@ -394,7 +403,7 @@ const ProductForm = ({
         SearchKeyword: product.searchKeyWord || "",
         productDetails: product.productDescription || "",
         productSpecifications: product.specification ? JSON.parse(product.specification) : [],
-        productImage: product.imageUrl || null,
+        productImages: product.imageUrlJson|| null,
         productFeatures: product.keyFeatures ? JSON.parse(product.keyFeatures) : {},
       }
     : {
@@ -723,7 +732,7 @@ const ProductForm = ({
           productID: formData.ProductID || "",
           categoryId: parseInt(formData.categoryId, 10),
           subCategoryId: formData.subcategoryId ? parseInt(formData.subcategoryId,10) : null,
-          subSubCategoryId: formData.subSubCategoryId ? parseInt(formData.subSubCategoryId,10) : null ,
+          subSubCategoryId: formData.subSubCategoryId ? parseInt(formData.subSubCategoryId,10) : 0 ,
           searchKeyWord: formData.SearchKeyword,
           categoryName: formData.categoryName,
           subCategoryName: formData.subCategoryName,

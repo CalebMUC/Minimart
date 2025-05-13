@@ -1,17 +1,14 @@
-
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import packageInfo from "../../package.json";
-import '../../src/CSS/ProductDetailPage.css';
 import { cartContext } from "./CartContext";
-import  ProductImageCarousel  from "./ProductImageCouresel";
-import Dialogs from "./Dialogs.js";
-import RecentlyViewed from "./RecentlyViewed.js";
+import ProductImageCarousel from "./ProductImageCouresel";
+import Dialogs from "./Dialogs";
+import RecentlyViewed from "./RecentlyViewed";
+import { AddCartItems, FetchProducts } from "../Data";
 
 const ProductDetail = () => {
-  const { productName: encodedProductName, productID } = useParams(); // Extract both productName and productID
+  const { productName: encodedProductName, productID } = useParams();
   const [product, setProduct] = useState(null);
-  // const [productID, setProductID] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userID, setUserID] = useState(localStorage.getItem('userID') || null);
@@ -19,41 +16,51 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { cartCount, updateCartCount } = useContext(cartContext);
-  const [showSuccessDialog,setSuccessDialog] = useState(false);
-  const [dialogMessage,setDialogMessage] = useState(null);
-  const [boxContent,setBoxContent] = useState([])
-
+  const [showSuccessDialog, setSuccessDialog] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState(null);
+  const [boxContent, setBoxContent] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
+
+  const [expandedDetails,setExpandedDetails] = useState(false)
+  const [expandedFeatures,setExpandedFeatures] = useState(false)
+  const detailsRef = useRef(null);
+  const featuresRef = useRef(null);
+
+  // Check if content exceeds max height
+  const [showDetailsToggle, setShowDetailsToggle] = useState(false);
+  const [showFeaturesToggle, setShowFeaturesToggle] = useState(false);
+
+
+  useEffect(()=>{
+    if(detailsRef.current){
+      setShowDetailsToggle(detailsRef.current.scrollHeight > 300)
+    }
+
+    if(featuresRef.current){
+      setShowDetailsToggle(featuresRef.current.scrollHeight > 300)
+    }
+
+  },[product])
 
   useEffect(() => {
     if (!product) return;
   
-    // Get the recently viewed items from localStorage or initialize an empty array
     const savedProducts = JSON.parse(localStorage.getItem("recentlyViewed")) || [];
-  
-    // Filter out the current product if it's already in the list
     const updatedProducts = savedProducts.filter(item => item.id !== product.productId);
   
-    // Add the new product to the beginning of the list
     updatedProducts.unshift({
       id: product.productId,
       name: product.productName,
       image: product.imageUrl,
       price: product.price,
-      rating: 4.3, // Example static rating
-      reviews: 31088, // Example static review count
+      rating: 4.3,
+      reviews: 31088,
     });
   
-    // Keep only the last 5 recently viewed products
     if (updatedProducts.length > 5) updatedProducts.pop();
-  
-    // Save the updated recently viewed list back to localStorage
     localStorage.setItem("recentlyViewed", JSON.stringify(updatedProducts));
-  
-    setRecentlyViewed(updatedProducts); // Update state for recently viewed items
+    setRecentlyViewed(updatedProducts);
   }, [product]);
-  
-
 
   useEffect(() => {
     fetchAllProducts();
@@ -61,46 +68,19 @@ const ProductDetail = () => {
 
   const fetchAllProducts = async () => {
     try {
-      const response = await fetch(packageInfo.urls.GetAllProducts, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          accept: "*/*",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch products: ${response.statusText}`);
-      }
-
-      const products = await response.json();
-      const matchedProduct = products.find((p) => p.productId  === productID);
+      const products = await FetchProducts();
+      const matchedProduct = products.find((p) => p.productId === productID);
 
       if (matchedProduct) {
-        console.log( "mand",matchedProduct)
         setProduct(matchedProduct);
-
-          // Parse the box content if it's a stringified array
-          let parsedBoxContent;
-          try {
-            parsedBoxContent = JSON.parse(matchedProduct.box);
-          } catch (error) {
-            console.error("Failed to parse box content:", error);
-            parsedBoxContent = [];
-          }
-          
-          setBoxContent(Array.isArray(parsedBoxContent) ? parsedBoxContent : []);
-
-
-        // setProductID(`${matchedProduct.productId}`);
-// ;
-//         console.log(productID)
-//         console.log(matchedProduct.keyFeatures)
-
-//         console.log(matchedProduct.specification)
-      
-        
-      
+        let parsedBoxContent;
+        try {
+          parsedBoxContent = JSON.parse(matchedProduct.box);
+        } catch (error) {
+          console.error("Failed to parse box content:", error);
+          parsedBoxContent = [];
+        }
+        setBoxContent(Array.isArray(parsedBoxContent) ? parsedBoxContent : []);
       } else {
         setError("Product not found");
       }
@@ -111,102 +91,28 @@ const ProductDetail = () => {
     }
   };
 
- 
-//   const parseKeyValuePairs = (input) => {
-//   if (!input) return [];
-
-//   return input
-//     .split(/[\r\n]+/) // Split by either \r\n or \n
-//     .map(line => line.split("\t").map(item => item.trim())) // Split by tabs
-//     .filter(([key, value]) => key && value); // Ensure both key and value exist
-// };
-// const parseKeyValuePairs = (data) => {
-//   if (typeof data === 'string') {
-//     try {
-//       data = JSON.parse(data); // Parse stringified JSON if necessary
-//     } catch (error) {
-//       console.error('Failed to parse data:', error);
-//       return [];
-//     }
-//   }else if(Array.isArray(data) ){
-//     const arrayData = data
-//     .filter(item => item.includes(':')) // Ensure the string has a colon
-//     .map(item => {
-//     const [key, value] = item.split(/:(.+)/); // Split on the first colon
-//     return [key.trim(), value ? value.trim() : '']; // Trim whitespace
-//      });
-//   }
-//   return Object.entries(data); // Convert object to array of key-value pairs
-// };
-// const parseKeyValuePairs = (data) => {
-//   if (!Array.isArray(data)) return [];
-  
-//   // Map over each string and split at the first colon
-//   return data
-//     .filter(item => item.includes(':')) // Ensure the string has a colon
-//     .map(item => {
-//       const [key, value] = item.split(/:(.+)/); // Split on the first colon
-//       return [key.trim(), value ? value.trim() : '']; // Trim whitespace
-//     });
-// };
-
-const parseKeyValuePairs = (data) => {
-  if (typeof data === 'string') {
-    try {
-      data = JSON.parse(data); // Parse stringified JSON if necessary
-    } catch (error) {
-      console.error('Failed to parse data:', error);
-      return [];
-    }
-  }
-
-  if (Array.isArray(data)) {
-    return data
-      .filter(item => item.includes(':') && !/^\d+\s*:/.test(item)) // Ensure the string has a colon and no leading numbers
-      .map(item => {
-        const [key, value] = item.split(/:(.+)/); // Split on the first colon
-        return [key.trim(), value ? value.trim() : '']; // Trim whitespace
-      });
-  } else if (typeof data === 'object' && data !== null) {
-    return Object.entries(data).map(([key, value]) => [key.trim(), String(value).trim()]);
-  }
-
-  return [];
-};
-
-const displayBoxContent =  (data) =>{
-
-
-}
-
-
-
-  const saveToCart = async () => {
-    try {
-      const response = await fetch(packageInfo.urls.AddCartItems, {
-        method: "POST",
-        headers: {
-          "Accept": "*/*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          UserID: userID,
-          ProductID: productID,
-          Quantity: quantity,
-        }),
-      });
-
-      // console.log(response.json());
-      if (!response.ok) {
-        throw new Error("Failed to add to cart");
+  const parseKeyValuePairs = (data) => {
+    if (typeof data === 'string') {
+      try {
+        data = JSON.parse(data);
+      } catch (error) {
+        console.error('Failed to parse data:', error);
+        return [];
       }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      setError("Error adding to cart");
     }
+
+    if (Array.isArray(data)) {
+      return data
+        .filter(item => item.includes(':') && !/^\d+\s*:/.test(item))
+        .map(item => {
+          const [key, value] = item.split(/:(.+)/);
+          return [key.trim(), value ? value.trim() : ''];
+        });
+    } else if (typeof data === 'object' && data !== null) {
+      return Object.entries(data).map(([key, value]) => [key.trim(), String(value).trim()]);
+    }
+
+    return [];
   };
 
   const handleAddToCart = async () => {
@@ -216,152 +122,212 @@ const displayBoxContent =  (data) =>{
     if (!userID || !token) {
       navigate('/Login', { state: { from: location } });
     } else {
-      const response = await saveToCart();
-
-      console.log(response);
+      const requestData = {
+        UserID: userID,
+        ProductID: productID,
+        Quantity: quantity,
+      }
+      const response = await AddCartItems(requestData);
 
       if (response && response.responseMessage) {
-
         if(response.responseCode == 0 ){
           const newCount = parseInt(cartCount) + 1;
           updateCartCount(newCount);
         }
-
-        setSuccessDialog(true)
+        setSuccessDialog(true);
         setDialogMessage(response.responseMessage);
-        // alert(response.responseMessage);
       }
     }
   };
 
-  const handleCloseDialog = async () =>{
+  const handleCloseDialog = async () => {
     setSuccessDialog(false);
-    setDialogMessage(null)
+    setDialogMessage(null);
   }
 
   if (loading) {
-    return <h2>Loading...</h2>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="error">{error}</div>;
+    return (
+      <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4" role="alert">
+        <p className="font-bold">Error</p>
+        <p>{error}</p>
+      </div>
+    );
   }
 
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 my-4" role="alert">
+        <p>Product not found</p>
+      </div>
+    );
   }
 
-  const productImages = [product.imageUrl];
+  const productImages = JSON.parse(product.imageUrl);
 
   return (
+    <div className="product-detail-container bg-gray-50 p-6">
+      {showSuccessDialog && (
+        <Dialogs
+          message={dialogMessage}
+          type="cart"
+          onClose={handleCloseDialog}
+        />
+      )}
 
-    <div className="product-detail-container">
+      <div className="flex flex-col md:flex-row gap-1">
+        {/* Left Side - Product Images */}
+        <div className="md:w-1/3 bg-white p-4 rounded-lg shadow-sm">
+          <ProductImageCarousel images={productImages} />
+        </div>
 
-      {/* Error message shown inline, allowing users to edit the form */}
-
-      {/* <div className="sidebarPDP"> */}
-        {/* <img src={`${product.imageUrl}`} alt={product.productName} /> */}
-        {/* call the ProductImageCorousel and pass the images */}
-
-        <ProductImageCarousel images={productImages} />
-
-
-        {/* //add viewed product to the RecentlyViewed */}
-
-       
-      {/* </div> */}
-
-      <div className="product-details">
-      {showSuccessDialog && <Dialogs
-      message={dialogMessage}
-       type="cart"
-       onClose={handleCloseDialog} />}
-        <div className="details">
-          <h2>{product.productName}</h2>
-          <h3>KSH {Number(product.price).toLocaleString()}</h3>
-          <p className={product.inStock > 1 ? "in-stock" : "out-of-stock"}>
-            {product.inStock > 1 ? "In stock" : "Out of stock"}
+        {/* Middle - Product Details */}
+        <div className="md:w-1/3 bg-white p-6 rounded-lg shadow-sm">
+          <h3 className="text-xl  text-gray-800 mb-2">{product.productName}</h3>
+          <h3 className="text-xl font-semibold text-yellow-600 mb-3">KSH {Number(product.price).toLocaleString()}</h3>
+          <p className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${product.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            {product.inStock ? 'In stock' : 'Out of stock'}
           </p>
 
-          <div className="quantity">
-            <label htmlFor="quantitySelect">Quantity:</label>
+          <div className="my-6">
+            <label htmlFor="quantitySelect" className="block text-sm font-medium text-gray-700 mb-1">Quantity:</label>
             <select
               id="quantitySelect"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
+              className="block w-20 mt-1 pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 rounded-md"
             >
-              {[...Array(5).keys()].map(i => (
+              {[...Array(product.stockQuantity).keys()].map(i => (
                 <option key={i} value={i + 1}>{i + 1}</option>
               ))}
             </select>
           </div>
 
-          <button className="my-button" onClick={handleAddToCart}>ADD TO CART</button>
+          <button 
+            onClick={handleAddToCart}
+            className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300"
+          >
+            ADD TO CART
+          </button>
+
+          <hr className="my-6 border-gray-200" />
+
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">Product Details</h2>
+
+              <div ref={detailsRef} 
+              className={`overflow:hidden transition-all duration-300 ${expandedDetails ? '' : 'max-h-[300px]'}`}
+              style={{maskImage : expandedDetails ? 'none' : 'linear-gradient(to bottom,black 80%,transparent 100%)',
+                WebkitMaskImage : expandedDetails ? 'none' : 'linear-gradient(to bottom,black 80%,transparent 100%)'
+              }}
+              >
+                 <ul className="space-y-2">
+                  {product.productDescription.split("\n").map(point => point.trim()).filter(point => point.length > 0).map((feature, index) => (
+                    <li key={index} className="flex items-start">
+                      <span className="text-gray-700">{feature.trim()}</span>
+                    </li>
+                  ))}
+                </ul>
+
+              </div>
+
+              {showDetailsToggle && (
+              <button 
+                onClick={() => setExpandedDetails(!expandedDetails)}
+                className="text-yellow-600 hover:text-yellow-700 text-sm font-medium mt-2 focus:outline-none"
+              >
+                {expandedDetails ? 'See Less' : 'See More'}
+              </button>
+            )}
+
+           
+          </div>
         </div>
-        <hr />
-        <div>
-          <h2>Product Details</h2>
-          <ul>
-            {product.productDescription.split("\n").map(point => point.trim()).filter(point => point.length > 0).map((feature, index) => (
-              <li key={index}>{feature.trim()}</li>
-            ))}
-          </ul>
+
+        {/* Right Side - Features */}
+        <div className="md:w-1/3 bg-white p-6 rounded-lg shadow-sm flex flex-col">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Features</h2>
+          
+          <div className="flex-grow overflow-hidden relative">
+            <div 
+              ref={featuresRef}
+              className={`overflow-hidden transition-all duration-300 ${expandedFeatures ? '' : 'max-h-[600px]'}`}
+              style={{
+                maskImage: expandedFeatures ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                WebkitMaskImage: expandedFeatures ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)'
+              }}
+            >
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-800 mb-2">Key Features</h3>
+                <hr className="border-yellow-200 mb-3" />
+                <ul className="space-y-2">
+                  {parseKeyValuePairs(product.keyFeatures).length > 0 ? (
+                    parseKeyValuePairs(product.keyFeatures).map(([key, value], index) => (
+                      <li key={index} className="text-gray-700">
+                        <span className="font-medium font-semibold">{key}:</span> {value}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No key features available</li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-lg font-medium text-gray-800 mb-2">Specifications</h3>
+                <hr className="border-yellow-200 mb-3" />
+                <ul className="space-y-2">
+                  {parseKeyValuePairs(product.specification).length > 0 ? (
+                    parseKeyValuePairs(product.specification).map((spec, index) => (
+                      <li key={index} className="text-gray-700">
+                        <span className="font-medium font-semibold">{spec[0]}:</span> {spec[1]}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No specifications available</li>
+                  )}
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-gray-800 mb-2">What's In the Box</h3>
+                <hr className="border-yellow-200 mb-3" />
+                <ul className="space-y-2">
+                  {boxContent.length > 0 ? (
+                    boxContent.map((item, index) => (
+                      <li key={index} className="text-gray-700">{item.trim()}</li>
+                    ))
+                  ) : (
+                    <li className="text-gray-500">No items available</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+            {showFeaturesToggle && (
+              <button 
+                onClick={() => setExpandedFeatures(!expandedFeatures)}
+                className="text-yellow-600 hover:text-yellow-700 text-sm font-medium mt-2 focus:outline-none"
+              >
+                {expandedFeatures ? 'See Less' : 'See More'}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="features">
-  <h2>Features</h2>
-  <div className="key-features">
-    <h3>Key Features</h3>
-    <hr />
-    <ul>
-  {parseKeyValuePairs(product.keyFeatures).length > 0 ? (
-    parseKeyValuePairs(product.keyFeatures).map(([key, value], index) => (
-      <li key={index}>
-        <strong>{key}:</strong> {value}
-      </li>
-    ))
-  ) : (
-    <li>No key features available</li>
-  )}
-</ul>
-  </div>
-
-        <div className="specifications">
-          <h3>Specifications</h3>
-          <hr />
-          <ul>
-            {parseKeyValuePairs(product.specification).length > 0 ? (
-              parseKeyValuePairs(product.specification).map((spec, index) => (
-                <li key={index}>
-                  <strong>{spec[0]}:</strong> {spec[1]}
-                </li>
-              ))
-            ) : (
-              <li>No specifications available</li>
-            )}
-          </ul>
-        </div>
-        <div className="box-contents">
-          <h3>What's In the Box</h3>
-          <hr />
-          <ul>
-            {boxContent.length > 0 ? (
-              boxContent.map((item, index) => (
-                <li key={index}>{item.trim()}</li>
-              ))
-            ) : (
-              <li>No items available</li>
-            )}
-          </ul>
-        </div>
-
-
-      </div>
+      {/* Recently Viewed - Maintained at bottom as in original */}
+      {/* <div className="mt-8">
+        <RecentlyViewed />
+      </div> */}
     </div>
   );
 };
 
 export default ProductDetail;
-
-

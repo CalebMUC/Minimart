@@ -61,7 +61,7 @@
     "GetSubCategory": "https://localhost:44334/api/Entities/SubCategoryID",
     "GetBusinessTypes": "https://localhost:44334/api/Merchant/GetBusinessTypes",
     "AddMerchants": "https://localhost:44334/api/Merchant/AddMerchants",
-    "GetProductsByCategory": "https://localhost:44334/api/Entities/GetProductsByCategory",
+    "GetProductsByCategory": "https://localhost:44334/api/Product/GetProductsByCategory",
     "Login": "https://localhost:44334/api/Authentication/Login",
     "WeatherForecast": "https://localhost:44334/WeatherForecast",
     "Register": "https://localhost:44334/api/Authentication/Register",
