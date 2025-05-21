@@ -1,119 +1,166 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 
-const MpesaForm = ({ paymentMethods, setOrderData,orderData, subTotal, shippingCost,onMethodSelection }) => {
-  // State for country code and phone number
+const MpesaForm = ({ paymentMethods,setOrderData,
+  orderData, subTotal, shippingCost, onMethodSelection }) => {
   const [selectedCountryCode, setSelectedCountryCode] = useState("+254");
-  const [paymentData, setPaymentData] = useState({ phoneNumber: "" });
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // List of supported country codes
-  const countryCodes = [
+  // Memoize country codes to prevent unnecessary re-renders
+  const countryCodes = useMemo(() => [
     { name: "Kenya", code: "+254" },
     { name: "Uganda", code: "+256" },
-    // Add more countries as needed
-  ];
+  ], []);
 
-  // Validate the phone number format
-  const validatePhoneNumber = (phoneNumber) => {
-    const kenyanPhoneRegex = /^7\d{8}$/; // Kenyan phone numbers start with 7 and have 9 digits
-    return kenyanPhoneRegex.test(phoneNumber);
+  // Validate phone number format with useCallback
+  const validatePhoneNumber = useCallback((number) => {
+    const kenyanPhoneRegex = /^7\d{8}$/;
+    return kenyanPhoneRegex.test(number);
+  }, []);
+
+  // Format full phone number with useCallback
+  const getFullPhoneNumber = useCallback(() => {
+    return `${selectedCountryCode.replace("+", "")}${phoneNumber}`;
+  }, [selectedCountryCode, phoneNumber]);
+
+  // Handle phone number input with debouncing
+  const handlePhoneNumberChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    setPhoneNumber(value);
   };
 
-  // Format the phone number for the Daraja API
-  const getFullPhoneNumber = () => {
-    const countryCode = selectedCountryCode.replace("+", ""); // Remove the '+' from the country code
-    return `${countryCode}${paymentData.phoneNumber}`; // Combine country code and phone number
-  };
+  // Handle form submission
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  // Handle payment input changes
-  const handlePaymentInputChange = (e) => {
-    const { name, value } = e.target;
-    setPaymentData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };  
-
-  const handleUseOption = useCallback(() => {
-    // Validate the phone number
-    if (!validatePhoneNumber(paymentData.phoneNumber)) {
-      setError("Invalid phone number. Please enter a valid Kenyan phone number (e.g., 712345678).");
+    if (!validatePhoneNumber(phoneNumber)) {
+      setError("Please enter a valid phone number (e.g., 712345678)");
+      setIsSubmitting(false);
       return;
     }
-  
-    // Clear any previous errors
+
     setError("");
-  
-    // Calculate the total order amount
-    const totalOrderedAmount = subTotal + shippingCost;
-  
+
+    try {
+      const totalAmount = subTotal + shippingCost;
+      const fullPhoneNumber = getFullPhoneNumber();
     // Update order data with payment details
     setOrderData((prevData) => ({
       ...prevData,
       paymentDetails: [
         {
           paymentID: 1, // Assuming Mpesa is payment method ID 1
-          paymentReference: getFullPhoneNumber(), // Full phone number for Daraja API
-          phoneNumber: getFullPhoneNumber(), // Full phone number for display
+          paymentReference: fullPhoneNumber, // Full phone number for Daraja API
+          phoneNumber: fullPhoneNumber, // Full phone number for display
           paymentMethod: "Mpesa", // Hardcoded since this is the Mpesa form
-          amount: totalOrderedAmount,
+          amount: totalAmount,
         },
       ],
     }));
-  
-    // Close the payment form
-    onMethodSelection(false);
-  }, [
-    paymentData.phoneNumber,
-    subTotal,
-    shippingCost,
-    setOrderData,
-    selectedCountryCode,
-    onMethodSelection, // Add onMethodSelection to the dependency array
-  ]);
+
+
+      onMethodSelection(false);
+    } catch (err) {
+      setError("Failed to process payment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [phoneNumber, subTotal, shippingCost, setOrderData,
+  orderData, onMethodSelection, validatePhoneNumber, getFullPhoneNumber]);
 
   return (
-    <div className="payment-form">
-      <h3>Enter Mpesa Details</h3>
-      <form className="global-form">
-        {/* Mpesa Number Input */}
-        <div className="form-group">
-          <label>Mpesa Number</label>
-          <div className="phone-input">
-            {/* Country Code Dropdown */}
-            <select
-              value={selectedCountryCode}
-              onChange={(e) => setSelectedCountryCode(e.target.value)}
-            >
-              {countryCodes.map((country) => (
-                <option key={country.code} value={country.code}>
-                  {country.name} ({country.code})
-                </option>
-              ))}
-            </select>
+    <div className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+      <h2 className="text-xl font-bold text-gray-800 mb-6">M-Pesa Payment Details</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="countryCode" className="block text-sm font-medium text-gray-700">
+            Country
+          </label>
+          <select
+            id="countryCode"
+            value={selectedCountryCode}
+            onChange={(e) => setSelectedCountryCode(e.target.value)}
+            className="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            aria-label="Select country code"
+          >
+            {countryCodes.map((country) => (
+              <option 
+                key={country.code} 
+                value={country.code}
+                aria-label={`${country.name} (${country.code})`}
+              >
+                {country.name} ({country.code})
+              </option>
+            ))}
+          </select>
+        </div>
 
-            {/* Phone Number Input */}
+        <div className="space-y-2">
+          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
+          <div className="flex rounded-md shadow-sm">
+            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+              {selectedCountryCode}
+            </span>
             <input
-              type="text"
+              type="tel"
+              id="phoneNumber"
               name="phoneNumber"
-              value={paymentData.phoneNumber}
-              onChange={handlePaymentInputChange}
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
               placeholder="712345678"
+              pattern="[0-9]{9}"
+              maxLength="9"
+              className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+              aria-describedby="phone-number-format"
+              aria-invalid={error ? "true" : "false"}
               required
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
+          <p id="phone-number-format" className="text-xs text-gray-500">
+            Enter your M-Pesa number without the country code (e.g., 712345678)
+          </p>
+          {error && (
+            <p className="text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
         </div>
 
-        {/* Use Option Button */}
-        <button
-          onClick={handleUseOption}
-          type="button"
-          disabled={!paymentData.phoneNumber} // Disable if phone number is empty
-        >
-          Use this Option
-        </button>
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={!phoneNumber || isSubmitting}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${(!phoneNumber || isSubmitting) ? 'bg-yellow-300 cursor-not-allowed' : 'bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500'}`}
+            aria-label="Confirm M-Pesa payment"
+          >
+            {isSubmitting ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              'Confirm Payment'
+            )}
+          </button>
+        </div>
       </form>
+
+      <div className="mt-6 p-4 bg-blue-50 rounded-md border border-blue-100">
+        <h3 className="text-sm font-medium text-blue-800">Payment Summary</h3>
+        <div className="mt-2 space-y-1 text-sm text-blue-700">
+          <p>Subtotal: KES {subTotal.toLocaleString()}</p>
+          <p>Shipping: KES {shippingCost.toLocaleString()}</p>
+          <p className="font-semibold">Total: KES {(subTotal + shippingCost).toLocaleString()}</p>
+        </div>
+      </div>
     </div>
   );
 };

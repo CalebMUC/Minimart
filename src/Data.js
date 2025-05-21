@@ -153,7 +153,7 @@ export const DeleteCategoriesById = async (categoryId) => {
 // -----* Addresses *-----
 export const fetchAddressesByUserID = async (userID) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/GetAddressesByUserId/${userID}`, {
+    const response = await fetch(`${config.baseUrl}/api/Address/GetAddressesByUserId/${userID}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -174,7 +174,7 @@ export const fetchAddressesByUserID = async (userID) => {
 
 export const AddNewAddress = async (data) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/AddAddress`, {
+    const response = await fetch(`${config.baseUrl}/api/Address/AddAddress`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -197,7 +197,7 @@ export const AddNewAddress = async (data) => {
 
 export const updateAddress = async (data) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Entities/EditAddress`, {
+    const response = await fetch(`${config.baseUrl}/api/Address/EditAddress`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -264,9 +264,16 @@ export const UpdateOrderStatus = async (formData) => {
   }
 };
 
-export const GetOrders = async () => {
+export const GetOrders = async (requestData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Order/GetOrders`);
+    const response = await fetch(`${config.baseUrl}/api/Order/GetOrders`,{
+       method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
     if (!response.ok) {
       throw new Error(`Network Error: ${response.statusText}`);
     }
@@ -737,6 +744,20 @@ export const fetchCountyTowns = async (countyId) => {
   }
 };
 
+export const fetchDeliveryStations = async (townId) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Deliveries/deliveryStations?townId=${townId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching towns:", error);
+    return [];
+  }
+};
+
 // -----* Carts *-----
 
 export const AddCartItems = async (requestData) => {
@@ -785,6 +806,66 @@ export const GetCartItems = async (requestData) => {
   }
 };
 
+// Data.js
+export const GetPersonalizedRecommendations = async (userId, limit = 5) => {
+  const response = await fetch(`${config.baseUrl}/api/Cart/personalized/${userId}?limit=${limit}`);
+  return await response.json();
+};
+
+export const GetComplementaryProducts = async (productId, limit = 5) => {
+  const response = await fetch(`${config.baseUrl}/api/Cart/complementary/${productId}?limit=${limit}`);
+  return await response.json();
+};
+
+export const GetFrequentlyBought = async (productId, limit = 5) => {
+  const response = await fetch(`${config.baseUrl}/api/Cart/frequently-bought/${productId}?limit=${limit}`);
+  return await response.json();
+};
+
+export const GetSimilarProducts = async (productId, limit = 5) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Cart/GetSimilarProducts?productId=${productId}&limit=${limit}`, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch similar products");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching similar products:", error);
+    throw error;
+  }
+};
+
+export const GetBoughtItems = async (requestData) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Cart/GetBoughtItems`, {
+      method: "POST",
+      headers: {
+        Accept: "*/*",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to save items");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error saving items:", error);
+    throw error;
+  }
+};
+
 export const SaveItems = async (requestData) => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Cart/SaveItems`, {
@@ -804,6 +885,21 @@ export const SaveItems = async (requestData) => {
     return data;
   } catch (error) {
     console.error("Error saving items:", error);
+    throw error;
+  }
+};
+
+export const GetSavedItems = async (userId) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Cart/${userId}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to get saved items");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error getting saved items:", error);
     throw error;
   }
 };

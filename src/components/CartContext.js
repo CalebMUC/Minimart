@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import packageInfo from "../../package.json";
+import { GetCartItems } from "../Data";
 
 // Create context
 export const cartContext = createContext();
@@ -9,28 +10,37 @@ export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
 
   // Function to fetch cart items (you can call this in your Header or any other component if needed)
-  const GetCartItems = async () => {
+  const GetCartItemsAsync = async () => {
     try {
-      const response = await fetch(packageInfo.urls.GetCartItemsUrl,{
-        method:"POST",
-        headers : {
-          "Accept": "*/*",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+      // const response = await fetch(packageInfo.urls.GetCartItemsUrl,{
+      //   method:"POST",
+      //   headers : {
+      //     "Accept": "*/*",
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify({
 
-        //   UserID: localStorage.getItem('userID'),
-         userID: localStorage.getItem('userID'),
+      //   //   UserID: localStorage.getItem('userID'),
+      //    userID: localStorage.getItem('userID'),
          
-        })
+      //   })
         
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setCartCount(data.length); // Assuming response contains cart items
-      } else {
-        console.error("Failed to fetch cart items");
+      // });
+      // if (response.ok) {
+      //   const data = await response.json();
+      //   setCartCount(data.length); // Assuming response contains cart items
+      // } else {
+      //   console.error("Failed to fetch cart items");
+      // }
+      const requestData = {
+        userID : parseInt(localStorage.getItem('userID'))
+
       }
+
+      var response = await GetCartItems(requestData);
+
+      setCartCount(response.length)
+
     } catch (error) {
       console.error(error);
     }
@@ -49,7 +59,7 @@ export const CartProvider = ({ children }) => {
   };
 
   return (
-    <cartContext.Provider value={{ cartCount, updateCartCount, GetCartItems }}>
+    <cartContext.Provider value={{ cartCount, updateCartCount, GetCartItemsAsync }}>
       {children}
     </cartContext.Provider>
   );

@@ -23,7 +23,7 @@ function Login() {
   const location = useLocation();
 
   const { updateUser } = useContext(UserContext);
-  const { GetCartItems } = useContext(cartContext);
+  const { GetCartItemsAsync } = useContext(cartContext);
 
   const redirectMessage = location.state?.successMessage;
 
@@ -93,7 +93,7 @@ function Login() {
 
         if (isAuthenticated) {
           const redirectPath = location.state?.from?.pathname || "/";
-          await GetCartItems(); // Update cart count after login
+          await GetCartItemsAsync(); // Update cart count after login
           navigate(redirectPath);
         } else {
           setErrorMessage("Authentication failed. Please try again.");

@@ -13,10 +13,69 @@ const Header = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedSubModule, setSelectedSubModule] = useState(null);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [query, setQuery] = useState("");
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const { cartCount, GetCartItems } = useContext(cartContext);
+  const { cartCount, GetCartItemsAsync } = useContext(cartContext);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Mock function to fetch suggestions - replace with your actual API call
+  const fetchSearchSuggestions = async (searchTerm) => {
+    // In a real app, you would fetch these from your backend
+    const mockSuggestions = [
+      "Q laptop",
+      "Q lap",
+      "Q lap desk", 
+      "Q laptop stand",
+      "Q lap table",
+      "Q lap tray",
+      "Q lap pillow"
+    ];
+    
+    return mockSuggestions.filter(item => 
+      item.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const handleSearchChange = async (e) => {
+    const value = e.target.value;
+    setQuery(value);
+    
+    if (value.length > 0) {
+      const suggestions = await fetchSearchSuggestions(value);
+      setSearchSuggestions(suggestions);
+      setShowSuggestions(true);
+    } else {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setQuery(suggestion);
+    setShowSuggestions(false);
+    // Navigate to search results or perform search
+    // navigate(`/search?q=${suggestion}`);
+  };
+
+  const handleSearchSubmit = () => {
+    setShowSuggestions(false);
+    // Perform search with the query
+    // navigate(`/search?q=${query}`);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth < 768);
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchModules = async () => {
     try {
@@ -41,7 +100,7 @@ const Header = () => {
 
   useEffect(() => {
     fetchModules();
-    GetCartItems();
+    GetCartItemsAsync();
   }, []);
 
   const showDropdown = () => setIsDropdownVisible(true);
@@ -102,124 +161,265 @@ const Header = () => {
       {/* Header */}
       <header className="bg-blue-600 text-white">
         {/* Top Header */}
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between">
-          {/* Left Section - Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="bg-white p-1 rounded shadow-md">
-              <img
-                src="/images/shopping-bag.png"
-                alt="Minimart Logo"
-                className="w-8 h-8"
-              />
+        <div className="container mx-auto px-4 py-2">
+          {/* First Row - Logo and Right Items */}
+          <div className="flex items-center justify-between pb-2">
+            {/* Left Section - Logo and Menu */}
+            <div className="flex items-center space-x-4">
+              <button 
+                className="flex items-center hover:underline md:hidden"
+                onClick={toggleSidebar}
+              >
+                <FaBars className="mr-1" />
+              </button>
+              <div className="flex items-center space-x-2">
+                <div className="bg-white p-1 rounded shadow-md">
+                  <img
+                    src="/images/shopping-bag.png"
+                    alt="Minimart Logo"
+                    className="w-8 h-8"
+                  />
+                </div>
+                <span className="font-semibold">Minimart</span>
+              </div>
             </div>
-            <span className="font-semibold hidden md:block">Minimart</span>
-          </div>
 
-          {/* Center Section - Search */}
-          <div className="flex-1 max-w-xl mx-4">
-            <div className="relative">
-              <input
-                type="text"
-                className="w-full py-2 px-4 rounded-l focus:outline-none text-gray-800"
-                placeholder="Search Minimart"
-              />
-              <button className="absolute right-0 top-0 h-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-4 rounded-r flex items-center justify-center">
-                <FaSearch />
+            {/* Center Section - Search (hidden on mobile) */}
+            {!isMobileView && (
+              <div className="flex-1 max-w-xl mx-4 relative">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={handleSearchChange}
+                    onFocus={() => query.length > 0 && setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    className="w-full py-2 px-4 rounded-l focus:outline-none text-gray-800"
+                    placeholder="Search Minimart"
+                  />
+                  <button 
+                    onClick={handleSearchSubmit}
+                    className="absolute right-0 top-0 h-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-4 rounded-r flex items-center justify-center"
+                  >
+                    <FaSearch />
+                  </button>
+                </div>
+                
+                {showSuggestions && searchSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-md shadow-lg z-50 mt-1">
+                    <ul className="py-1">
+                      {searchSuggestions.map((suggestion, index) => (
+                        <li 
+                          key={index}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                          onClick={() => handleSuggestionClick(suggestion)}
+                        >
+                          <FaSearch className="text-gray-400 mr-2" />
+                          <span className="text-gray-500">{suggestion}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Right Section - Navigation */}
+            <div className="flex items-center space-x-6">
+              {/* Account Dropdown */}
+              <div 
+                className="relative group hidden md:block"
+                onMouseEnter={showDropdown}
+                onMouseLeave={hideDropdown}
+              >
+                <div className="flex flex-col items-center cursor-pointer">
+                  <span className="text-xs">
+                    {username ? `Hello, ${username}` : "Hello"}
+                  </span>
+                  <span className="text-sm font-semibold">Account & Lists</span>
+                </div>
+                
+                {isDropdownVisible && (
+                  <div className="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 text-gray-800">
+                    <div className="py-1">
+                      {username ? (
+                        <>
+                          <Link
+                            to="/profile"
+                            className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                          >
+                            <FaUser className="mr-2" /> My Profile
+                          </Link>
+                          <Link
+                            to="/account-settings"
+                            className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                          >
+                            <FaCog className="mr-2" /> Account Settings
+                          </Link>
+                          <Link
+                            to="/device-management"
+                            className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                          >
+                            <FaMobileAlt className="mr-2" /> Device Management
+                          </Link>
+                          <button
+                            onClick={HandleLogout}
+                            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                          >
+                            <FaSignOutAlt className="mr-2" /> Sign Out
+                          </button>
+                        </>
+                      ) : (
+                        <Link
+                          to="/Login"
+                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+                        >
+                          <FaSignInAlt className="mr-2" /> Sign In
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Returns & Orders */}
+              <div 
+                className="flex flex-col items-center cursor-pointer hidden md:flex"
+                onClick={() => navigate("/ReturnsAndOrdersPage")}
+              >
+                <span className="text-xs">Returns</span>
+                <span className="text-sm font-semibold">& Orders</span>
+              </div>
+
+              {/* Cart */}
+              <div 
+                className="flex items-center cursor-pointer relative"
+                onClick={() => navigate("/ProductPage")}
+              >
+                <div className="relative">
+                  <FaShoppingCart className="text-2xl" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+                <span className="ml-1 text-sm font-semibold hidden md:block">Cart</span>
+              </div>
+
+              {/* Mobile Profile Dropdown Trigger */}
+              <button 
+                onClick={() => setIsDropdownVisible(!isDropdownVisible)}
+                className="flex items-center md:hidden"
+              >
+                <FaUser className="text-xl" />
               </button>
             </div>
           </div>
 
-          {/* Right Section - Navigation */}
-          <div className="flex items-center space-x-6">
-            {/* Account Dropdown */}
-            <div 
-              className="relative group"
-              onMouseEnter={showDropdown}
-              onMouseLeave={hideDropdown}
-            >
-              <div className="flex flex-col items-center cursor-pointer">
-                <span className="text-xs">
-                  {username ? `Hello, ${username}` : "Hello"}
-                </span>
-                <span className="text-sm font-semibold">Account & Lists</span>
+          {/* Second Row - Search Bar (only on mobile) */}
+          {isMobileView && (
+            <div className="w-full pb-2 relative">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={handleSearchChange}
+                  onFocus={() => query.length > 0 && setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  className="w-full py-2 px-4 rounded-l focus:outline-none text-gray-800"
+                  placeholder="Search Minimart"
+                />
+                <button 
+                  onClick={handleSearchSubmit}
+                  className="absolute right-0 top-0 h-full bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-4 rounded-r flex items-center justify-center"
+                >
+                  <FaSearch />
+                </button>
               </div>
               
-              {isDropdownVisible && (
-                <div className="absolute right-0 mt-1 w-56 bg-white rounded-md shadow-lg z-50 text-gray-800">
-                  <div className="py-1">
-                    {username ? (
-                      <>
-                        <Link
-                          to="/profile"
-                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
-                        >
-                          <FaUser className="mr-2" /> My Profile
-                        </Link>
-                        <Link
-                          to="/account-settings"
-                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
-                        >
-                          <FaCog className="mr-2" /> Account Settings
-                        </Link>
-                        <Link
-                          to="/device-management"
-                          className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
-                        >
-                          <FaMobileAlt className="mr-2" /> Device Management
-                        </Link>
-                        <button
-                          onClick={HandleLogout}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
-                        >
-                          <FaSignOutAlt className="mr-2" /> Sign Out
-                        </button>
-                      </>
-                    ) : (
-                      <Link
-                        to="/Login"
-                        className="block px-4 py-2 text-sm hover:bg-gray-100 flex items-center"
+              {showSuggestions && searchSuggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-md shadow-lg z-50 mt-1">
+                  <ul className="py-1">
+                    {searchSuggestions.map((suggestion, index) => (
+                      <li 
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                        onClick={() => handleSuggestionClick(suggestion)}
                       >
-                        <FaSignInAlt className="mr-2" /> Sign In
-                      </Link>
-                    )}
-                  </div>
+                        <FaSearch className="text-gray-400 mr-2" />
+                        <span className="text-gray-500">{suggestion}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
             </div>
+          )}
 
-            {/* Returns & Orders */}
-            <div 
-              className="flex flex-col items-center cursor-pointer"
-              onClick={() => navigate("/ReturnsAndOrdersPage")}
-            >
-              <span className="text-xs">Returns</span>
-              <span className="text-sm font-semibold">& Orders</span>
-            </div>
-
-            {/* Cart */}
-            <div 
-              className="flex items-center cursor-pointer relative"
-              onClick={() => navigate("/ProductPage")}
-            >
-              <div className="relative">
-                <FaShoppingCart className="text-2xl" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
+          {/* Mobile Dropdown */}
+          {isMobileView && isDropdownVisible && (
+            <div className="absolute right-4 mt-2 w-56 bg-white rounded-md shadow-lg z-50 text-gray-800 border border-gray-200">
+              <div className="py-2">
+                <div className="px-4 py-2 font-medium border-b border-gray-200">
+                  {username ? `Hello, ${username}` : "Hello, Sign In"}
+                </div>
+                
+                <div className="py-1">
+                  <h4 className="px-4 py-2 font-medium">Account</h4>
+                  {username ? (
+                    <>
+                      <Link
+                        to="/profile"
+                        className="block px-6 py-2 text-sm hover:bg-gray-100"
+                      >
+                        My Profile
+                      </Link>
+                      <Link
+                        to="/account-settings"
+                        className="block px-6 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Account Settings
+                      </Link>
+                      <button
+                        onClick={HandleLogout}
+                        className="w-full text-left px-6 py-2 text-sm hover:bg-gray-100"
+                      >
+                        Sign Out
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      to="/Login"
+                      className="block px-6 py-2 text-sm hover:bg-gray-100"
+                    >
+                      Sign In
+                    </Link>
+                  )}
+                </div>
+                
+                <div className="border-t border-gray-200"></div>
+                
+                <div className="py-1">
+                  <h4 className="px-4 py-2 font-medium">Orders</h4>
+                  <div 
+                    onClick={() => navigate("/ReturnsAndOrdersPage")}
+                    className="block px-6 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+                  >
+                    Returns & Orders
+                  </div>
+                </div>
               </div>
-              <span className="ml-1 text-sm font-semibold hidden md:block">Cart</span>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Sub Header */}
         <div className="bg-blue-400">
           <div className="container mx-auto px-4 py-2 flex items-center">
-            {/* Sidebar Toggle */}
+            {/* Sidebar Toggle (hidden on mobile) */}
             <button 
-              className="flex items-center mr-4 hover:underline"
+              className="hidden md:flex items-center mr-4 hover:underline"
               onClick={toggleSidebar}
             >
               <FaBars className="mr-1" />

@@ -1,8 +1,6 @@
-import React from "react";
-import Modal from "./Modal";
+import React, { useState } from "react";
 import MpesaForm from "./MpesaForm";
 import CreditCardForm from "./CreditCardForm";
-import '../../src/CSS/checkoupage.css';
 
 const PaymentMethodSection = ({
   paymentMethods,
@@ -15,90 +13,123 @@ const PaymentMethodSection = ({
   subTotal,
   shippingCost
 }) => {
-  // Function to clear the selected payment method
-  const clearSelectedPaymentMethod = () => {
-    handleSelectPaymentMethod(null); // Reset the selected payment method
-    setShowPaymentForm(false); // Close any open payment form
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleCloseForm = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setShowPaymentForm(false);
+      setIsAnimating(false);
+    }, 300);
+  };
+
+  const handleMethodClick = (methodId) => {
+    handleSelectPaymentMethod(methodId);
+    setShowPaymentForm(true);
   };
 
   return (
-    <div className={`payment-section ${!selectedPaymentMethod ? 'disabled' : ''}`}>
-      <h2>3. Payment method</h2>
-      <div className="payment-method">
-        {/* Render only the selected payment method */}
-        {selectedPaymentMethod ? (
-          <>
-            {/* Display the selected payment method */}
-            {paymentMethods
-              .filter((method) => method.id === selectedPaymentMethod)
-              .map((method) => (
-                <div key={method.id} className="payment-option selected">
-                  <div className="payment-method-logo">
-                    <img src={method.logo} alt={method.name} />
+    <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4">3. Payment Method</h2>
+
+      {selectedPaymentMethod ? (
+        <div className="space-y-4">
+          {/* Selected Payment Method Display */}
+          {paymentMethods
+            .filter(method => method.id === selectedPaymentMethod)
+            .map(method => (
+              <div 
+                key={method.id} 
+                className="flex items-center justify-between p-4 border border-orange-300 bg-orange-50 rounded-lg"
+              >
+                <div className="flex items-center space-x-4">
+                  <img 
+                    src={method.logo} 
+                    alt={method.name} 
+                    className="h-10 w-10 object-contain"
+                  />
+                  <div>
+                    <p className="font-medium">{method.name}</p>
+                    <p className="text-sm text-gray-500">Selected payment method</p>
                   </div>
-                  <div className="payment-method-name">
-                    <p>{method.name}</p>
-                  </div>
-                  {/* Clear Button */}
-                  <button
-                    className="clear-button"
-                    onClick={clearSelectedPaymentMethod}
-                  >
-                    Clear
-                  </button>
                 </div>
-              ))}
-
-            {/* Mpesa Form Modal */}
-            {showPaymentForm && selectedPaymentMethod === 1 && (
-              <Modal
-                isVisible={showPaymentForm}
-                onClose={ clearSelectedPaymentMethod}
-              >
-                <MpesaForm
-                  paymentMethods={paymentMethods}
-                  setOrderData={setOrderData}
-                  orderData={orderData}
-                  subTotal={subTotal}
-                  shippingCost={shippingCost}
-                  onMethodSelection={setShowPaymentForm} // Pass the function
-                />
-              </Modal>
-            )}
-
-            {/* Credit Card Form Modal */}
-            {showPaymentForm && selectedPaymentMethod === 2 && (
-              <Modal
-                isVisible={showPaymentForm}
-                onClose={ clearSelectedPaymentMethod}
-              >
-                <CreditCardForm
-                  setOrderData={setOrderData}
-                  orderData={orderData}
-                  subTotal={subTotal}
-                  shippingCost={shippingCost}
-                />
-              </Modal>
-            )}
-          </>
-        ) : (
-          // Display all payment methods if none is selected
-          paymentMethods.map((method) => (
-            <div
-              key={method.id}
-              className="payment-option"
-              onClick={() => handleSelectPaymentMethod(method.id)} // Select the method on click
-            >
-              <div className="payment-method-logo">
-                <img src={method.logo} alt={method.name} />
+                <button
+                  onClick={() => handleSelectPaymentMethod(null)}
+                  className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  Change
+                </button>
               </div>
-              <div className="payment-method-name">
-                <p>{method.name}</p>
+            ))}
+
+          {/* Custom Modal for Payment Forms */}
+          {showPaymentForm && (
+            <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isAnimating ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
+              <div 
+                className="fixed inset-0 bg-black bg-opacity-50"
+                onClick={handleCloseForm}
+                aria-hidden="true"
+              />
+              
+              <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                {/* Close Button */}
+                <button
+                  onClick={handleCloseForm}
+                  className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100"
+                  aria-label="Close payment form"
+                >
+                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                {/* Form Content */}
+                <div className="p-6">
+                  {selectedPaymentMethod === 1 && (
+                    <MpesaForm
+                      paymentMethods={paymentMethods}
+                       setOrderData={setOrderData}
+                       orderData={orderData}
+                      subTotal={subTotal}
+                      shippingCost={shippingCost}
+                      onMethodSelection={handleCloseForm}
+                    />
+                  )}
+                  {selectedPaymentMethod === 2 && (
+                    <CreditCardForm
+                       setOrderData={setOrderData}
+                       orderData={orderData}
+                      subTotal={subTotal}
+                      shippingCost={shippingCost}
+                      onMethodSelection={handleCloseForm}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {paymentMethods.map(method => (
+            <button
+              key={method.id}
+              onClick={() => handleMethodClick(method.id)}
+              className="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors text-left"
+            >
+              <img 
+                src={method.logo} 
+                alt={method.name} 
+                className="h-10 w-10 object-contain mr-4"
+              />
+              <div>
+                <p className="font-medium">{method.name}</p>
+                {/* <p className="text-sm text-gray-500">Click to select</p> */}
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

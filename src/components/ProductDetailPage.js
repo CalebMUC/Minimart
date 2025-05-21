@@ -5,6 +5,7 @@ import ProductImageCarousel from "./ProductImageCouresel";
 import Dialogs from "./Dialogs";
 import RecentlyViewed from "./RecentlyViewed";
 import { AddCartItems, FetchProducts } from "../Data";
+import { FiCheckCircle } from "react-icons/fi";
 
 const ProductDetail = () => {
   const { productName: encodedProductName, productID } = useParams();
@@ -123,7 +124,7 @@ const ProductDetail = () => {
       navigate('/Login', { state: { from: location } });
     } else {
       const requestData = {
-        UserID: userID,
+        UserID: parseInt(userID),
         ProductID: productID,
         Quantity: quantity,
       }
@@ -231,6 +232,7 @@ const ProductDetail = () => {
                  <ul className="space-y-2">
                   {product.productDescription.split("\n").map(point => point.trim()).filter(point => point.length > 0).map((feature, index) => (
                     <li key={index} className="flex items-start">
+                      <FiCheckCircle className="text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                       <span className="text-gray-700">{feature.trim()}</span>
                     </li>
                   ))}
@@ -241,7 +243,7 @@ const ProductDetail = () => {
               {showDetailsToggle && (
               <button 
                 onClick={() => setExpandedDetails(!expandedDetails)}
-                className="text-yellow-600 hover:text-yellow-700 text-sm font-medium mt-2 focus:outline-none"
+                className="text-yellow-600 hover:text-yellow-700 text-sm  mt-2 focus:outline-none"
               >
                 {expandedDetails ? 'See Less' : 'See More'}
               </button>
@@ -265,7 +267,7 @@ const ProductDetail = () => {
               }}
             >
               <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Key Features</h3>
+                <h3 className="text-lg  text-gray-800 mb-2">Key Features</h3>
                 <hr className="border-yellow-200 mb-3" />
                 <ul className="space-y-2">
                   {parseKeyValuePairs(product.keyFeatures).length > 0 ? (

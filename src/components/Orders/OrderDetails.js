@@ -11,7 +11,7 @@ const OrderDetails = ({ orderProducts, onClose }) => {
             {/* Product Image */}
             <div className="w-24 h-24 flex-shrink-0">
               <img
-                src={product.imageUrl}
+                src={JSON.parse(product.imageUrl)[0]}
                 alt={product.productName}
                 className="w-full h-full object-contain rounded-md"
               />

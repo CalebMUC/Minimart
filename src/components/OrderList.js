@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import Modal from './OrderModal'; // Import the Modal component
+import Modal from './OrderModal';
 import { FaDownload, FaPrint, FaArrowLeft } from 'react-icons/fa';
-import OrderDetails from './Orders/OrderDetails'; // Import the OrderDetails component
+import OrderDetails from './Orders/OrderDetails';
 
 const OrdersList = ({ orders }) => {
   const [showModal, setShowModal] = useState(false);
@@ -15,13 +15,13 @@ const OrdersList = ({ orders }) => {
   };
 
   const handleOpenOrderDetails = (orderProducts) => {
-    setSelectedOrderProducts(orderProducts); // Set the selected order products
-    setIsOrderDetails(true); // Show the order details page
+    setSelectedOrderProducts(orderProducts);
+    setIsOrderDetails(true);
   };
 
   const handleCloseOrderDetails = () => {
-    setSelectedOrderProducts([]); // Clear the selected order products
-    setIsOrderDetails(false); // Return to the orders list
+    setSelectedOrderProducts([]);
+    setIsOrderDetails(false);
   };
 
   const handleCloseModal = () => {
@@ -29,55 +29,50 @@ const OrdersList = ({ orders }) => {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Back Arrow (Visible only when OrderDetails is shown) */}
+    <div className="space-y-6">
       {isOrderDetails && (
         <button
           onClick={handleCloseOrderDetails}
-          className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
+          className="flex items-center text-gray-600 hover:text-gray-800 mb-4 transition-colors"
         >
           <FaArrowLeft className="mr-2" /> Back to Orders
         </button>
       )}
 
-      {/* Render Orders List or Order Details */}
       {!isOrderDetails ? (
-        // Orders List
         orders.map((order) => (
           <div
             key={order.orderID}
-            className="flex justify-between items-center p-4 border border-gray-200 rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow"
+            className="flex flex-col sm:flex-row justify-between p-6 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-all"
           >
-            <div>
+            <div className="mb-4 sm:mb-0">
               <h4 className="text-lg font-semibold text-gray-800">Order #{order.orderID}</h4>
-              <p className="text-sm text-gray-600 pb-4">
+              <p className="text-sm text-gray-600 mt-2">
                 Status: <span className="font-medium">{order.status}</span>
               </p>
-              <p className="text-sm text-gray-600 pb-4">
+              <p className="text-sm text-gray-600 mt-2">
                 Placed on: {new Date(order.orderDate).toLocaleDateString()}
               </p>
-              <p className="text-sm text-gray-600 pb-4">
-                Total: <span className="font-medium">${order.totalOrderAmount}</span>
+              <p className="text-sm text-gray-600 mt-2">
+                Total: <span className="font-medium">${order.totalOrderAmount.toFixed(2)}</span>
               </p>
             </div>
 
-            {/* Trigger Modal and Order Details */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 self-end sm:self-auto">
               <button
                 onClick={() => handleOpenOrderDetails(order.products)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors"
               >
-                See Order Details
+                Order Details
               </button>
               <FaDownload
                 onClick={() => handleOpenModal(order)}
-                className="w-6 h-6 text-gray-600 hover:text-gray-800 cursor-pointer"
+                className="w-6 h-6 text-gray-600 hover:text-gray-800 cursor-pointer transition-colors"
               />
             </div>
           </div>
         ))
       ) : (
-        // Order Details Page
         <div className="mt-6">
           <OrderDetails
             orderProducts={selectedOrderProducts}
@@ -86,7 +81,6 @@ const OrdersList = ({ orders }) => {
         </div>
       )}
 
-      {/* Render the modal when triggered */}
       <Modal show={showModal} onClose={handleCloseModal} order={selectedOrder} />
     </div>
   );
