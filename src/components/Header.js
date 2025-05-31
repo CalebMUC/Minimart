@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaChevronDown, FaChevronUp, FaSearch, FaBars, FaTimes, FaUser, FaCog, FaMobileAlt, FaSignOutAlt, FaSignInAlt, FaShoppingCart } from "react-icons/fa";
 import packageInfo from "../../package.json";
 import { cartContext } from "./CartContext";
-import { fetchRoleModules, fetchSubModuleCategories } from "../Data.js";
+import { fetchRoleModules, fetchSubModuleCategories, GetProductsSearch, GetSuggestions } from "../Data.js";
 
 const Header = () => {
   const [dashboardModules, setDashboardModules] = useState([]);
@@ -17,35 +17,18 @@ const Header = () => {
   const [query, setQuery] = useState("");
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef(null);
 
   const { cartCount, GetCartItemsAsync } = useContext(cartContext);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Mock function to fetch suggestions - replace with your actual API call
-  const fetchSearchSuggestions = async (searchTerm) => {
-    // In a real app, you would fetch these from your backend
-    const mockSuggestions = [
-      "Q laptop",
-      "Q lap",
-      "Q lap desk", 
-      "Q laptop stand",
-      "Q lap table",
-      "Q lap tray",
-      "Q lap pillow"
-    ];
-    
-    return mockSuggestions.filter(item => 
-      item.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
 
   const handleSearchChange = async (e) => {
     const value = e.target.value;
     setQuery(value);
     
     if (value.length > 0) {
-      const suggestions = await fetchSearchSuggestions(value);
+      const suggestions = await GetSuggestions(value);
       setSearchSuggestions(suggestions);
       setShowSuggestions(true);
     } else {
@@ -54,17 +37,18 @@ const Header = () => {
     }
   };
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+      setShowSuggestions(false);
+    }
+  };
+
   const handleSuggestionClick = (suggestion) => {
     setQuery(suggestion);
     setShowSuggestions(false);
-    // Navigate to search results or perform search
-    // navigate(`/search?q=${suggestion}`);
-  };
-
-  const handleSearchSubmit = () => {
-    setShowSuggestions(false);
-    // Perform search with the query
-    // navigate(`/search?q=${query}`);
+    navigate(`/search?q=${encodeURIComponent(suggestion)}`);
   };
 
   useEffect(() => {
@@ -193,7 +177,12 @@ const Header = () => {
                     value={query}
                     onChange={handleSearchChange}
                     onFocus={() => query.length > 0 && setShowSuggestions(true)}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    onBlur={() => {
+                      if (!suggestionsRef.current || 
+                          !suggestionsRef.current.contains(document.activeElement)) {
+                        setShowSuggestions(false);
+                      }
+                    }}
                     className="w-full py-2 px-4 rounded-l focus:outline-none text-gray-800"
                     placeholder="Search Minimart"
                   />
@@ -206,12 +195,16 @@ const Header = () => {
                 </div>
                 
                 {showSuggestions && searchSuggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-md shadow-lg z-50 mt-1">
+                  <div 
+                    ref={suggestionsRef}
+                    className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-md shadow-lg z-50 mt-1"
+                  >
                     <ul className="py-1">
                       {searchSuggestions.map((suggestion, index) => (
                         <li 
                           key={index}
                           className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                          onMouseDown={(e) => e.preventDefault()}
                           onClick={() => handleSuggestionClick(suggestion)}
                         >
                           <FaSearch className="text-gray-400 mr-2" />
@@ -326,7 +319,12 @@ const Header = () => {
                   value={query}
                   onChange={handleSearchChange}
                   onFocus={() => query.length > 0 && setShowSuggestions(true)}
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                  onBlur={() => {
+                    if (!suggestionsRef.current || 
+                        !suggestionsRef.current.contains(document.activeElement)) {
+                      setShowSuggestions(false);
+                    }
+                  }}
                   className="w-full py-2 px-4 rounded-l focus:outline-none text-gray-800"
                   placeholder="Search Minimart"
                 />
@@ -339,12 +337,16 @@ const Header = () => {
               </div>
               
               {showSuggestions && searchSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-md shadow-lg z-50 mt-1">
+                <div 
+                  ref={suggestionsRef}
+                  className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-md shadow-lg z-50 mt-1"
+                >
                   <ul className="py-1">
                     {searchSuggestions.map((suggestion, index) => (
                       <li 
                         key={index}
                         className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                        onMouseDown={(e) => e.preventDefault()}
                         onClick={() => handleSuggestionClick(suggestion)}
                       >
                         <FaSearch className="text-gray-400 mr-2" />

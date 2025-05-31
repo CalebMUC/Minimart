@@ -6,7 +6,7 @@ import CompareSimilarItems from "./Comparison.js";
 import { cartContext } from "./CartContext";
 import { Link, useNavigate } from 'react-router-dom';
 import RecentlyViewed from "./RecentlyViewed";
-import { FaSpinner, FaShoppingCart, FaHeart, FaShareAlt, FaTrash, FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import { FaSpinner, FaShoppingCart, FaHeart, FaShareAlt, FaTrash, FaArrowLeft, FaArrowRight, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const ProductPage = () => {
   const { checkOutData, addItemTocheckOut, removeItemFromCheckout, subTotal } = useContext(CheckOutContext);
@@ -29,6 +29,17 @@ const ProductPage = () => {
   const [isBoughtLoading, setIsBoughtLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
+    // New state for toggling sections
+  const [showAllSaved, setShowAllSaved] = useState(false);
+  const [showAllBought, setShowAllBought] = useState(false);
+  const [showAllComplementary, setShowAllComplementary] = useState(false);
+  const [showAllPersonalized, setShowAllPersonalized] = useState(false);
+  const [showAllFreqBought, setShowAllFreqBought] = useState(false);
+
+  // Ref for sticky checkout button
+  const checkoutButtonRef = useRef(null);
+
+
   // Refs for carousels
   const savedItemsRef = useRef(null);
   const complementaryRef = useRef(null);
@@ -37,6 +48,29 @@ const ProductPage = () => {
   const buyAgainRef = useRef(null);
 
   const navigate = useNavigate();
+
+
+  
+  // Sticky checkout button effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (checkoutButtonRef.current) {
+        const scrollPosition = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        // Show sticky button when scrolled past the original checkout section
+        if (scrollPosition > 200 && scrollPosition < documentHeight - windowHeight - 100) {
+          checkoutButtonRef.current.classList.remove('hidden');
+        } else {
+          checkoutButtonRef.current.classList.add('hidden');
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     setUserId(localStorage.getItem("userID"));
@@ -210,7 +244,8 @@ const ProductPage = () => {
     setShowCompareModal(false);
   };
 
-  // Product card component for reuse
+  
+  // Modified ProductCard component with responsive sizing
   const ProductCard = ({ product, showDiscount = true }) => {
     const discount = 0.10;
     const discountedPrice = (product.price * (1 - discount)).toFixed(2);
@@ -218,7 +253,7 @@ const ProductPage = () => {
     const firstImage = productImages[0];
   
     return (
-      <div className="flex flex-col w-52 p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+      <div className="w-full sm:w-48 p-2 sm:p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
         {showDiscount && (
           <div className="absolute bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
             -{(discount * 100).toFixed(0)}%
@@ -228,10 +263,10 @@ const ProductPage = () => {
           <img 
             src={firstImage} 
             alt={product.productName}
-            className="w-full h-40 object-contain" 
+            className="w-full h-32 sm:h-40 object-contain" 
           />
-          <div className="mt-3 space-y-1">
-            <h3 className="text-sm font-medium hover:underline line-clamp-3">{product.productName}</h3>
+          <div className="mt-2 sm:mt-3 space-y-1">
+            <h3 className="text-xs sm:text-sm font-medium hover:underline line-clamp-2">{product.productName}</h3>
             <div className={`text-xs ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
               {product.inStock ? "In Stock" : "Low Stock"}
             </div>
@@ -243,11 +278,88 @@ const ProductPage = () => {
                 Was KSH {product.price.toLocaleString()}
               </div>
             )}
-            <div className="text-base font-bold text-gray-800">
+            <div className="text-sm sm:text-base font-bold text-gray-800">
               KSH {showDiscount ? discountedPrice.toLocaleString() : product.price.toLocaleString()}
             </div>
           </div>
         </Link>
+      </div>
+    );
+  };
+
+   // Helper component for recommendation sections
+  const RecommendationSection = ({ 
+    title, 
+    items, 
+    isLoading, 
+    showAll, 
+    setShowAll,
+    showDiscount = true 
+  }) => {
+    if (!items || items.length === 0) return null;
+
+    const visibleItems = showAll ? items : items.slice(0, 4);
+    const isMobile = window.innerWidth < 640;
+
+    return (
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 mb-6">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">{title}</h2>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-32">
+            <FaSpinner className="animate-spin text-yellow-500 text-2xl" />
+          </div>
+        ) : (
+          <>
+            {isMobile ? (
+              <div className="grid grid-cols-2 gap-3">
+                {visibleItems.map((product, index) => (
+                  <ProductCard key={index} product={product} showDiscount={showDiscount} />
+                ))}
+              </div>
+            ) : (
+              <div className="relative">
+                <button 
+                  onClick={() => scrollLeft(relatedRef)}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10 hover:bg-yellow-50"
+                >
+                  <FaArrowLeft className="text-yellow-600" />
+                </button>
+                <div 
+                  className="flex gap-4 overflow-x-auto py-2 scrollbar-hide"
+                >
+                  {items.map((product, index) => (
+                    <ProductCard key={index} product={product} showDiscount={showDiscount} />
+                  ))}
+                </div>
+                <button 
+                  onClick={() => scrollRight(relatedRef)}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10 hover:bg-yellow-50"
+                >
+                  <FaArrowRight className="text-yellow-600" />
+                </button>
+              </div>
+            )}
+            
+            {items.length > 4 && isMobile && (
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="mt-4 text-yellow-600 hover:text-yellow-700 flex items-center text-sm"
+              >
+                {showAll ? (
+                  <>
+                    <span>Show Less</span>
+                    <FaChevronUp className="ml-1" />
+                  </>
+                ) : (
+                  <>
+                    <span>Show More</span>
+                    <FaChevronDown className="ml-1" />
+                  </>
+                )}
+              </button>
+            )}
+          </>
+        )}
       </div>
     );
   };
@@ -362,7 +474,7 @@ const ProductPage = () => {
           </div>
 
           {/* Saved Items Section */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          {/* <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Your Saved Items</h2>
             {isSavedLoading ? (
               <div className="flex justify-center items-center h-32">
@@ -394,10 +506,10 @@ const ProductPage = () => {
             ) : (
               <p className="text-gray-500">You have no saved items.</p>
             )}
-          </div>
+          </div> */}
 
           {/* Buy Again Section */}
-          {boughtProducts.length > 0 && (
+          {/* {boughtProducts.length > 0 && (
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Buy Again</h2>
               {isBoughtLoading ? (
@@ -430,7 +542,30 @@ const ProductPage = () => {
               )}
             </div>
           )}
+        </div> */}
+
+        
+      {/* Sticky Checkout Button (mobile only) */}
+      {checkOutData.length > 0 && (
+        <div 
+          ref={checkoutButtonRef}
+          className="fixed hidden bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 p-4 z-50 md:hidden"
+        >
+          <div className="container mx-auto flex justify-between items-center">
+            <div>
+              <p className="text-sm font-medium">
+                {checkOutData.length} items: <span className="font-bold">KSH{subTotal.toFixed(2)}</span>
+              </p>
+            </div>
+            <button 
+              onClick={handleCheckout}
+              className="bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-bold py-2 px-4 rounded-lg text-sm"
+            >
+              Proceed to checkout
+            </button>
+          </div>
         </div>
+      )}
 
         {/* Sidebar */}
         <div className="lg:w-80 space-y-6">
@@ -458,9 +593,58 @@ const ProductPage = () => {
         </div>
       </div>
 
+        {/* Modified Recommendations Sections */}
+      <div className="mt-8 space-y-4 sm:space-y-6">
+        {/* Saved Items */}
+        <RecommendationSection
+          title="Your Saved Items"
+          items={savedProducts}
+          isLoading={isSavedLoading}
+          showAll={showAllSaved}
+          setShowAll={setShowAllSaved}
+        />
+
+        {/* Buy Again */}
+        <RecommendationSection
+          title="Buy Again"
+          items={boughtProducts}
+          isLoading={isBoughtLoading}
+          showAll={showAllBought}
+          setShowAll={setShowAllBought}
+          showDiscount={false}
+        />
+
+        {/* Complementary Products */}
+        <RecommendationSection
+          title="Complement your products for a better experience"
+          items={complementaryItems}
+          isLoading={false}
+          showAll={showAllComplementary}
+          setShowAll={setShowAllComplementary}
+        />
+
+        {/* Personalized Recommendations */}
+        <RecommendationSection
+          title="Personalized based on your shopping trends"
+          items={personalizedItems}
+          isLoading={false}
+          showAll={showAllPersonalized}
+          setShowAll={setShowAllPersonalized}
+        />
+
+        {/* Frequently Bought Together */}
+        <RecommendationSection
+          title="Customers who bought this also bought"
+          items={freqBoughtItems}
+          isLoading={false}
+          showAll={showAllFreqBought}
+          setShowAll={setShowAllFreqBought}
+        />
+      </div>
+
       {/* Recommendations Sections */}
-      <div className="mt-8 space-y-8">
-        {/* Complementary Products - Only show if items exist */}
+      {/* <div className="mt-8 space-y-8">
+        {/* Complementary Products - Only show if items exist 
         {complementaryItems.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Complement your products for a better experience</h2>
@@ -489,7 +673,7 @@ const ProductPage = () => {
           </div>
         )}
 
-        {/* Personalized Recommendations - Only show if items exist */}
+        {/* Personalized Recommendations - Only show if items exist }
         {personalizedItems.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Personalized based on your shopping trends</h2>
@@ -518,7 +702,7 @@ const ProductPage = () => {
           </div>
         )}
 
-        {/* Frequently Bought Together - Only show if items exist */}
+        {/* Frequently Bought Together - Only show if items exist }
         {freqBoughtItems.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Customers who bought this also bought</h2>
@@ -545,8 +729,9 @@ const ProductPage = () => {
               </button>
             </div>
           </div>
-        )}
-      </div>
+        )}*/}
+        
+      </div> 
 
       {/* Comparison Modal */}
       {showCompareModal && (

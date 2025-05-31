@@ -100,11 +100,13 @@ const MainPage = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      {/* Ad Slider at the top */}
-      <AdSlider />
+      {/* Ad Slider at the top - now properly positioned */}
+      <div className="w-full mt-3 px-8 py-4">
+        <AdSlider />
+      </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4">
         {/* Loop through categories */}
         {categories.map((category) => {
           // Skip categories without subcategories
@@ -116,7 +118,7 @@ const MainPage = () => {
           const currentProducts = subCategoryProducts[category.categoryId] || [];
           
           return (
-            <div key={category.categoryId} className="mb-12">
+            <div key={category.categoryId} className="mb-8">
               {/* Category Header */}
               <div className="bg-yellow-500 text-white px-3 py-1 rounded-t-lg shadow-md">
                 <h2 className="text-l font-bold">{category.categoryName}</h2>
@@ -137,36 +139,36 @@ const MainPage = () => {
                 </select>
               </div>
 
-              {/* Products Carousel */}
+              {/* Products Grid */}
               {currentProducts.length > 0 ? (
-                <div className="relative group">
-                  {/* Left Scroll Button */}
-                  <button
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg hover:bg-blue-700"
-                    onClick={() => scrollLeft(category.categoryId)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                <div className="relative">
+                  {/* Desktop View - Carousel */}
+                  <div className="hidden md:block relative group">
+                    {/* Left Scroll Button */}
+                    <button
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg hover:bg-blue-700"
+                      onClick={() => scrollLeft(category.categoryId)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
 
-                  {/* Products Container */}
-                  <div
-                    ref={(el) => (scrollRefs.current[category.categoryId] = el)}
-                    className="flex space-x-4 py-6 px-2 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar"
-                  >
-                    {currentProducts.map((product, index) => {
-                      const discount = 0.10; // 10% discount 
-                      const discountedPrice = (product.price * (1 - discount)).toFixed(2);
-
-                      // Parse the productImage string into an actual array
+                    {/* Products Container */}
+                    <div
+                      ref={(el) => (scrollRefs.current[category.categoryId] = el)}
+                      className="flex space-x-4 py-6 px-2 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar"
+                    >
+                      {currentProducts.map((product, index) => {
+                        const discount = 0.10;
+                        const discountedPrice = (product.price * (1 - discount)).toFixed(2);
                         const productImages = JSON.parse(product.productImage);
-                        const firstImage = productImages[0]; // Get the first image
+                        const firstImage = productImages[0];
                         const showDiscount = true;
 
-                      return (
-                            <div className="flex flex-col w-52 p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                              {showDiscount && (
+                        return (
+                          <div key={product.productID} className="flex-shrink-0 w-52 p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                             {showDiscount && (
                                 <div className="absolute bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
                                   -{(discount * 100).toFixed(0)}%
                                 </div>
@@ -195,20 +197,66 @@ const MainPage = () => {
                                   </div>
                                 </div>
                               </Link>
-                            </div>
-                          );
-                    })}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Right Scroll Button */}
+                    <button
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg hover:bg-blue-700"
+                      onClick={() => scrollRight(category.categoryId)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
                   </div>
 
-                  {/* Right Scroll Button */}
-                  <button
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg hover:bg-blue-700"
-                    onClick={() => scrollRight(category.categoryId)}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </button>
+                  {/* Mobile View - Grid */}
+                  <div className="md:hidden grid grid-cols-2 gap-3 py-4">
+                    {currentProducts.map((product) => {
+                      const discount = 0.10;
+                      const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+                      const productImages = JSON.parse(product.productImage);
+                      const firstImage = productImages[0];
+                      const showDiscount = true;
+
+                      return (
+                        <div key={product.productID} className="p-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                          {showDiscount && (
+                            <div className="absolute bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                              -{(discount * 100).toFixed(0)}%
+                            </div>
+                          )}
+                          <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                            <img 
+                              src={firstImage} 
+                              alt={product.productName}
+                              className="w-full h-32 object-contain" 
+                            />
+                            <div className="mt-2 space-y-1">
+                              <h3 className="text-xs font-medium hover:underline line-clamp-2">{product.productName}</h3>
+                              <div className={`text-xs ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
+                                {product.inStock ? "In Stock" : "Low Stock"}
+                              </div>
+                              <div className="flex items-center text-xs text-yellow-500">
+                                ⭐{4.5} ({30000})
+                              </div>
+                              {showDiscount && (
+                                <div className="text-xs text-gray-500 line-through">
+                                  Was KSH {product.price.toLocaleString()}
+                                </div>
+                              )}
+                              <div className="text-sm font-bold text-gray-800">
+                                KSH {showDiscount ? discountedPrice.toLocaleString() : product.price.toLocaleString()}
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : (
                 <div className="bg-white p-8 text-center text-gray-500">

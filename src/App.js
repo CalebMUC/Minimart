@@ -148,7 +148,10 @@ const App = () => {
             
               {/* <Route path="/ProductFeatures" element={<ProductFeatures />} /> */}
               
-              <Route path="/SearchPage/:Name/:categoryID/:subCategoryID" element={<SearchPage />} />
+              {/* <Route path="/SearchPage/:Name/:categoryID/:subCategoryID" element={<SearchPage />} /> */}
+
+              <Route path="/search" element={<SearchPage />} />
+              
               <Route path="/ProductPage" element={<ProductPage />} />
               <Route path="/ReturnsAndOrdersPage" element={<ReturnsAndOrdersPage />} />
             </Route>

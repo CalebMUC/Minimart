@@ -1189,7 +1189,7 @@ export const DeleteMerchants = async (formData) =>{
 
 export const FetchFilteredProducts = async (requestData) => {
   try {
-    const response = await fetch(`${config.baseUrl}/api/Category/GetFilteredProducts`, {
+    const response = await fetch(`${config.baseUrl}/api/Search/GetFilteredProducts`, {
       method: "POST",
       headers: {
         Accept: "*/*",
@@ -1213,6 +1213,37 @@ export const FetchFilteredProducts = async (requestData) => {
 export const FetchSearchProducts = async (subCategoryID) => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Category/GetSearchProducts/${subCategoryID}`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching search products:", error);
+    throw error;
+  }
+};
+
+export const GetSuggestions = async (query) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Search/SearchSuggestion?query=${query}`);
+    if (!response.ok) {
+      throw new Error(`Network Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching search products:", error);
+    throw error;
+  }
+};
+
+
+export const GetProductsSearch = async (query) => {
+  try {
+    const response = await fetch(`${config.baseUrl}/api/Search/SearchProducts?query=${query}`);
     if (!response.ok) {
       throw new Error(`Network Error: ${response.statusText}`);
     }

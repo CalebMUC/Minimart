@@ -30,7 +30,9 @@ module.exports = {
         'slide-in': 'slide-in 0.5s ease-out',
         'bounce': 'bounce 1s infinite',
       }
-  },
-  plugins: [
-  ],
+  }
+//  plugins: [
+//   require('@tailwindcss/line-clamp'),
+//   require('@tailwindcss/forms')
+// ]
 }

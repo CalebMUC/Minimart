@@ -1,104 +1,144 @@
 import React, { useEffect, useState } from "react";
 import Slider from "react-slider";
-import "../../src/CSS/SearchFilterSideBar.css";
 
-const SearchFilterSidebar = ({ features, setFilters }) => {
-  const [priceRange, setPriceRange] = useState([0, 0]);
+const SearchFilterSidebar = ({ features, setFilters, currentFilters,  priceRange,
+  setPriceRange
+ }) => {
+  // const [priceRange, setPriceRange] = useState([10000, 200000]);
+  const [tempPriceRange, setTempPriceRange] = useState([10000, 200000]);
+  const [expandedSections, setExpandedSections] = useState({});
 
-  // Extract and set min/max price from features
   useEffect(() => {
-    const maxPriceFeature = features.find((feature) => feature.featureName === "MaxPrice");
-    const minPriceFeature = features.find((feature) => feature.featureName === "MinPrice");
+    const maxPriceFeature = features.find(f => f.featureName === "MaxPrice");
+    const minPriceFeature = features.find(f => f.featureName === "MinPrice");
 
     if (maxPriceFeature && minPriceFeature) {
-      const maxPrice = maxPriceFeature.featureOptions.options[0];
-      const minPrice = minPriceFeature.featureOptions.options[0];
-
+      const maxPrice = Math.ceil(Number(maxPriceFeature.featureOptions.options[0])) || 200000;
+      const minPrice = Math.floor(Number(minPriceFeature.featureOptions.options[0])) || 10000;
       setPriceRange([minPrice, maxPrice]);
+      setTempPriceRange([minPrice, maxPrice]); 
     }
   }, [features]);
 
-  // Update filters based on user selection
-  const handleFilterChange = (filterType, value, isChecked) => {
-    setFilters((prev) => {
-      const updatedFilters = { ...prev };
-
-      if (isChecked) {
-        // Add the filter value
-        updatedFilters[filterType] = updatedFilters[filterType]
-          ? [...updatedFilters[filterType], value]
-          : [value];
-      } else {
-        // Remove the filter value
-        updatedFilters[filterType] = updatedFilters[filterType]?.filter((item) => item !== value);
-        if (!updatedFilters[filterType]?.length) delete updatedFilters[filterType];
-      }
-
-      return updatedFilters;
-    });
-  };
-
-  // Update price range filter
-  const handlePriceChange = (value) => {
-    setPriceRange(value);
-    setFilters((prev) => ({
+  const toggleSection = (sectionName) => {
+    setExpandedSections(prev => ({
       ...prev,
-      minPrice: value[0],
-      maxPrice: value[1],
+      [sectionName]: !prev[sectionName]
     }));
   };
 
+  const handlePriceChange = (value) => {
+    setTempPriceRange(value);
+  };
+
+  const applyPriceFilter = () => {
+    setPriceRange(tempPriceRange);
+    // setFilters(prev => ({
+    //   ...prev,
+    //   minPrice: tempPriceRange[0],
+    //   maxPrice: tempPriceRange[1]
+    // }));
+  };
+
+  const handleFilterChange = (filterType, value, isChecked) => {
+    setFilters(prev => {
+      const updated = { ...prev };
+      
+      if (isChecked) {
+        updated[filterType] = updated[filterType] 
+          ? [...updated[filterType], value] 
+          : [value];
+      } else {
+        updated[filterType] = updated[filterType]?.filter(v => v !== value);
+        if (!updated[filterType]?.length) delete updated[filterType];
+      }
+      
+      return updated;
+    });
+  };
+
+  const isChecked = (featureName, option) => {
+    return currentFilters[featureName]?.includes(option) || false;
+  };
+
   return (
-    <div className="sidebar-search-page">
-      <h3>Filters</h3>
-
-      {/* Price Range Filter */}
-      <div className="filter-section">
-        <h4>Price Range</h4>
-        <div className="slider-container">
-          {/* Display selected price range */}
-          <div className="price-range-display">
-            <span>${priceRange[0]}</span> – <span>${priceRange[1]}</span>
-          </div>
-
-          {/* Price Range Slider */}
-          <Slider
-            value={priceRange}
-            min={priceRange[0]}
-            max={priceRange[1]}
-            step={1}
-            onChange={handlePriceChange}
-            renderThumb={(props) => <div {...props} className="slider-thumb" />}
-            renderTrack={(props, state) => (
-              <div
-                {...props}
-                className={`slider-track ${state.index === 0 ? "left" : "right"}`}
-              />
-            )}
-          />
+    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+      <h2 className="text-lg font-semibold mb-4 pb-2 border-b border-gray-200">Filters</h2>
+      
+      {/* Price Filter with Apply Button */}
+      <div className="mb-6">
+        <div 
+          className="flex justify-between items-center cursor-pointer"
+          onClick={() => toggleSection('price')}
+        >
+          <h3 className="font-medium">Price</h3>
+          <span>{expandedSections['price'] ? '−' : '+'}</span>
         </div>
+        
+        {expandedSections['price'] !== false && (
+          <div className="mt-3">
+            <Slider
+              value={tempPriceRange}
+              min={priceRange[0]}
+              max={priceRange[1]}
+              step={1}
+              onChange={handlePriceChange}
+              className="mb-2"
+              thumbClassName="bg-blue-500 w-4 h-4 rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300"
+              trackClassName="bg-gray-200 h-1 rounded"
+            />
+            <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <span className="py-5">KES {tempPriceRange[0].toLocaleString()}</span>
+              <span className="py-5">KES {tempPriceRange[1].toLocaleString()}</span>
+            </div>
+            <button
+              onClick={applyPriceFilter}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded text-sm"
+            >
+              Apply Price
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Feature Filters */}
+      {/* Other Filters */}
       {features
-        .filter((feature) => feature.featureName !== "MaxPrice" && feature.featureName !== "MinPrice")
-        .map((feature) => (
-          <div key={feature.featureName} className="filter-section">
-            <h4>{feature.featureName}</h4>
-            <ul>
-              {feature.featureOptions.options.map((option) => (
-                <li key={option}>
-                  <input
-                    type="checkbox"
-                    value={option}
-                    onChange={(e) =>
-                      handleFilterChange(feature.featureName, e.target.value, e.target.checked)
-                    }
-                  />
-                  {option}
-                </li>
-              ))}
-            </ul>
+        .filter(f => !['MaxPrice', 'MinPrice'].includes(f.featureName))
+        .map(feature => (
+          <div key={feature.featureName} className="mb-6">
+            <div 
+              className="flex justify-between items-center cursor-pointer"
+              onClick={() => toggleSection(feature.featureName)}
+            >
+              <h3 className="font-medium">{feature.featureName}</h3>
+              <span>{expandedSections[feature.featureName] ? '−' : '+'}</span>
+            </div>
+            
+            {expandedSections[feature.featureName] !== false && (
+              <ul className="mt-2 space-y-2">
+                {feature.featureOptions.options.map(option => (
+                  <li key={option} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`${feature.featureName}-${option}`}
+                      checked={isChecked(feature.featureName, option)}
+                      onChange={(e) => handleFilterChange(
+                        feature.featureName, 
+                        option, 
+                        e.target.checked
+                      )}
+                      className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500"
+                    />
+                    <label 
+                      htmlFor={`${feature.featureName}-${option}`}
+                      className="ml-2 text-sm text-gray-700"
+                    >
+                      {option}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
     </div>
