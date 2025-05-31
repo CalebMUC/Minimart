@@ -1,167 +1,273 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../../src/Mainpage.css";
 import packageInfo from "../../package.json";
 import AdSlider from "../components/AdSlider";
+import { FetchNestedCategories } from "../Data";
 
 const MainPage = () => {
   const [categories, setCategories] = useState([]);
+  const [subCategoryProducts, setSubCategoryProducts] = useState({});
+  const [selectedSubCategories, setSelectedSubCategories] = useState({});
   const navigate = useNavigate();
+  
+  // Create refs for each category carousel
+  const scrollRefs = useRef({});
 
-  const scrollLeft = (ref) => {
-    if (ref && ref.current) {
-      ref.current.scrollBy({
+  const scrollLeft = (categoryId) => {
+    if (scrollRefs.current[categoryId]) {
+      scrollRefs.current[categoryId].scrollBy({
         left: -300,
         behavior: "smooth",
       });
     }
   };
 
-  const scrollRight = (ref) => {
-    if (ref && ref.current) {
-      ref.current.scrollBy({
+  const scrollRight = (categoryId) => {
+    if (scrollRefs.current[categoryId]) {
+      scrollRefs.current[categoryId].scrollBy({
         left: 300,
         behavior: "smooth",
       });
     }
   };
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(packageInfo.urls.GetCategories);
-      if (!response.ok) {
-        throw new Error(`Network Error: ${response.statusText}`);
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      return [];
-    }
-  };
-
-  const fetchProductsByCategory = async (categoryId) => {
-    try {
-      const response = await fetch(packageInfo.urls.GetProductsByCategory, {
-        method: "POST",
-        headers: {
-          Accept: "*/*",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          categoryID: categoryId,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      const products = await response.json();
-      return products;
-    } catch (error) {
-      console.error(`Failed to fetch products for category ${categoryId}:`, error);
-      return [];
-    }
-  };
-
+  // Load nested categories
   useEffect(() => {
-    const loadCategoriesAndProducts = async () => {
-      const categoryData = await fetchCategories();
-
-      if (categoryData.length === 0) {
-        console.log("No categories found");
-        return;
+    const LoadNestedCategories = async () => {
+      try {
+        const response = await FetchNestedCategories();
+        setCategories(response);
+        
+        // Initialize selected subcategories with the first subcategory of each category
+        const initialSelections = {};
+        response.forEach(category => {
+          if (category.subCategories && category.subCategories.length > 0) {
+            initialSelections[category.categoryId] = category.subCategories[0].categoryId;
+          }
+        });
+        setSelectedSubCategories(initialSelections);
+      } catch (error) {
+        console.error(error);
       }
-
-      const categoriesWithProducts = await Promise.all(
-        categoryData.map(async (category) => {
-          const products = await fetchProductsByCategory(category.id);
-          return { ...category, products, scrollRef: React.createRef() };
-        })
-      );
-
-      setCategories(categoriesWithProducts);
     };
-
-    loadCategoriesAndProducts();
+    LoadNestedCategories();
   }, []);
 
+  // Fetch products for selected subcategories
+  useEffect(() => {
+    const fetchProductsForSubCategories = async () => {
+      const productsMap = {};
+      
+      for (const [categoryId, subCategoryId] of Object.entries(selectedSubCategories)) {
+        try {
+          const response = await fetch(packageInfo.urls.GetProductsByCategory, {
+            method: "POST",
+            headers: {
+              Accept: "*/*",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              categoryID: subCategoryId,
+            }),
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+          
+          const products = await response.json();
+          productsMap[categoryId] = products;
+        } catch (error) {
+          console.error(`Failed to fetch products for subcategory ${subCategoryId}:`, error);
+          productsMap[categoryId] = [];
+        }
+      }
+      
+      setSubCategoryProducts(productsMap);
+    };
+    
+    if (Object.keys(selectedSubCategories).length > 0) {
+      fetchProductsForSubCategories();
+    }
+  }, [selectedSubCategories]);
+
+  const handleSubCategoryChange = (categoryId, subCategoryId) => {
+    setSelectedSubCategories(prev => ({
+      ...prev,
+      [categoryId]: subCategoryId
+    }));
+  };
+
   return (
-    <>
-      {/* Ad Slider at the top */}
-      <AdSlider />
-
-      {/* Body */}
-      <div className="container3">
-        {/* Loop through categories */}
-        {categories.map((category) => (
-          <div key={category.id} className="category-section">
-            <h2 className="product-heading">{category.name}</h2>
-
-            <div className="carouselContainer">
-              <div className="carousel">
-                <button
-                  className="cont-scrollBtn left"
-                  onClick={() => scrollLeft(category.scrollRef)}
-                >
-                  &#8249;
-                </button>
-
-                <div className="carouselContent" ref={category.scrollRef}>
-                  {category.products.map((product, index) => {
-                    const discount = 0.10; // 10% discount for now, can be dynamically passed later
-                    const discountedPrice = (product.price * (1 - discount)).toFixed(2);
-
-                    return (
-                      <div key={index} className="item">
-                        <Link to={`/ProductPage/${product.productName}`}>
-                          {/* Discount tag */}
-                          <div className="discount-tag">
-                            -{(discount * 100).toFixed(0)}%
-                          </div>
-
-                          {/* Product image */}
-                          <img
-                            src={`${product.productImage}`}
-                            alt={product.productName}
-                          />
-
-                          {/* Product name (ellipsis after 3 lines) */}
-                          <p className="product-name">{product.productName}</p>
-
-                          {/* Stock information */}
-                          <p className={product.inStock ? "Instock" : "LowStock"}>
-                            {product.inStock
-                              ? "In Stock"
-                              : "Only a few left in stock - order soon."}
-                          </p>
-
-                          {/* Original price with strike-through */}
-                          <p className="original-price">
-                            <s>Was KSH {product.price.toLocaleString()}</s>
-                          </p>
-
-                          {/* Price after discount */}
-                          <p className="discounted-price">
-                            KSH {discountedPrice.toLocaleString()}
-                          </p>
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <button
-                  className="cont-scrollBtn right"
-                  onClick={() => scrollRight(category.scrollRef)}
-                >
-                  &#8250;
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+    <div className="bg-gray-50 min-h-screen">
+      {/* Ad Slider at the top - now properly positioned */}
+      <div className="w-full mt-3 px-8 py-4">
+        <AdSlider />
       </div>
-    </>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-4">
+        {/* Loop through categories */}
+        {categories.map((category) => {
+          // Skip categories without subcategories
+          if (!category.subCategories || category.subCategories.length === 0) {
+            return null;
+          }
+          
+          const currentSubCategoryId = selectedSubCategories[category.categoryId];
+          const currentProducts = subCategoryProducts[category.categoryId] || [];
+          
+          return (
+            <div key={category.categoryId} className="mb-8">
+              {/* Category Header */}
+              <div className="bg-yellow-500 text-white px-3 py-1 rounded-t-lg shadow-md">
+                <h2 className="text-l font-bold">{category.categoryName}</h2>
+              </div>
+              
+              {/* Subcategory dropdown */}
+              <div className="bg-white px-4 py-2 shadow-sm">
+                <select
+                  className="border border-gray-300 rounded px-3 py-2 text-sm"
+                  value={currentSubCategoryId}
+                  onChange={(e) => handleSubCategoryChange(category.categoryId, parseInt(e.target.value))}
+                >
+                  {category.subCategories.map(subCategory => (
+                    <option key={subCategory.categoryId} value={subCategory.categoryId}>
+                      {subCategory.categoryName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Products Grid */}
+              {currentProducts.length > 0 ? (
+                <div className="relative">
+                  {/* Desktop View - Carousel */}
+                  <div className="hidden md:block relative group">
+                    {/* Left Scroll Button */}
+                    <button
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg hover:bg-blue-700"
+                      onClick={() => scrollLeft(category.categoryId)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+
+                    {/* Products Container */}
+                    <div
+                      ref={(el) => (scrollRefs.current[category.categoryId] = el)}
+                      className="flex space-x-4 py-6 px-2 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar"
+                    >
+                      {currentProducts.map((product, index) => {
+                        const discount = 0.10;
+                        const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+                        const productImages = JSON.parse(product.productImage);
+                        const firstImage = productImages[0];
+                        const showDiscount = true;
+
+                        return (
+                          <div key={product.productID} className="flex-shrink-0 w-52 p-3 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                             {showDiscount && (
+                                <div className="absolute bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                                  -{(discount * 100).toFixed(0)}%
+                                </div>
+                              )}
+                              <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                                <img 
+                                  src={firstImage} 
+                                  alt={product.productName}
+                                  className="w-full h-40 object-contain" 
+                                />
+                                <div className="mt-3 space-y-1">
+                                  <h3 className="text-sm font-medium hover:underline line-clamp-3">{product.productName}</h3>
+                                  <div className={`text-xs ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
+                                    {product.inStock ? "In Stock" : "Low Stock"}
+                                  </div>
+                                  <div className="flex items-center text-xs text-yellow-500">
+                                    ⭐{4.5} ({30000})
+                                  </div>
+                                  {showDiscount && (
+                                    <div className="text-xs text-gray-500 line-through">
+                                      Was KSH {product.price.toLocaleString()}
+                                    </div>
+                                  )}
+                                  <div className="text-base font-bold text-gray-800">
+                                    KSH {showDiscount ? discountedPrice.toLocaleString() : product.price.toLocaleString()}
+                                  </div>
+                                </div>
+                              </Link>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Right Scroll Button */}
+                    <button
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg hover:bg-blue-700"
+                      onClick={() => scrollRight(category.categoryId)}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Mobile View - Grid */}
+                  <div className="md:hidden grid grid-cols-2 gap-3 py-4">
+                    {currentProducts.map((product) => {
+                      const discount = 0.10;
+                      const discountedPrice = (product.price * (1 - discount)).toFixed(2);
+                      const productImages = JSON.parse(product.productImage);
+                      const firstImage = productImages[0];
+                      const showDiscount = true;
+
+                      return (
+                        <div key={product.productID} className="p-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                          {showDiscount && (
+                            <div className="absolute bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded">
+                              -{(discount * 100).toFixed(0)}%
+                            </div>
+                          )}
+                          <Link to={`/product/${encodeURIComponent(product.productName)}/${product.productID}`}>
+                            <img 
+                              src={firstImage} 
+                              alt={product.productName}
+                              className="w-full h-32 object-contain" 
+                            />
+                            <div className="mt-2 space-y-1">
+                              <h3 className="text-xs font-medium hover:underline line-clamp-2">{product.productName}</h3>
+                              <div className={`text-xs ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
+                                {product.inStock ? "In Stock" : "Low Stock"}
+                              </div>
+                              <div className="flex items-center text-xs text-yellow-500">
+                                ⭐{4.5} ({30000})
+                              </div>
+                              {showDiscount && (
+                                <div className="text-xs text-gray-500 line-through">
+                                  Was KSH {product.price.toLocaleString()}
+                                </div>
+                              )}
+                              <div className="text-sm font-bold text-gray-800">
+                                KSH {showDiscount ? discountedPrice.toLocaleString() : product.price.toLocaleString()}
+                              </div>
+                            </div>
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white p-8 text-center text-gray-500">
+                  No products available in this category
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 

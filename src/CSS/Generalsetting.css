@@ -1,0 +1,145 @@
+/* General Settings Page */
+.main-page-settings {
+    display: flex;
+    height: 100vh;
+    background-color: #f7fafc;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Sidebar */
+  .settings-side-bar {
+    width: 250px;
+    background-color: #2d3748;
+    color: white;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .settings-side-bar h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .setting-item-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .setting-item-list li {
+    margin-bottom: 10px;
+  }
+  
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #4a5568;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .item-header:hover {
+    background-color: #718096;
+  }
+  
+  .item-header span {
+    font-size: 1rem;
+  }
+  
+  .side-item-list {
+    list-style: none;
+    padding-left: 20px;
+    margin-top: 10px;
+  }
+  
+  .side-item-list li {
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .side-item-list li:hover {
+    background-color: #4a5568;
+  }
+  
+  /* Main Content Area */
+  .settings-main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+    overflow-y: auto;
+  }
+  
+  .settings-main-header {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #2d3748;
+  }
+  
+  /* Active Section Styling */
+  .active-section {
+    background-color: #edf2f7;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+/* Landing Page Styles */
+.landing-page {
+  padding: 2rem;
+  text-align: center;
+}
+
+.landing-page h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.landing-page p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.settings-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.settings-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.card-content h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #1976d2;
+}
+
+.card-content p {
+  font-size: 0.9rem;
+  color: #666;
+}
+

@@ -1,0 +1,47 @@
+/* Ensures the modal covers the entire viewport */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* Ensures it covers the full width */
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Aligns modal at the top to enable scrolling */
+  z-index: 1000;
+  overflow-y: auto; /* Enables vertical scrolling for the entire overlay */
+}
+
+  
+  /* Modal content styling */
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%; /* Increase horizontal size */
+    max-width: 800px; /* Prevent excessive width on larger screens */
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+  
+  /* Close button styling */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333; /* Visible color */
+  }
+  
+  .close-button:hover {
+    color: red; /* Highlighted when hovered */
+  }
+  

@@ -1,0 +1,456 @@
+/* Main Container */
+/* .MainContainer {
+    font-family: "Amazon Ember", Arial, sans-serif;
+    max-width: 1000px;
+    margin: auto;
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    display: flex;
+    gap: 20px;
+} */
+
+.Checkout-MainContainer {
+    display: flex; /* Arrange child elements horizontally */
+    justify-content: space-between; /* Add space between left and right sections */
+    align-items: flex-start; /* Align items at the start */
+    gap: 20px; /* Add spacing between the sections */
+    padding: 20px;
+  }
+  
+  .left-section {
+    flex: 2; /* Take up more space compared to the right section */
+    max-width: 70%; /* Limit width for better responsiveness */
+    background-color: #f9f9f9; /* Optional: Background color */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add some shadow */
+  }
+  
+   .right-section {
+    flex: 1; 
+    max-width: 30%;  
+    background-color:#fff; 
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  } 
+  
+
+/* Section Headings */
+.address-section h2,
+.payment-section h2,
+.delivery-section h2,
+.items-section h2,
+.items-shipping-section h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Address Section */
+.address-section {
+    margin-bottom: 20px;
+}
+
+.address-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.address-card input[type="radio"] {
+    margin-right: 10px;
+}
+
+.address-card label {
+    font-size: 14px;
+    color: #333;
+}
+
+.edit-link {
+    color: #007185;
+    text-decoration: none;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+/* Address Form */
+#AddressPageID {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#AddressPageID input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.global-form{
+    max-width: 28rem; /* Equivalent to max-w-md in Tailwind */
+    margin: 0 auto; /* Center the form */
+    background-color: white;
+    padding: 1.5rem; /* Equivalent to p-6 in Tailwind */
+    border-radius: 0.5rem; /* Equivalent to rounded-lg in Tailwind */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to shadow-md in Tailwind */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Button Styles */
+.use-address-btn {
+    background-color: #f0c14b;
+    border-color: #a88734 #9c7e31 #846a29;
+    color: #111;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.use-address-btn:hover {
+    background-color: #ddb347;
+}
+
+/* Payment Section */
+.payment-section {
+    margin-bottom: 20px;
+}
+
+.payment-method {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.payment-method-logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.payment-method-name {
+    font-size: 14px;
+}
+
+.apply-btn {
+    background-color: #f0c14b;
+    border-color: #a88734 #9c7e31 #846a29;
+    color: #111;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 200px;
+}
+
+.apply-btn:hover {
+    background-color: #ddb347;
+}
+
+/* Items and Shipping Section */
+.items-shipping-section {
+    margin-bottom: 20px;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+/* Media Query for Responsiveness */
+@media (max-width: 768px) {
+    .MainContainer {
+        padding: 10px;
+    }
+
+    .address-card,
+    .payment-option {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+.address-section {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.address-card {
+    margin-bottom: 10px;
+}
+
+.address-card input[type="radio"] {
+    margin-right: 10px;
+}
+
+.edit-link {
+    margin-left: 10px;
+    color: #007185;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.add-new-address-btn,
+.use-address-btn,
+.save-address-btn {
+    background-color: #f0c14b;
+    border-color: #a88734;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.add-new-address-btn:hover,
+.use-address-btn:hover,
+.save-address-btn:hover {
+    background-color: #ecb22e;
+}
+
+.address-form-section {
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.save-address-btn {
+    background-color: #f0c14b;
+    border-color: #a88734;
+    padding: 10px 20px;
+    margin-top: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.save-address-btn:hover {
+    background-color: #ecb22e;
+}
+/* Order Summary Styling */
+
+.order-summary {
+    flex: 1;
+    padding: 20px;
+    background-color: #f6f6f6;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    max-width: 300px;
+    margin-left: auto;
+} 
+.order-summary h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #333;
+} 
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.order-total {
+    font-weight: bold;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 20px;
+    background-color: #f0c14b;
+    border: 1px solid #a88734;
+    cursor: pointer;
+}
+
+.checkout-btn:hover {
+    background-color: #e6b339;
+}
+
+.errors {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .payment-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  
+  .payment-option.selected {
+    border-color: #007bff; /* Highlight color */
+    background-color: #f0f8ff; /* Light background for selected option */
+  }
+  
+  .payment-option input[type="radio"] {
+    margin-right: 10px;
+  }
+  
+  .payment-method-logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .payment-method-name p {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  .payment-option.disabled {
+    opacity: 0.5;
+    pointer-events: none; /* Disable clicks */
+  }
+  
+  .clear-payment-methods-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clear-payment-methods-button:hover {
+    background-color: #ff1a1a;
+  }
+  .clear-button {
+    margin-left: auto; /* Push the button to the right */
+    padding: 5px 10px;
+    background-color: #ff4444; /* Red color for the button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .clear-button:hover {
+    background-color: #cc0000; /* Darker red on hover */
+  }
+/* .MainContainer .left-section{
+    flex: 1;
+    color: black;
+    background-color: black;
+} 
+ .MainContainer .right-section{
+    flex: 2;
+    /* color: blue; 
+    background-color: blue;
+}  */
+.phone-input {
+    display: flex;
+    align-items: center;
+}
+
+
+
+.phone-input input {
+    flex: 1;
+}
+.phone-input select {
+    padding: 8px;
+    font-size: 16px;
+    width: 200px;
+}
+
+/* Product Item */
+.productItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+    gap: 20px;
+}
+/* Product Details */
+.productDetails {
+    flex-grow: 1;
+}
+/* Product Image */
+.productImage img {
+    max-width: 100px;
+    height: auto;
+    margin-right: 20px;
+}
+.delivery-mode-options{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.delivery-option{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.delivery-mode-logo img {
+    width: 40px;
+    height: 40px;
+}
+
+.delivery-mode-name {
+    font-size: 14px;
+}
+
+.delivery-info{
+    width: 100%;
+    height:auto;
+    border:1px   solid orange;
+    box-shadow: 0 2px 8px rgba(0, 0, 0,
+     0.1);
+    transition: transform 0.3s ease;
+    padding: 10px;
+    border-radius: 10px;
+
+    background-color:#fdf3e6 ;
+}
+
+@media (max-width: 600px) {
+    .phone-input select {
+        padding: 4px;
+        font-size: 14px;
+        width: 80%;
+    }
+}

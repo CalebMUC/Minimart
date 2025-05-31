@@ -1,42 +1,166 @@
 import React from "react";
 import ProductPage from "../src/components/ProductPage";
+import ReturnsAndOrdersPage from "../src/components/ReturnsAndOrdersPage";
 import ProductDetail from "../src/components/ProductDetailPage";
 import MainPage from "../src/components/MinimartMainPage";
 import Checkout from "../src/components/CheckOutPage";
+import MainCheckout from "../src/components/MainCheckoutPage";
+import CreateMarketPlace from "../src/components/CreateMarketPlace";
 import Layout from "../src/components/Layout";
 import SubCategories from "../src/components/SubCategory";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "../src/components/Login";
-import AddProductPage from "../src/components/AddProducts";
 
+import AddProductPage from "../src/components/Products/AddProducts";
+import AddCategories from "../src/components/Products/AddCategories";
+import ProductFeatures from "../src/components/Products/ProductFeatures";
+// import AddProductForm from "../src/components/Products/AddproductForm";
+
+
+import Merchants from "../src/components/Merchants/MaintainMerchants";
+import MerchantOrders from "../src/components/Merchants/MerchantOrders";
+import MerchantDashboard from "./components/Merchants/MerchantDashboard";
+import MerchabtsSidebar from "./components/Merchants/MerchantsSidebar"
+
+import OrderDetails from "./components/Orders/OrderDetails"
+import OrderTracking from "./components/Orders/OrderTracking"
+
+import AdminDashboard from "../src/components/Administrator/AdminDashboard";
+import AdminMainContent from "../src/components/Administrator/AdminMainContent";
+import AdminOrders from "../src/components/Administrator/AdminOrders";
+import {NotificationProvider} from "../src/components/Notifications/NotificatonContext"
+import Notifications from "../src/components/Notifications/NotificationsPage"
+
+
+// import Merchants from "../src/components/Merchants";  
+// import ProductFeatures from "../src/components/ProductFeatures";
 import Register from "../src/components/Register";
+import SearchPage from "../src/components/SearchPage";
+import Reports from "../src/components/Reports";
+import DeliveryForm from "../src/components/Deliveryform";
+import MpesaForm from "../src/components/MpesaForm";
+import CreditCardForm from "../src/components/CreditCardForm";
+import AddressForm from "../src/components/AddressForm";
+
+import ForgotPassword from "../src/components/Authorization/ForgotPassword";
+import VerifyResetCode from "../src/components/Authorization/ResetCodeVerification";
+import ResetPassword from "../src/components/Authorization/ResetPassword";
+
+import PasswordResetFlow from "../src/components/Authorization/PasswordResetFlow";
+
+import RegistrationFlow from "../src/components/Authorization/RegistrationFlow";
+import EmailCodeVerification from "../src/components/Authorization/EmailCodeVerification";
+
+//jsx
+import DeliveryModeSection from "../src/components/DeliveryModeSection";
+import AddressSection  from "../src/components/AddressSection";
+import OrderSummarySection  from "../src/components/OrderSummarySection";
+import ItemSection from "../src/components/ItemSection";
+import PaymentSection from "../src/components/PaymentSection";
+
+import GeneralSettings from "../src/components/Settings/GeneralSettings";
+
 import Header from "../src/components/Header";
 import { CartProvider } from "./components/CartContext";
+import { CheckOutProvider } from "./components/CheckOutContext";
+import { UserProvider } from "./components/UserMainContext";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-// import "./index.css";
+import AccountSection from "./components/Settings/AccountSection/AccountSection";
+import PersonalInformation from "./components/Settings/AccountSection/PersonalInformation";
+import "./index.css";
+// import { ResetPassword } from "./Data";
 
 const App = () => {
   return (
+  <UserProvider>
     <CartProvider>
-      <Router>
-        {/* <Header /> */}
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            {/* Load MainPage when the root URL is accessed */}
-            <Route index element={<MainPage />} />
+      <CheckOutProvider>
+        <NotificationProvider>
+        <Router>
+          {/* <Header /> */}
+          <Routes>
+          <Route path="/Login" element={<Login />} />
 
-            {/* Other Routes */}
-            <Route path="/ProductPage/:ProductName" element={<ProductDetail />} />
-            <Route path="/products/:subCategoryName" element={<SubCategories />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/Login" element={<Login />} />
-            <Route path="/AddProducts" element={<AddProductPage />} />
-            <Route path="/Register" element={<Register />} />
-            <Route path="/ProductPage" element={<ProductPage />} />
-          </Route>
-        </Routes>
-      </Router>
+          <Route path="/Authorization/ForgotPassword" element={<ForgotPassword />} />
+
+          <Route path="/Authorization/ResetCodeVerification" element={<VerifyResetCode />} />
+
+          <Route path="/Authorization/ResetPassword" element={<ResetPassword />} />
+
+          <Route path="/Authorization/PasswordResetFlow" element={<PasswordResetFlow />} />
+
+          <Route path="/Authorization/RegistrationFlow" element={<RegistrationFlow />} />
+
+          <Route path="/EmailCodeVerification" element={<EmailCodeVerification />} />
+
+          <Route path="/Register" element={<Register />} />
+          <Route path="/Settings/GeneralSettings" element={<GeneralSettings />} />
+          <Route path="/Merchants/MerchantDashboard" element={<MerchantDashboard />} />
+          <Route path="/Products/AddCategories" element={<AddCategories />} />
+          <Route path="/Products/AddProducts" element={<AddProductPage />} />
+          <Route path="/Products/ProductFeatures" element={<ProductFeatures />} />
+          <Route path="/Merchants/MaintainMerchants" element={<Merchants />} />
+          <Route path="/Merchants/:merchantId/:orderID" element={<MerchantOrders />} />
+          <Route path="/Admin/Orders" element={<AdminOrders />} />
+
+          <Route path="/Orders/OrderDetails" element={<OrderDetails />} />
+          <Route path="/Orders/OrderTracking" element={<OrderTracking />} />
+
+          <Route path="/Adminstrator/AdminDashboard" element={<AdminDashboard />} />
+          <Route path="/Adminstrator/AdminMainContent" element={<AdminMainContent />} />
+
+          <Route path="/Notifications/notifications" element={<Notifications />} />
+
+          <Route path="/Reports" element={<Reports />} />
+          <Route path="/" element={<Layout />}>
+              {/* Load MainPage when the root URL is accessed */}
+              <Route index element={<MainPage />} />
+  
+              {/* Other Routes */}
+              <Route path="/product/:productName/:productID" element={<ProductDetail />} />
+              <Route path="/products/:subCategoryName" element={<SubCategories />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/MainCheckout" element={<MainCheckout />} />
+
+              <Route path="/DeliveryForm" element={<DeliveryForm />} />
+              <Route path="/MpesaForm" element={<MpesaForm />} />
+              <Route path="/CreditCardForm" element={<CreditCardForm />} />
+              <Route path="/AddressForm" element={<AddressForm />} />
+
+              <Route path="/DeliveryModeSection" element={<DeliveryModeSection />} />
+              <Route path="/OrderSummarySection" element={<OrderSummarySection />} />
+              <Route path="/ItemSection" element={<ItemSection />} />
+              <Route path="/PaymentSection" element={<PaymentSection />} />
+              <Route path="/AddressSection" element={<AddressSection />} />
+
+              <Route path="/CreateMarketPlace" element={<CreateMarketPlace />} />
+              
+
+              {/* <Route path="/AddProducts" element={<AddProductPage />} /> */}
+
+            
+
+              
+              <Route path="/Settings/AccountSection/AccountSection" element={<AccountSection />} />
+              <Route path="/Settings/AccountSection/PersonalInformatiom" element={<PersonalInformation />} />
+              {/* <Route path="/Products/AddProductForm" element={<AddProductForm />} /> */}
+
+            
+              {/* <Route path="/ProductFeatures" element={<ProductFeatures />} /> */}
+              
+              {/* <Route path="/SearchPage/:Name/:categoryID/:subCategoryID" element={<SearchPage />} /> */}
+
+              <Route path="/search" element={<SearchPage />} />
+              
+              <Route path="/ProductPage" element={<ProductPage />} />
+              <Route path="/ReturnsAndOrdersPage" element={<ReturnsAndOrdersPage />} />
+            </Route>
+          </Routes>
+        </Router>
+        </NotificationProvider>
+      </CheckOutProvider>
     </CartProvider>
+    </UserProvider>
   );
 };
 

@@ -1,0 +1,57 @@
+.comparison-main-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .product-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .product-image {
+    width: 100%;
+    max-width: 150px;
+    border-radius: 8px;
+  }
+  
+  .product-name {
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .discount-tag {
+    background-color: red;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .in-stock {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .low-stock {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .original-price {
+    color: gray;
+    font-size: 14px;
+    text-decoration: line-through;
+  }
+  
+  .discounted-price {
+    color: green;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  

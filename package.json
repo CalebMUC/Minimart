@@ -3,19 +3,39 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@microsoft/signalr": "^8.0.7",
+    "@mui/icons-material": "^6.4.4",
+    "@mui/material": "^6.4.4",
+    "@mui/x-data-grid": "^7.26.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "ag-grid-community": "^33.1.0",
+    "ag-grid-react": "^33.1.0",
+    "axios": "^1.8.2",
+    "buffer": "^6.0.3",
+    "chart.js": "^4.4.8",
+    "customize-cra": "^1.0.0",
+    "process": "^0.11.10",
     "react": "^18.3.1",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-calendar": "^5.1.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.0",
+    "react-icons": "^5.4.0",
+    "react-router-dom": "^6.28.2",
     "react-scripts": "5.0.1",
     "react-slick": "^0.30.2",
+    "react-slider": "^2.0.6",
     "slick-carousel": "^1.8.1",
+    "stream-browserify": "^3.0.0",
+    "sweetalert2": "^11.16.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -39,14 +59,37 @@
     "GetCategoriesByIDUrl": "https://localhost:44334/api/Entities/GetCartItems",
     "GetCategories": " https://localhost:44334/api/Entities/GetDashBoardCategories",
     "GetSubCategory": "https://localhost:44334/api/Entities/SubCategoryID",
-    "GetProductsByCategory": "https://localhost:44334/api/Entities/GetProductsByCategory",
-    "Login": "https://localhost:44334/api/Entities/Login",
+    "GetBusinessTypes": "https://localhost:44334/api/Merchant/GetBusinessTypes",
+    "AddMerchants": "https://localhost:44334/api/Merchant/AddMerchants",
+    "GetProductsByCategory": "https://localhost:44334/api/Product/GetProductsByCategory",
+    "Login": "https://localhost:44334/api/Authentication/Login",
     "WeatherForecast": "https://localhost:44334/WeatherForecast",
-    "Register": "https://localhost:44334/api/Entities/Register",
-    "AddCartItems": "https://localhost:44334/api/Entities/AddToCart"
+    "Register": "https://localhost:44334/api/Authentication/Register",
+    "AddCartItems": "https://localhost:44334/api/Entities/AddToCart",
+    "DeleteCartItems": "https://localhost:44334/api/Entities/DeleteCartItems",
+    "GetSavedItems": "https://localhost:44334/api/Entities/GetSavedItems",
+    "SaveItems": "https://localhost:44334/api/Entities/SaveItems",
+    "LoadCounties": "https://localhost:44334/api/Entities/counties",
+    "LoadTowns": "https://localhost:44334/api/Entities/towns?countyId={countyId}",
+    "LoadDeliveryStations": "https://localhost:44334/api/Entities/deliveryStations?townId={townId}",
+    "AddNewAddress": "https://localhost:44334/api/Entities/AddAddress",
+    "UpdateAddress": "https://localhost:44334/api/Entities/EditAddress",
+    "AddOrder": "https://localhost:44334/api/Order/AddOrder",
+    "GetOrders": "https://localhost:44334/api/Order/GetOrders",
+    "AddFeature": "https://localhost:44334/api/Category/AddFeatures",
+    "GetFeatures": "https://localhost:44334/api/Category/GetFeatures",
+    "GetSearchProducts": "https://localhost:44334/api/Category/GetSearchProducts/{id}",
+    "GetFilteredProducts": "https://localhost:44334/api/Category/GetFilteredProducts",
+    "GetSearchApi": "https://localhost:44334/api/Search/GetSearchResults",
+    "AddEditCategories": "https://localhost:44334/api/Category/AddEditCategories",
+    "GenerateReports": "https://localhost:44334/api/Report/Generate",
+    "ExportReports": "https://localhost:44334/api/Report/Export",
+    "GetAddressesByUserId": "https://localhost:44334/api/Entities/GetAddressesByUserId",
+    "GetRoleModules": "https://localhost:44334/api/SystemSecurity/role-modules?RoleID={RoleID}",
+    "GetSubModuleCategories": "https://localhost:44334/api/SystemSecurity/submodule-categories?subModuleID={subModuleID}"
   },
-  "ImageUploads":{
-    "filepath":"D:/OrderApi"
+  "ImageUploads": {
+    "filepath": "D:/OrderApi"
   },
   "browserslist": {
     "production": [
@@ -62,7 +105,11 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.41",
-    "tailwindcss": "^3.4.10"
+    "crypto-browserify": "^3.12.1",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "postcss": "^8.5.3",
+    "react-app-rewired": "^2.2.1",
+    "tailwindcss": "^3.4.17"
   }
 }
