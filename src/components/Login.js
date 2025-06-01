@@ -4,6 +4,8 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import packageInfo from "../../package.json";
 import { cartContext } from "./CartContext";
 import { UserContext } from "./UserMainContext";
+import { UserLogin } from "../Data";
+
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -65,31 +67,33 @@ function Login() {
     setErrorMessage("");
 
     try {
-      const response = await fetch(packageInfo.urls.Login, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      // const response = await fetch(packageInfo.urls.Login, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
 
-      if (response.ok) {
-        const data = await response.json();
+      const response = await UserLogin(formData);
 
-        if (data.responseCode == 200) {
+      
+        
+
+        if (response.responseCode == 200) {
           // Update user and local storage
-          updateUser(data.userName);
+          updateUser(response.userName);
 
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userID", data.userID);
-          localStorage.setItem("username", data.username);
-          localStorage.setItem("userRole", data.userRole);
+          localStorage.setItem("token", response.token);
+          localStorage.setItem("userID", response.userID);
+          localStorage.setItem("username", response.username);
+          localStorage.setItem("userRole", response.userRole);
 
-          setSuccessMessage(data.responseMessage);
+          setSuccessMessage(response.responseMessage);
           setShowSuccessDialog(true);
         }
 
-        const isAuthenticated = await verifyAuthentication(data.token);
+        const isAuthenticated = await verifyAuthentication(response.token);
 
         if (isAuthenticated) {
           const redirectPath = location.state?.from?.pathname || "/";
@@ -98,10 +102,7 @@ function Login() {
         } else {
           setErrorMessage("Authentication failed. Please try again.");
         }
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.message || "Login failed");
-      }
+     
     } catch (error) {
       setErrorMessage("An error occurred. Please try again later.");
     } finally {

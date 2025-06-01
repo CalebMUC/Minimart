@@ -415,7 +415,7 @@ export const ExportReports = async (format) => {
 };
 
 // -----* Authentication *-----
-export const Login = async (credentials) => {
+export const UserLogin = async (credentials) => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Authentication/Login`, {
       method: "POST",
