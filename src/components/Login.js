@@ -4,7 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import packageInfo from "../../package.json";
 import { cartContext } from "./CartContext";
 import { UserContext } from "./UserMainContext";
-import { UserLogin } from "../Data";
+import { UserLogin, verifyToken } from "../Data";
 
 
 function Login() {
@@ -112,14 +112,16 @@ function Login() {
 
   const verifyAuthentication = async (token) => {
     try {
-      const response = await fetch(packageInfo.urls.WeatherForecast, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // const response = await fetch(packageInfo.urls.WeatherForecast, {
+      //   method: "POST",
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
 
-      return response.ok;
+      const response = await verifyToken(token)
+
+      return response;
     } catch (err) {
       console.error("Error verifying token:", err);
       return false;

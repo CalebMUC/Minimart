@@ -438,6 +438,22 @@ export const UserLogin = async (credentials) => {
   }
 };
 
+ export const verifyToken = async (token) => {
+    try {
+      const response = await fetch(`${config.baseUrl}/WeatherForecast`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.ok;
+    } catch (err) {
+      console.error("Error verifying token:", err);
+      return false;
+    }
+  };
+
 export const SendEmailValidationCode = async (credentials) => {
   try {
     
