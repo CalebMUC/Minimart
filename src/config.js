@@ -1,12 +1,12 @@
 // config.js
-const env = process.env.NODE_ENV || 'development'; // Default to 'development' if NODE_ENV is not set
+const env = process.env.NODE_ENV || 'production'; // Default to 'development' if NODE_ENV is not set
 
 const development = {
   baseUrl: 'https://localhost:44334', // Development API base URL
 };
 
 const production = {
-  baseUrl: 'https://api.your-production-domain.com', // Production API base URL
+  baseUrl: 'https://minimart-api-lp1k.onrender.com', // Production API base URL
 };
 
 const staging = {
