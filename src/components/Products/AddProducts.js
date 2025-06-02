@@ -3,7 +3,7 @@ import { FaEdit, FaTrashAlt, FaPlus, FaSearch, FaTimes,FaImage } from "react-ico
 import Swal from "sweetalert2";
 import { DataGrid,GridActionsCellItem } from "@mui/x-data-grid";
 import Modal from "../Modal";
-import { AddProduct, FetchAllCategories, FetchFeatures, FetchProducts, FetchMerchants, EditProduct, FetchNestedCategories } from "../../Data.js";
+import { AddProduct, FetchAllCategories, FetchFeatures, FetchProducts, FetchMerchants, EditProduct, FetchNestedCategories, FileUploads } from "../../Data.js";
 import packageInfo from "../../../package.json";
 
 const AddProducts = () => {
@@ -699,15 +699,17 @@ const ProductForm = ({
         for (const file of filesToUpload) {
           const imageData = new FormData();
           imageData.append("file", file);
-          const response = await fetch(packageInfo.urls.UploadImages, {
-            method: "POST",
-            body: imageData,
-          });
-          if (!response.ok) {
-            throw new Error("Failed to upload image");
-          }
-          const data = await response.json();
-          uploadedImages.push(data.url);
+          // const response = await fetch(packageInfo.urls.UploadImages, {
+          //   method: "POST",
+          //   body: imageData,
+          // });
+          // if (!response.ok) {
+          //   throw new Error("Failed to upload image");
+          // }
+
+          const response = await FileUploads(imageData)
+          // const data = await response.json();
+          uploadedImages.push(response.url);
         }
         
         setFormData((prevData) => ({
