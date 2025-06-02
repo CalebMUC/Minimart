@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import packageInfo from "../../package.json";
 import AdSlider from "../components/AdSlider";
-import { FetchNestedCategories } from "../Data";
+import { FetchNestedCategories, GetProductsByCategory } from "../Data";
 
 const MainPage = () => {
   const [categories, setCategories] = useState([]);
@@ -60,23 +60,28 @@ const MainPage = () => {
       
       for (const [categoryId, subCategoryId] of Object.entries(selectedSubCategories)) {
         try {
-          const response = await fetch(packageInfo.urls.GetProductsByCategory, {
-            method: "POST",
-            headers: {
-              Accept: "*/*",
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              categoryID: subCategoryId,
-            }),
-          });
-          
-          if (!response.ok) {
-            throw new Error(`Error: ${response.statusText}`);
+          var requestData = {
+            categoryID: subCategoryId
           }
+          // const response = await fetch(packageInfo.urls.GetProductsByCategory, {
+          //   method: "POST",
+          //   headers: {
+          //     Accept: "*/*",
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({
+          //     categoryID: subCategoryId,
+          //   }),
+          // });
           
-          const products = await response.json();
-          productsMap[categoryId] = products;
+          const response = await GetProductsByCategory(requestData)
+
+          // if (!response.ok) {
+          //   throw new Error(`Error: ${response.statusText}`);
+          // }
+          
+          // const products = await response.json();
+          productsMap[categoryId] = response;
         } catch (error) {
           console.error(`Failed to fetch products for subcategory ${subCategoryId}:`, error);
           productsMap[categoryId] = [];
