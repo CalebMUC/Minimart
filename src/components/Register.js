@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import packageInfo from "../../package.json";
 import Dialogs from "./Dialogs.js";
+import { UserRegister } from '../Data.js';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -139,31 +140,28 @@ function Register() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(packageInfo.urls.Register, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      // const response = await fetch(packageInfo.urls.Register, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(formData),
+      // });
 
-      if (response.ok) {
-        const data = await response.json();
-        if(data.responseCode == 200){
-          localStorage.setItem('userID', data.userID);
-          localStorage.setItem('username', data.username);
-          setSuccessMessage(data.responseMessage);
+      var response = await UserRegister(formData);
+      
+        if(response.responseCode == 200){
+          localStorage.setItem('userID', response.userID);
+          localStorage.setItem('username', response.username);
+          setSuccessMessage(response.responseMessage);
           setShowSuccessDialog(true);
           setTimeout(() => {
-            window.location.href = "http://localhost:3000";
+            window.location.href = "https://minimart-nine.vercel.app";
           }, 3000);
-        } else if (data.responseCode == 400){
-          setErrorMessage(data.responseMessage || 'Registration failed');
+        } else if (response.responseCode == 400){
+          setErrorMessage(response.responseMessage || 'Registration failed');
         }
-      } else {
-        const errorData = await response.json();
-        setErrorMessage(errorData.message || 'Registration failed');
-      }
+     
     } catch (error) {
       setErrorMessage('An error occurred. Please try again later.');
     } finally {

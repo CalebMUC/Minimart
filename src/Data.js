@@ -571,7 +571,7 @@ export const ResetPassword = async (credentials) => {
   }
 };
 
-export const Register = async (userData) => {
+export const UserRegister = async (userData) => {
   try {
     const response = await fetch(`${config.baseUrl}/api/Authentication/Register`, {
       method: "POST",
