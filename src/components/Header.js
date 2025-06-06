@@ -159,7 +159,7 @@ const Header = () => {
               <div className="flex items-center space-x-2">
                 <div className="bg-white p-1 rounded shadow-md">
                   <img
-                    src="/images/shopping-bag.png"
+                    src="https://minimartke-products-upload.s3.us-east-1.amazonaws.com/minimartLogo.png"
                     alt="Minimart Logo"
                     className="w-8 h-8"
                   />

@@ -1,25 +1,25 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "MinimartKe",
+  "name": "MinimartKe Ecommerce site",
   "icons": [
     {
-      "src": "favicon.ico",
+      "src": "https://minimartke-products-upload.s3.us-east-1.amazonaws.com/minimartLogo.png",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
+      "src": "https://minimartke-products-upload.s3.us-east-1.amazonaws.com/minimartLogo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logo512.png",
+      "src": "https://minimartke-products-upload.s3.us-east-1.amazonaws.com/minimartLogo.png",
       "type": "image/png",
       "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#ecb22e", 
+  "background_color": "#fff"
 }
