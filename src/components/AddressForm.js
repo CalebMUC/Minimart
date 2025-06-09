@@ -141,7 +141,7 @@ const AddressForm = ({
     setIsLoading(true);
     try {
       let response;
-      if (isEditing) {
+      if (!isEditing) {
         response = await updateAddress(addressPayload);
       } else {
         response = await AddNewAddress(addressPayload);
