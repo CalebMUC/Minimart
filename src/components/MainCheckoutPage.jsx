@@ -77,10 +77,10 @@ const MainCheckOutPage = () => {
   // Fetch Addresses
   useEffect(() => {
     const loadAddresses = async () => {
-      if (state.userID) {
+      if (localStorage.getItem("userID")) {
         updateState({ isLoading: true });
         try {
-          const fetchedAddresses = await fetchAddressesByUserID(state.userID);
+          const fetchedAddresses = await fetchAddressesByUserID(localStorage.getItem("userID"));
           updateState({ addresses: fetchedAddresses, isLoading: false });
         } catch (error) {
           console.error("Error fetching addresses:", error);
@@ -140,9 +140,9 @@ const MainCheckOutPage = () => {
   useEffect(() => {
     if (state.selectedDeliveryMode) {
       const methods = [
-        { id: 1, name: "Mpesa", logo: "/Images/Mpesa.jpeg", paymentMethod: "Mpesa" },
-        { id: 2, name: "Credit Card", logo: "/Images/card-logo-compact.gif", paymentMethod: "CreditCard" },
-        { id: 3, name: "Pay on Delivery", logo: "/Images/delivery-track-icon.png", paymentMethod: "Cash" },
+        { id: 1, name: "Mpesa", logo: "/Images/Mpesa.jpeg", paymentMethod: "Mpesa" }
+        // { id: 2, name: "Credit Card", logo: "/Images/card-logo-compact.gif", paymentMethod: "CreditCard" },
+        // { id: 3, name: "Pay on Delivery", logo: "/Images/delivery-track-icon.png", paymentMethod: "Cash" },
       ];
       updateState({ paymentMethods: methods });
     } else {
@@ -368,7 +368,7 @@ const MainCheckOutPage = () => {
   
     return {
       orderID: orderID,
-      userID: parseInt(state.userID),
+      userID: parseInt(localStorage.getItem("userID")),
       orderedBy: localStorage.getItem("username"),
       products: products,
       totalOrderAmount: state.totalOrderedAmount,

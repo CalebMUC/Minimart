@@ -105,68 +105,70 @@ const AddressForm = ({
     }));
   };
 
-  const handleSubmitAddressForm = async (e) => {
-    e.preventDefault();
+ const handleSubmitAddressForm = async (e) => {
+  e.preventDefault();
 
-    // Validate all fields before submission
-    const requiredFields = ["name", "phoneNumber", "postalAddress", "postalCode", "countyId", "townId"];
-    let isValid = true;
-    const newErrors = {};
+  // Validate all fields before submission
+  const requiredFields = ["name", "phoneNumber", "postalAddress", "postalCode", "countyId", "townId"];
+  let isValid = true;
+  const newErrors = {};
 
-    requiredFields.forEach((field) => {
-      if (!formData[field]) {
-        newErrors[field] = "This field is required";
-        isValid = false;
-      }
-    });
-
-    if (!isValid) {
-      setErrors(newErrors);
-      return;
+  requiredFields.forEach((field) => {
+    if (!formData[field]) {
+      newErrors[field] = "This field is required";
+      isValid = false;
     }
+  });
 
-    const addressPayload = {
-      userID: formData.userID,
-      name: formData.name,
-      phoneNumber: formData.phoneNumber,
-      postalAddress: formData.postalAddress,
-      postalCode: formData.postalCode,
-      county: counties.find((c) => c.countyId === Number(formData.countyId))?.countyName,
-      town: countyTowns.find((c) => c.townId === Number(formData.townId))?.townName,
-      extraInformation: formData.extraInformation,
-      isDefault: formData.isDefault == 1 ? true : false,
-      ...(isEditing && { addressID: formData.addressID }),
-    };
+  if (!isValid) {
+    setErrors(newErrors);
+    return;
+  }
 
-    setIsLoading(true);
-    try {
-      let response;
-      if (!isEditing) {
-        response = await updateAddress(addressPayload);
-      } else {
-        response = await AddNewAddress(addressPayload);
-      }
-
-      if (response.responseCode === 200) {
-        onUpdateAddresses(response.addresses);
-        setSuccessMessage(response.responseMessage);
-        setShowSuccessDialog(true);
-        setTimeout(() => {
-          setShowModal(false);
-          setShowAddressForm(false);
-        }, 1500);
-      } else {
-        setErrorMessage(response.responseMessage);
-        setShowErrorDialog(true);
-      }
-    } catch (error) {
-      console.error(error);
-      setErrorMessage("An error occurred while saving the address. Please try again.");
-      setShowErrorDialog(true);
-    } finally {
-      setIsLoading(false);
-    }
+  const addressPayload = {
+    userID: formData.userID,
+    name: formData.name,
+    phoneNumber: formData.phoneNumber,
+    postalAddress: formData.postalAddress,
+    postalCode: formData.postalCode,
+    county: counties.find((c) => c.countyId === Number(formData.countyId))?.countyName,
+    town: countyTowns.find((c) => c.townId === Number(formData.townId))?.townName,
+    extraInformation: formData.extraInformation,
+    isDefault: formData.isDefault == 1 ? true : false,
+    ...(isEditing && { addressID: formData.addressID }), // Only include addressID when editing
   };
+
+  setIsLoading(true);
+  try {
+    let response;
+    if (isEditing) {
+      // Call updateAddress when editing
+      response = await updateAddress(addressPayload);
+    } else {
+      // Call AddNewAddress when adding
+      response = await AddNewAddress(addressPayload);
+    }
+
+    if (response.responseCode === 200) {
+      onUpdateAddresses(response.addresses);
+      setSuccessMessage(response.responseMessage);
+      setShowSuccessDialog(true);
+      setTimeout(() => {
+        setShowModal(false);
+        setShowAddressForm(false);
+      }, 1500);
+    } else {
+      setErrorMessage(response.responseMessage);
+      setShowErrorDialog(true);
+    }
+  } catch (error) {
+    console.error(error);
+    setErrorMessage("An error occurred while saving the address. Please try again.");
+    setShowErrorDialog(true);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleCloseDialog = () => {
     setShowSuccessDialog(false);

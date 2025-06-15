@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { cartCount, updateCartCount } = useContext(cartContext);
+  const { GetCartItemsAsync } = useContext(cartContext);
   const [showSuccessDialog, setSuccessDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState(null);
   const [boxContent, setBoxContent] = useState([]);
@@ -134,6 +135,7 @@ const ProductDetail = () => {
         if(response.responseCode == 0 ){
           const newCount = parseInt(cartCount) + 1;
           updateCartCount(newCount);
+          GetCartItemsAsync();
         }
         setSuccessDialog(true);
         setDialogMessage(response.responseMessage);

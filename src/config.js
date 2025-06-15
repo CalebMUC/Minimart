@@ -1,5 +1,5 @@
 // config.js
-const env = process.env.NODE_ENV || 'production'; // Default to 'development' if NODE_ENV is not set
+const env = process.env.NODE_ENV || 'development'; // Default to 'development' if NODE_ENV is not set
 
 const development = {
   baseUrl: 'https://localhost:44334', // Development API base URL
