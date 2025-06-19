@@ -23,26 +23,37 @@ const ProductDetail = () => {
   const [boxContent, setBoxContent] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
 
-  const [expandedDetails,setExpandedDetails] = useState(false)
-  const [expandedFeatures,setExpandedFeatures] = useState(false)
+ const [expandedDetails, setExpandedDetails] = useState(false);
+  const [expandedKeyFeatures, setExpandedKeyFeatures] = useState(false);
+  const [expandedSpecifications, setExpandedSpecifications] = useState(false);
+  const [expandedBoxContent, setExpandedBoxContent] = useState(false);
+  
   const detailsRef = useRef(null);
-  const featuresRef = useRef(null);
+  const keyFeaturesRef = useRef(null);
+  const specificationsRef = useRef(null);
+  const boxContentRef = useRef(null);
 
   // Check if content exceeds max height
   const [showDetailsToggle, setShowDetailsToggle] = useState(false);
-  const [showFeaturesToggle, setShowFeaturesToggle] = useState(false);
+  const [showKeyFeaturesToggle, setShowKeyFeaturesToggle] = useState(false);
+  const [showSpecificationsToggle, setShowSpecificationsToggle] = useState(false);
+  const [showBoxContentToggle, setShowBoxContentToggle] = useState(false);
 
 
-  useEffect(()=>{
-    if(detailsRef.current){
-      setShowDetailsToggle(detailsRef.current.scrollHeight > 300)
+  useEffect(() => {
+    if (detailsRef.current) {
+      setShowDetailsToggle(detailsRef.current.scrollHeight > 300);
     }
-
-    if(featuresRef.current){
-      setShowDetailsToggle(featuresRef.current.scrollHeight > 300)
+    if (keyFeaturesRef.current) {
+      setShowKeyFeaturesToggle(keyFeaturesRef.current.scrollHeight > 300);
     }
-
-  },[product])
+    if (specificationsRef.current) {
+      setShowSpecificationsToggle(specificationsRef.current.scrollHeight > 300);
+    }
+    if (boxContentRef.current) {
+      setShowBoxContentToggle(boxContentRef.current.scrollHeight > 300);
+    }
+  }, [product]);
 
   useEffect(() => {
     if (!product) return;
@@ -205,7 +216,7 @@ const ProductDetail = () => {
               id="quantitySelect"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="block w-20 mt-1 pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 rounded-md"
+              className="block w-22 mt-1 pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 rounded-md"
             >
               {[...Array(product.stockQuantity).keys()].map(i => (
                 <option key={i} value={i + 1}>{i + 1}</option>
@@ -256,74 +267,113 @@ const ProductDetail = () => {
         </div>
 
         {/* Right Side - Features */}
-        <div className="md:w-1/3 bg-white p-6 rounded-lg shadow-sm flex flex-col">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Features</h2>
-          
-          <div className="flex-grow overflow-hidden relative">
+          {/* Right Side - Features */}
+      <div className="md:w-1/3 bg-white p-6 rounded-lg shadow-sm flex flex-col">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Features</h2>
+        
+        <div className="flex-grow">
+          {/* Key Features Section */}
+          <div className="mb-6">
             <div 
-              ref={featuresRef}
-              className={`overflow-hidden transition-all duration-300 ${expandedFeatures ? '' : 'max-h-[600px]'}`}
+              ref={keyFeaturesRef}
+              className={`overflow-hidden transition-all duration-300 ${expandedKeyFeatures ? '' : 'max-h-[300px]'}`}
               style={{
-                maskImage: expandedFeatures ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
-                WebkitMaskImage: expandedFeatures ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)'
+                maskImage: expandedKeyFeatures ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                WebkitMaskImage: expandedKeyFeatures ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)'
               }}
             >
-              <div className="mb-6">
-                <h3 className="text-lg  text-gray-800 mb-2">Key Features</h3>
-                <hr className="border-yellow-200 mb-3" />
-                <ul className="space-y-2">
-                  {parseKeyValuePairs(product.keyFeatures).length > 0 ? (
-                    parseKeyValuePairs(product.keyFeatures).map(([key, value], index) => (
-                      <li key={index} className="text-gray-700">
-                        <span className="font-medium font-semibold">{key}:</span> {value}
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-gray-500">No key features available</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Specifications</h3>
-                <hr className="border-yellow-200 mb-3" />
-                <ul className="space-y-2">
-                  {parseKeyValuePairs(product.specification).length > 0 ? (
-                    parseKeyValuePairs(product.specification).map((spec, index) => (
-                      <li key={index} className="text-gray-700">
-                        <span className="font-medium font-semibold">{spec[0]}:</span> {spec[1]}
-                      </li>
-                    ))
-                  ) : (
-                    <li className="text-gray-500">No specifications available</li>
-                  )}
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-lg font-medium text-gray-800 mb-2">What's In the Box</h3>
-                <hr className="border-yellow-200 mb-3" />
-                <ul className="space-y-2">
-                  {boxContent.length > 0 ? (
-                    boxContent.map((item, index) => (
-                      <li key={index} className="text-gray-700">{item.trim()}</li>
-                    ))
-                  ) : (
-                    <li className="text-gray-500">No items available</li>
-                  )}
-                </ul>
-              </div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">Key Features</h3>
+              <hr className="border-yellow-200 mb-3" />
+              <ul className="space-y-2">
+                {parseKeyValuePairs(product.keyFeatures).length > 0 ? (
+                  parseKeyValuePairs(product.keyFeatures).map(([key, value], index) => (
+                    <li key={index} className="text-gray-700">
+                      <span className="font-semibold">{key}:</span> {value}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No key features available</li>
+                )}
+              </ul>
             </div>
-            {showFeaturesToggle && (
+            {showKeyFeaturesToggle && (
               <button 
-                onClick={() => setExpandedFeatures(!expandedFeatures)}
-                className="text-yellow-600 hover:text-yellow-700 text-sm font-medium mt-2 focus:outline-none"
+                onClick={() => setExpandedKeyFeatures(!expandedKeyFeatures)}
+                className="text-yellow-600 hover:text-yellow-700 text-sm mt-2 focus:outline-none"
               >
-                {expandedFeatures ? 'See Less' : 'See More'}
+                {expandedKeyFeatures ? 'See Less' : 'See More'}
+              </button>
+            )}
+          </div>
+
+          {/* Specifications Section */}
+          <div className="mb-6">
+            <div 
+              ref={specificationsRef}
+              className={`overflow-hidden transition-all duration-300 ${expandedSpecifications ? '' : 'max-h-[300px]'}`}
+              style={{
+                maskImage: expandedSpecifications ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                WebkitMaskImage: expandedSpecifications ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)'
+              }}
+            >
+              <h3 className="text-lg font-medium text-gray-800 mb-2">Specifications</h3>
+              <hr className="border-yellow-200 mb-3" />
+              <ul className="space-y-2">
+                {parseKeyValuePairs(product.specification).length > 0 ? (
+                  parseKeyValuePairs(product.specification).map(([key, value], index) => (
+                    <li key={index} className="text-gray-700">
+                      <span className="font-semibold">{key}:</span> {value}
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No specifications available</li>
+                )}
+              </ul>
+            </div>
+            {showSpecificationsToggle && (
+              <button 
+                onClick={() => setExpandedSpecifications(!expandedSpecifications)}
+                className="text-yellow-600 hover:text-yellow-700 text-sm mt-2 focus:outline-none"
+              >
+                {expandedSpecifications ? 'See Less' : 'See More'}
+              </button>
+            )}
+          </div>
+
+          {/* What's In the Box Section */}
+          <div>
+            <div 
+              ref={boxContentRef}
+              className={`overflow-hidden transition-all duration-300 ${expandedBoxContent ? '' : 'max-h-[300px]'}`}
+              style={{
+                maskImage: expandedBoxContent ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)',
+                WebkitMaskImage: expandedBoxContent ? 'none' : 'linear-gradient(to bottom, black 80%, transparent 100%)'
+              }}
+            >
+              <h3 className="text-lg font-medium text-gray-800 mb-2">What's In the Box</h3>
+              <hr className="border-yellow-200 mb-3" />
+              <ul className="space-y-2">
+                {boxContent.length > 0 ? (
+                  boxContent.map((item, index) => (
+                    <li key={index} className="text-gray-700">{item.trim()}</li>
+                  ))
+                ) : (
+                  <li className="text-gray-500">No items available</li>
+                )}
+              </ul>
+            </div>
+            {showBoxContentToggle && (
+              <button 
+                onClick={() => setExpandedBoxContent(!expandedBoxContent)}
+                className="text-yellow-600 hover:text-yellow-700 text-sm mt-2 focus:outline-none"
+              >
+                {expandedBoxContent ? 'See Less' : 'See More'}
               </button>
             )}
           </div>
         </div>
+      </div>
+
       </div>
 
       {/* Recently Viewed - Maintained at bottom as in original */}

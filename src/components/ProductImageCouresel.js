@@ -4,6 +4,7 @@ const ProductImageCarousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [zoomStyle, setZoomStyle] = useState({ display: 'none' });
+    const [showZoomPreview, setShowZoomPreview] = useState(false);
   const imageRef = useRef(null);
   const zoomRef = useRef(null);
 
@@ -25,10 +26,12 @@ const ProductImageCarousel = ({ images }) => {
   };
 
   const handleMouseEnter = () => {
+    setShowZoomPreview(true);
     setZoomStyle(prev => ({ ...prev, display: 'block' }));
   };
 
   const handleMouseLeave = () => {
+    setShowZoomPreview(false);
     setZoomStyle(prev => ({ ...prev, display: 'none' }));
   };
 
@@ -88,17 +91,19 @@ const ProductImageCarousel = ({ images }) => {
           />
         </div>
 
-        {/* Fixed Zoom Preview (Amazon-style) */}
-        <div className="hidden lg:block fixed right-8 top-1/2 transform -translate-y-1/2 w-64 h-64 border-2 border-gray-200 bg-white overflow-hidden rounded-lg shadow-xl z-10">
-          <div 
-            className="w-full h-full bg-no-repeat"
-            style={{
-              backgroundImage: `url(${images[currentIndex]})`,
-              backgroundSize: `${imageRef.current?.offsetWidth * 2}px ${imageRef.current?.offsetHeight * 2}px`,
-              ...zoomStyle
-            }}
-          />
-        </div>
+         {/* Fixed Zoom Preview (Amazon-style) - Now conditionally rendered */}
+        {showZoomPreview && (
+          <div className="hidden lg:block fixed right-8 top-1/2 transform -translate-y-1/2 w-64 h-64 border-2 border-gray-200 bg-white overflow-hidden rounded-lg shadow-xl z-10">
+            <div 
+              className="w-full h-full bg-no-repeat"
+              style={{
+                backgroundImage: `url(${images[currentIndex]})`,
+                backgroundSize: `${imageRef.current?.offsetWidth * 2}px ${imageRef.current?.offsetHeight * 2}px`,
+                backgroundPosition: zoomStyle.backgroundPosition
+              }}
+            />
+          </div>
+        )}
 
         {/* Navigation Arrows */}
         <button 
