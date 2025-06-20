@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faEyeSlash, faCheck, faTimes,faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import packageInfo from "../../package.json";
 import Dialogs from "./Dialogs.js";
 import { UserRegister } from '../Data.js';
