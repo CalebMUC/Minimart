@@ -48,20 +48,70 @@ function Register({ verifiedEmail, onBack }) {
   };
 
   const fetchCountryCodes = async () => {
-    try {
-      const response = await fetch("https://restcountries.com/v3.1/all");
-      const data = await response.json();
-      const codes = data
-        .map((country) => ({
-          name: country.name.common,
-          code: country.idd.root + (country.idd.suffixes ? country.idd.suffixes[0] : ""),
-        }))
-        .filter((country) => country.code);
-      return codes;
-    } catch (error) {
-      console.error("Error fetching country codes:", error);
+  try {
+    const response = await fetch("https://restcountries.com/v3.1/all");
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Validate response structure
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid API response format");
+    }
+    
+    // Process country codes with proper error handling
+    const codes = data
+      .filter(country => 
+        country?.name?.common && 
+        country?.idd?.root && 
+        country.idd.suffixes?.[0]
+      )
+      .map(country => ({
+        name: country.name.common,
+        code: `${country.idd.root}${country.idd.suffixes[0]}`,
+      }))
+      .filter(country => country.code)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    
+    // Add default Kenya (+254) if not present
+    if (!codes.some(c => c.code === "+254")) {
+      codes.unshift({ name: "Kenya", code: "+254" });
+    }
+    
+    return codes;
+  } catch (error) {
+    console.error("Error fetching country codes:", error);
+    
+    // Return default codes if API fails
+    return [
+      { name: "Kenya", code: "+254" },
+      { name: "United States", code: "+1" },
+      { name: "United Kingdom", code: "+44" },
+      // Add more fallback codes as needed
+    ];
+  }
+};
+
+// Update the useEffect hook
+useEffect(() => {
+  let isMounted = true;
+  
+  const loadCountryCodes = async () => {
+    const codes = await fetchCountryCodes();
+    if (isMounted) {
+      setCountryCodes(codes);
     }
   };
+  
+  loadCountryCodes();
+  
+  return () => {
+    isMounted = false;
+  };
+}, []);
 
   const validatePasswordStrength = (password) => {
     const requirements = {
@@ -138,13 +188,13 @@ function Register({ verifiedEmail, onBack }) {
     }
   };
 
-  useEffect(() => {
-    const loadCountryCodes = async () => {
-      const codes = await fetchCountryCodes();
-      setCountryCodes(codes);
-    };
-    loadCountryCodes();
-  }, []);
+  // useEffect(() => {
+  //   const loadCountryCodes = async () => {
+  //     const codes = await fetchCountryCodes();
+  //     setCountryCodes(codes);
+  //   };
+  //   loadCountryCodes();
+  // }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
