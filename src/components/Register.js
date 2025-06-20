@@ -8,12 +8,13 @@ import { UserRegister } from '../Data.js';
 
 function Register() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    password: '',
-    confirmPassword: '',
-  });
+  userName: '', // ✅ Correct key name
+  email: '',
+  phoneNumber: '',
+  password: '',
+  confirmPassword: '',
+});
+
 
   const [errors, setErrors] = useState({});
   const [passwordVisible, setPasswordVisible] = useState(false);
