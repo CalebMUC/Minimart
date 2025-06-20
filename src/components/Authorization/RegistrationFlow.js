@@ -64,9 +64,11 @@ const RegistrationFlow = () =>{
                     errorMessage={errorMessage}
                 />
              )}
-             {step === 3 &&(
+            {step === 3 && (
+            <div className="fixed inset-0 bg-gray-100 flex justify-center items-center">
                 <Register/>
-             )}
+            </div>
+            )}
         </div>
     )
 
