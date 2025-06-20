@@ -6,7 +6,7 @@ import packageInfo from "../../package.json";
 import Dialogs from "./Dialogs.js";
 import { UserRegister } from '../Data.js';
 
-function Register() {
+function Register({ verifiedEmail, onBack }) {
   const [formData, setFormData] = useState({
   userName: '', // ✅ Correct key name
   email: '',
@@ -33,6 +33,13 @@ function Register() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+   // Lock the email field since it's already verified
+    useEffect(() => {
+        if (verifiedEmail) {
+            setFormData(prev => ({ ...prev, email: verifiedEmail }));
+        }
+    }, [verifiedEmail]);
 
   const navigate = useNavigate();
 
@@ -81,6 +88,10 @@ function Register() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
+    // Prevent changing verified email
+        if (name === 'email' && verifiedEmail) return;
+
     setFormData({
       ...formData,
       [name]: value,
@@ -186,6 +197,16 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+
+        {/* Back Button */}
+            <button 
+                onClick={onBack}
+                className="absolute top-4 left-4 text-gray-500 hover:text-gray-700"
+            >
+                <FontAwesomeIcon icon={faArrowLeft} className="mr-1" />
+                Back
+            </button>
+
       {showSuccessDialog && (
         <Dialogs 
           message={successMessage} 
@@ -215,47 +236,44 @@ function Register() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
-            {/* Name Field */}
-            <div>
-              <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
-                Username
-              </label>
-              <div className="mt-1">
-                <input
-                  id="userName"
-                  name="userName"
-                  type="text"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
-                  placeholder="Username"
-                  value={formData.userName}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
+              {/* Username Field */}
+                        <div>
+                            <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
+                                Username
+                            </label>
+                            <input
+                                id="userName"
+                                name="userName"
+                                type="text"
+                                required
+                                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
+                                value={formData.userName}
+                                onChange={handleInputChange}
+                            />
+                        </div>
 
             {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <div className="mt-1">
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"
-                  placeholder="Enter Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                />
-                {errors.email && (
-                  <p className="mt-2 text-sm text-red-600">{errors.email}</p>
-                )}
-              </div>
-            </div>
+             {/* Email Field (Read-only if verified) */}
+                        <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                                Email address
+                            </label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                readOnly={!!verifiedEmail}
+                                className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm ${
+                                    verifiedEmail ? 'bg-gray-100 cursor-not-allowed' : ''
+                                }`}
+                                value={formData.email}
+                                onChange={handleInputChange}
+                            />
+                            {verifiedEmail && (
+                                <p className="mt-1 text-xs text-green-600">Email verified</p>
+                            )}
+                        </div>
 
             {/* Phone Number Field */}
             <div>
@@ -439,7 +457,7 @@ function Register() {
 
             {/* Submit Button */}
             <div>
-              <button
+              {/* <button
                 type="submit"
                 disabled={isSubmitting || passwordStrength === "Weak"}
                 className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 ${
@@ -459,7 +477,18 @@ function Register() {
                 ) : (
                   'Sign Up'
                 )}
-              </button>
+              </button> */}
+               <button
+                            type="submit"
+                            disabled={isSubmitting || passwordStrength === "Weak"}
+                            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 ${
+                                isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                            } ${
+                                passwordStrength === "Weak" ? 'opacity-50 cursor-not-allowed' : ''
+                            }`}
+                        >
+                            {isSubmitting ? 'Creating account...' : 'Create Account'}
+                        </button>
             </div>
           </form>
 
