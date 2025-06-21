@@ -284,8 +284,14 @@ useEffect(() => {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
+        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 
+        style={{ maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}">
+          {/* <form className="flex flex-col space-y-4" onSubmit={handleSubmit}> */}
+           <form 
+              className="flex-1 overflow-y-auto" 
+              onSubmit={handleSubmit}
+              style={{ paddingRight: '8px' }} // Add some padding to prevent scrollbar overlap
+            >
               {/* Username Field */}
                         <div>
                             <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
