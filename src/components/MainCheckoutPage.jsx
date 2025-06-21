@@ -299,7 +299,7 @@ const MainCheckOutPage = () => {
     let selectedZone = "CBD";
   
     checkOutData.forEach((product) => {
-      totalAmount += product.price;
+      totalAmount += product.price * product.quantity;
     });
   
     if (totalAmount > 2500 && selectedZone === "CBD") {
