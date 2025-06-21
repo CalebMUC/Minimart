@@ -166,12 +166,12 @@ const RegistrationFlow = () => {
             )}
             
             {step === 3 && isVerified && (
-                <div className="fixed inset-0 bg-gray-100 z-50">
+                // <div className="fixed inset-0 bg-gray-100 z-50">
                     <Register 
                         verifiedEmail={email}
                         onBack={handleBack}
                     />
-                </div>
+                // </div>
             )}
         </div>
     );
