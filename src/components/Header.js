@@ -597,7 +597,8 @@ const Header = () => {
               onClick={() => handleCategoryClick(category)}
               className="w-full text-left font-semibold text-lg mb-2 flex justify-between items-center"
             >
-              <span>{category.categoryName}</span>
+              {/* <span>{category.categoryName}</span> */}
+              <p className="font-semibold text-sm mb-2">{category.categoryName}</p>
               {category.subCategories && category.subCategories.length > 0 && (
                 <FaChevronDown className="text-gray-500" />
               )}
@@ -656,7 +657,7 @@ const Header = () => {
       <div className="space-y-4">
         {dashboardModules.map((module) => (
           <div key={module.moduleID} className="mb-4">
-             <p className="font-semibold text-lg mb-2">{module.moduleName}</p> 
+             <p className="font-semibold text-sm mb-2">{module.moduleName}</p> 
             <ul className="space-y-1">
               {module.subModules.slice(
                 0,
