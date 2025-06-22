@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaChevronDown, FaChevronUp, FaSearch, FaBars, FaTimes, FaUser, FaCog, FaMobileAlt, FaSignOutAlt, FaSignInAlt, FaShoppingCart } from "react-icons/fa";
 import packageInfo from "../../package.json";
 import { cartContext } from "./CartContext";
-import { fetchRoleModules, fetchSubModuleCategories, GetProductsSearch, GetSuggestions } from "../Data.js";
+import { FetchNestedCategories, fetchRoleModules, fetchSubModuleCategories, GetProductsSearch, GetSuggestions } from "../Data.js";
 
 const Header = () => {
   const [dashboardModules, setDashboardModules] = useState([]);
@@ -12,6 +12,8 @@ const Header = () => {
   const [username, setUsername] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [subCategories, setSubCategories] = useState([]);
+  const [nestedCategories, setNestedCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubModule, setSelectedSubModule] = useState(null);
   const [isMobileView, setIsMobileView] = useState(false);
   const [query, setQuery] = useState("");
@@ -82,8 +84,28 @@ const Header = () => {
     }
   };
 
+  // Get Nested Categories
+  const getNestedCategories = async () => {
+    try {
+      const response = await FetchNestedCategories();
+      // Add showAll property to each category for toggling
+      const categoriesWithToggle = response.map(category => ({
+        ...category,
+        showAll: false,
+        subCategories: category.subCategories.map(subCategory => ({
+          ...subCategory,
+          showAll: false
+        }))
+      }));
+      setNestedCategories(categoriesWithToggle);
+    } catch (error) {
+      console.error("Error fetching nested categories:", error);
+    }
+  };
+
   useEffect(() => {
     fetchModules();
+    getNestedCategories();
     GetCartItemsAsync();
   }, []);
 
@@ -110,6 +132,26 @@ const Header = () => {
     }
   };
 
+  const handleCategoryClick = (category) => {
+    if (category.subCategories && category.subCategories.length > 0) {
+      setSelectedCategory(category);
+    } else {
+      // Navigate to category page if no subcategories
+      navigate(`/category/${category.slug}`);
+      setSidebarOpen(false);
+    }
+  };
+
+  const toggleCategory = (categoryId) => {
+    setNestedCategories(prevCategories =>
+      prevCategories.map(category =>
+        category.categoryId === categoryId
+          ? { ...category, showAll: !category.showAll }
+          : category
+      )
+    );
+  };
+
   const HandleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userID");
@@ -120,8 +162,8 @@ const Header = () => {
   };
 
   const toggleSubmodules = (moduleId) => {
-    setDashboardModules((prevModules) =>
-      prevModules.map((module) =>
+    setDashboardModules(prevModules =>
+      prevModules.map(module =>
         module.moduleID === moduleId
           ? { ...module, showAll: !module.showAll }
           : module
@@ -229,7 +271,7 @@ const Header = () => {
                   <span className="text-xs">
                     {username ? `Hello, ${username}` : "Hello"}
                   </span>
-                  <span className="text-sm font-semibold">Account & Lists</span>
+                  <span className="text-sm font-semibold">Accounts</span>
                 </div>
                 
                 {isDropdownVisible && (
@@ -454,24 +496,25 @@ const Header = () => {
 
           {/* Sidebar Content */}
           <div className="flex-1 overflow-y-auto p-4">
-            {selectedSubModule ? (
+            {selectedCategory ? (
               <>
                 <button 
-                  onClick={() => setSelectedSubModule(null)}
+                  onClick={() => setSelectedCategory(null)}
                   className="text-blue-600 hover:text-blue-800 mb-4 flex items-center"
                 >
-                  <span className="mr-1">&larr;</span> Back to {selectedSubModule.ModuleName}
+                  <span className="mr-1">&larr;</span> Back to Categories
                 </button>
                 <div className="mb-6">
-                  <h4 className="font-bold text-lg mb-2">{selectedSubModule.subModuleName}</h4>
+                  <h4 className="font-bold text-lg mb-2">{selectedCategory.categoryName}</h4>
                   <ul className="space-y-2">
-                    {subCategories.map((subCategory) => (
-                      <li key={subCategory.subCategoryID}>
+                    {selectedCategory.subCategories.map((subCategory) => (
+                      <li key={subCategory.categoryId}>
                         <Link 
-                          to={subCategory.subCategoryUrl}
+                          to={`/category/${subCategory.slug}`}
                           className="block py-1 text-gray-700 hover:text-blue-600"
+                          onClick={() => setSidebarOpen(false)}
                         >
-                          {subCategory.subCategoryName}
+                          {subCategory.categoryName}
                         </Link>
                       </li>
                     ))}
@@ -479,42 +522,40 @@ const Header = () => {
                 </div>
               </>
             ) : (
-              dashboardModules.map((module) => (
-                <div key={module.moduleID} className="mb-6">
-                  <h3 className="font-bold text-lg mb-2">{module.moduleName}</h3>
-                  <ul className="space-y-1">
-                    {module.subModules.slice(
-                      0,
-                      module.showAll ? module.subModules.length : 5
-                    ).map((subModule) => (
-                      <li key={subModule.subModuleID}>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleSubModuleClick(subModule);
-                          }}
-                          className="w-full text-left py-1 text-gray-700 hover:text-blue-600"
-                        >
-                          {subModule.subModuleName}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                  {module.subModules.length > 5 && (
-                    <button
-                      className="text-blue-600 hover:text-blue-800 mt-2 flex items-center"
-                      onClick={() => toggleSubmodules(module.moduleID)}
-                    >
-                      {module.showAll ? "See Less" : "See All"}
-                      {module.showAll ? (
-                        <FaChevronUp className="ml-1" />
-                      ) : (
-                        <FaChevronDown className="ml-1" />
+              <>
+                <h3 className="font-bold text-xl mb-4">Categories</h3>
+                <div className="space-y-4">
+                  {nestedCategories.map((category) => (
+                    <div key={category.categoryId} className="mb-4">
+                      <button
+                        onClick={() => handleCategoryClick(category)}
+                        className="w-full text-left font-semibold text-lg mb-2 flex justify-between items-center"
+                      >
+                        <span>{category.categoryName}</span>
+                        {category.subCategories && category.subCategories.length > 0 && (
+                          <FaChevronDown className="text-gray-500" />
+                        )}
+                      </button>
+                      
+                      {category.showAll && category.subCategories && (
+                        <ul className="ml-4 space-y-2">
+                          {category.subCategories.map((subCategory) => (
+                            <li key={subCategory.categoryId}>
+                              <Link 
+                                to={`/category/${subCategory.slug}`}
+                                className="block py-1 text-gray-700 hover:text-blue-600"
+                                onClick={() => setSidebarOpen(false)}
+                              >
+                                {subCategory.categoryName}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
                       )}
-                    </button>
-                  )}
+                    </div>
+                  ))}
                 </div>
-              ))
+              </>
             )}
           </div>
         </div>
