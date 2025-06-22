@@ -563,7 +563,7 @@ const Header = () => {
 <div className="flex-1 overflow-y-auto p-4">
   {/* Categories Section */}
   <div className="mb-8">
-    <h3 className="font-bold text-xl mb-4">Categories</h3>
+    {/* <h3 className="font-bold text-xl mb-4">Categories</h3> */}
     {selectedCategory ? (
       <>
         <button 
@@ -573,7 +573,7 @@ const Header = () => {
           <span className="mr-1">&larr;</span> Back to Categories
         </button>
         <div className="mb-6">
-          <h4 className="font-bold text-lg mb-2">{selectedCategory.categoryName}</h4>
+          <h4 className="font-semibold text-sm mb-2">{selectedCategory.categoryName}</h4>
           <ul className="space-y-2">
             {selectedCategory.subCategories.map((subCategory) => (
               <li key={subCategory.categoryId}>
@@ -636,7 +636,7 @@ const Header = () => {
           <span className="mr-1">&larr;</span> Back to {selectedSubModule.moduleName}
         </button>
         <div className="mb-6">
-          <h4 className="font-bold text-lg mb-2">{selectedSubModule.subModuleName}</h4>
+          <h4 className="font-semibold text-sm mb-2">{selectedSubModule.subModuleName}</h4>
           <ul className="space-y-2">
             {subCategories.map((subCategory) => (
               <li key={subCategory.subCategoryID}>
@@ -656,7 +656,7 @@ const Header = () => {
       <div className="space-y-4">
         {dashboardModules.map((module) => (
           <div key={module.moduleID} className="mb-4">
-            <h3 className="font-semibold text-lg mb-2">{module.moduleName}</h3>
+            {/* <h3 className="font-semibold text-lg mb-2">{module.moduleName}</h3> */}
             <ul className="space-y-1">
               {module.subModules.slice(
                 0,
