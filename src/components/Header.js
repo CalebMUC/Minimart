@@ -495,7 +495,7 @@ const Header = () => {
           </div>
 
           {/* Sidebar Content */}
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* <div className="flex-1 overflow-y-auto p-4">
             {selectedCategory ? (
               <>
                 <button 
@@ -505,7 +505,7 @@ const Header = () => {
                   <span className="mr-1">&larr;</span> Back to Categories
                 </button>
                 <div className="mb-6">
-                  <h4 className="font-bold text-lg mb-2">{selectedCategory.categoryName}</h4>
+                  <h4 className="font-semibold text-md mb-2">{selectedCategory.categoryName}</h4>
                   <ul className="space-y-2">
                     {selectedCategory.subCategories.map((subCategory) => (
                       <li key={subCategory.categoryId}>
@@ -558,8 +558,146 @@ const Header = () => {
               </>
             )}
           </div>
+
+          {/* Sidebar Content */}
+<div className="flex-1 overflow-y-auto p-4">
+  {/* Categories Section */}
+  <div className="mb-8">
+    <h3 className="font-bold text-xl mb-4">Categories</h3>
+    {selectedCategory ? (
+      <>
+        <button 
+          onClick={() => setSelectedCategory(null)}
+          className="text-blue-600 hover:text-blue-800 mb-4 flex items-center"
+        >
+          <span className="mr-1">&larr;</span> Back to Categories
+        </button>
+        <div className="mb-6">
+          <h4 className="font-bold text-lg mb-2">{selectedCategory.categoryName}</h4>
+          <ul className="space-y-2">
+            {selectedCategory.subCategories.map((subCategory) => (
+              <li key={subCategory.categoryId}>
+                <Link 
+                  to={`/category/${subCategory.slug}`}
+                  className="block py-1 text-gray-700 hover:text-blue-600"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  {subCategory.categoryName}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
+      </>
+    ) : (
+      <div className="space-y-4">
+        {nestedCategories.map((category) => (
+          <div key={category.categoryId} className="mb-4">
+            <button
+              onClick={() => handleCategoryClick(category)}
+              className="w-full text-left font-semibold text-lg mb-2 flex justify-between items-center"
+            >
+              <span>{category.categoryName}</span>
+              {category.subCategories && category.subCategories.length > 0 && (
+                <FaChevronDown className="text-gray-500" />
+              )}
+            </button>
+            
+            {category.showAll && category.subCategories && (
+              <ul className="ml-4 space-y-2">
+                {category.subCategories.map((subCategory) => (
+                  <li key={subCategory.categoryId}>
+                    <Link 
+                      to={`/category/${subCategory.slug}`}
+                      className="block py-1 text-gray-700 hover:text-blue-600"
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      {subCategory.categoryName}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))}
       </div>
+    )}
+  </div>
+
+  {/* Modules Section */}
+  <div className="border-t border-gray-200 pt-6">
+    <h3 className="font-bold text-xl mb-4">Modules</h3>
+    {selectedSubModule ? (
+      <>
+        <button 
+          onClick={() => setSelectedSubModule(null)}
+          className="text-blue-600 hover:text-blue-800 mb-4 flex items-center"
+        >
+          <span className="mr-1">&larr;</span> Back to {selectedSubModule.moduleName}
+        </button>
+        <div className="mb-6">
+          <h4 className="font-bold text-lg mb-2">{selectedSubModule.subModuleName}</h4>
+          <ul className="space-y-2">
+            {subCategories.map((subCategory) => (
+              <li key={subCategory.subCategoryID}>
+                <Link 
+                  to={subCategory.subCategoryUrl}
+                  className="block py-1 text-gray-700 hover:text-blue-600"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  {subCategory.subCategoryName}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </>
+    ) : (
+      <div className="space-y-4">
+        {dashboardModules.map((module) => (
+          <div key={module.moduleID} className="mb-4">
+            <h3 className="font-semibold text-lg mb-2">{module.moduleName}</h3>
+            <ul className="space-y-1">
+              {module.subModules.slice(
+                0,
+                module.showAll ? module.subModules.length : 5
+              ).map((subModule) => (
+                <li key={subModule.subModuleID}>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSubModuleClick(subModule);
+                    }}
+                    className="w-full text-left py-1 text-gray-700 hover:text-blue-600"
+                  >
+                    {subModule.subModuleName}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {module.subModules.length > 5 && (
+              <button
+                className="text-blue-600 hover:text-blue-800 mt-2 flex items-center"
+                onClick={() => toggleSubmodules(module.moduleID)}
+              >
+                {module.showAll ? "See Less" : "See All"}
+                {module.showAll ? (
+                  <FaChevronUp className="ml-1" />
+                ) : (
+                  <FaChevronDown className="ml-1" />
+                )}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+        </div>
+      </div> 
+
+      
 
       {/* Overlay */}
       {isSidebarOpen && (
