@@ -626,7 +626,8 @@ const Header = () => {
   </div>
 
   {/* Modules Section */}
-  <div className="border-t border-gray-200 pt-6">
+  {!selectedCategory && (
+     <div className="border-t border-gray-200 pt-6">
     {/* <h3 className="font-bold text-xl mb-4">Modules</h3> */}
     {selectedSubModule ? (
       <>
@@ -694,6 +695,8 @@ const Header = () => {
       </div>
     )}
   </div>
+  )}
+ 
 </div>
         </div>
       </div> 
