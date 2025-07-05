@@ -237,7 +237,7 @@ const AddProducts = () => {
   // Generate a unique product ID
   const generateProductID = (product) => {
     const { categoryId, subCategoryId } = product;
-    if (categoryId != null && subCategoryId != null) {
+    if (categoryId != null) {
       // const categoryName = categories.find((cat) => cat.id === parseInt(categoryID))?.name || "";
       // const subcategoryName = subcategories.find((sub) => sub.id === parseInt(subcategory))?.name || "";
 
