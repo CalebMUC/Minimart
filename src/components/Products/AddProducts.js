@@ -246,8 +246,8 @@ const AddProducts = () => {
       const subSubCategoryName = product.subSubCategoryName;
 
       const catCode = categoryName.substring(0, 2).toUpperCase();
-      const subCatCode = subCategoryName.substring(0, 2).toUpperCase();
-      const subSubCatCode = subSubCategoryName !== "" ? subCategoryName.substring(0, 2).toUpperCase() : "";
+      const subCatCode = subCategoryName != "" ? subCategoryName.substring(0, 2).toUpperCase() : "";
+      const subSubCatCode = subSubCategoryName !== "" ? subSubCategoryName.substring(0, 2).toUpperCase() : "";
       const uniqueNumber = String(Date.now()).slice(-4);
 
       const baseCode = subSubCatCode ? `${catCode}${subCatCode}${subSubCatCode}` : `${catCode}${subCatCode}`
